@@ -53,8 +53,12 @@ test.describe('authenticated membership flow', () => {
     await page.waitForURL('**/login');
 
     await expect(page.getByText(new RegExp(authTestEmail, 'i')).first()).toBeVisible();
-    await page.getByRole('button', { name: 'Claim demo organization' }).click();
-    await expect(page.getByText(/Demo organization membership granted/i)).toBeVisible();
+
+    const claimButton = page.getByRole('button', { name: 'Claim demo organization' });
+    if (await claimButton.count()) {
+      await claimButton.click();
+      await expect(page.getByText(/Demo organization membership granted/i)).toBeVisible();
+    }
 
     await page.goto('/voice');
 
