@@ -1,8 +1,16 @@
+import { mockTasks } from '../../data/mock-tasks';
+
 export function OpenTasksWidget() {
   return (
     <section>
       <h2>Open Tasks</h2>
-      <p>Widget scaffold for task counts and assigned work.</p>
+      <ul>
+        {mockTasks.map((task) => (
+          <li key={task.id}>
+            <strong>{task.title}</strong> — {task.status}
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
