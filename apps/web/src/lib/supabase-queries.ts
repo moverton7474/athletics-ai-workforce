@@ -1,7 +1,12 @@
 import { getSupabaseClient } from './supabase';
+import { getSupabaseServerClient } from './server/supabase-admin';
+
+function getQueryClient() {
+  return getSupabaseServerClient() || getSupabaseClient();
+}
 
 async function resolveQuery(query: any) {
-  const client = getSupabaseClient();
+  const client = getQueryClient();
   if (!client) {
     return { data: [] as any[], error: 'Supabase env vars not configured' };
   }
@@ -11,37 +16,37 @@ async function resolveQuery(query: any) {
 }
 
 export async function fetchOrganizations() {
-  const client = getSupabaseClient();
+  const client = getQueryClient();
   if (!client) return { data: [] as any[], error: 'Supabase env vars not configured' };
   return resolveQuery(client.from('organizations').select('*').order('created_at', { ascending: false }).limit(20));
 }
 
 export async function fetchWorkers() {
-  const client = getSupabaseClient();
+  const client = getQueryClient();
   if (!client) return { data: [] as any[], error: 'Supabase env vars not configured' };
   return resolveQuery(client.from('agents').select('*').order('created_at', { ascending: false }).limit(20));
 }
 
 export async function fetchTasks() {
-  const client = getSupabaseClient();
+  const client = getQueryClient();
   if (!client) return { data: [] as any[], error: 'Supabase env vars not configured' };
   return resolveQuery(client.from('tasks').select('*').order('created_at', { ascending: false }).limit(20));
 }
 
 export async function fetchApprovals() {
-  const client = getSupabaseClient();
+  const client = getQueryClient();
   if (!client) return { data: [] as any[], error: 'Supabase env vars not configured' };
   return resolveQuery(client.from('approvals').select('*').order('created_at', { ascending: false }).limit(20));
 }
 
 export async function fetchKnowledgeItems() {
-  const client = getSupabaseClient();
+  const client = getQueryClient();
   if (!client) return { data: [] as any[], error: 'Supabase env vars not configured' };
   return resolveQuery(client.from('knowledge_items').select('*').order('created_at', { ascending: false }).limit(20));
 }
 
 export async function fetchConnectorRuns() {
-  const client = getSupabaseClient();
+  const client = getQueryClient();
   if (!client) return { data: [] as any[], error: 'Supabase env vars not configured' };
   return resolveQuery(client.from('connector_runs').select('*').order('created_at', { ascending: false }).limit(20));
 }
