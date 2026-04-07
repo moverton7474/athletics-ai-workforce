@@ -46,7 +46,7 @@ async function createMagicLink() {
 test.describe('authenticated membership flow', () => {
   test.skip(!requiredConfigured, 'Missing Supabase service-role env vars for authenticated Playwright coverage.');
 
-  test('user can sign in, claim demo org, and run sponsor attrition connector', async ({ page }) => {
+  test('user can sign in, claim demo org, and run the connector workflow set', async ({ page }) => {
     const magicLink = await createMagicLink();
 
     await page.goto(magicLink);
@@ -57,7 +57,24 @@ test.describe('authenticated membership flow', () => {
     await expect(page.getByText(/Demo organization membership granted/i)).toBeVisible();
 
     await page.goto('/voice');
+
     await page.getByRole('button', { name: 'Run sponsor attrition analysis' }).click();
     await expect(page.getByText(/Sponsor attrition analysis completed/i)).toBeVisible();
+
+    await page.getByRole('button', { name: 'Run sponsor category-gap analysis' }).click();
+    await expect(page.getByText(/Sponsor category-gap analysis completed/i)).toBeVisible();
+
+    await page.getByRole('button', { name: 'Run sponsor alumni-match analysis' }).click();
+    await expect(page.getByText(/Sponsor alumni-match analysis completed/i)).toBeVisible();
+
+    await page.getByLabel('Company').fill('Acme Roofing');
+    await page.getByRole('button', { name: 'Run proposal create' }).click();
+    await expect(page.getByText(/Proposal draft created/i)).toBeVisible();
+
+    await page.goto('/connector-runs');
+    await expect(page.getByText(/csos sponsor attrition --json/i).first()).toBeVisible();
+    await expect(page.getByText(/csos sponsor category-gaps --json/i).first()).toBeVisible();
+    await expect(page.getByText(/csos sponsor match-alumni --json/i).first()).toBeVisible();
+    await expect(page.getByText(/csos proposal create/i).first()).toBeVisible();
   });
 });

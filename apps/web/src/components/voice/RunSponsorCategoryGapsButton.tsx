@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-export function RunSponsorCategoryGapsButton() {
+export function RunSponsorCategoryGapsButton({ disabledReason }: { disabledReason?: string }) {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -32,9 +32,10 @@ export function RunSponsorCategoryGapsButton() {
     <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16 }}>
       <h2>Run second CSOS connector loop</h2>
       <p>Trigger sponsor category-gap analysis and log the result into connector runs/tasks.</p>
-      <button type="button" onClick={handleClick} disabled={loading}>
+      <button type="button" onClick={handleClick} disabled={loading || Boolean(disabledReason)}>
         {loading ? 'Running connector…' : 'Run sponsor category-gap analysis'}
       </button>
+      {disabledReason ? <p>{disabledReason}</p> : null}
       {message ? <p>{message}</p> : null}
       {error ? <p>{error}</p> : null}
     </section>

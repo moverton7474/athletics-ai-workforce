@@ -13,13 +13,15 @@ type ConnectorActionConfig = {
   taskDescription: string;
   cliArgs: string[];
   stubOutput: Record<string, unknown>;
+  input?: Record<string, unknown>;
+  allowedRoles?: string[];
   successMessage: {
     cli: string;
     stub: string;
   };
 };
 
-async function requireDemoMembership() {
+async function requireDemoMembership(allowedRoles?: string[]) {
   const authClient = await createAuthServerClient();
   const adminClient = getSupabaseServerClient();
 
@@ -48,6 +50,10 @@ async function requireDemoMembership() {
 
   if (!membership.data) {
     return { ok: false as const, status: 403, message: 'You need organization membership before running connector actions.' };
+  }
+
+  if (allowedRoles?.length && !allowedRoles.includes(membership.data.role)) {
+    return { ok: false as const, status: 403, message: 'Your role does not allow this connector action.' };
   }
 
   return { ok: true as const, user, adminClient, membership: membership.data };
@@ -82,7 +88,7 @@ async function executeCsosCommand(config: ConnectorActionConfig) {
 }
 
 async function runConnectorAction(config: ConnectorActionConfig) {
-  const membershipCheck = await requireDemoMembership();
+  const membershipCheck = await requireDemoMembership(config.allowedRoles);
   if (!membershipCheck.ok) {
     return membershipCheck;
   }
@@ -107,6 +113,7 @@ async function runConnectorAction(config: ConnectorActionConfig) {
       input: {
         trigger: config.triggerCode,
         initiated_by_user_id: user.id,
+        ...(config.input ?? {}),
       },
       output: connectorExecution.normalizedOutput,
       status: connectorExecution.status,
@@ -156,6 +163,7 @@ export async function runSponsorAttritionConnector() {
         { sponsor: 'North Metro Bank', risk_score: 0.64, note: 'Stub follow-up candidate.' },
       ],
     },
+    allowedRoles: ['owner', 'admin', 'operator'],
     successMessage: {
       cli: 'Sponsor attrition analysis completed through CSOS.',
       stub: 'Sponsor attrition analysis completed through stub connector mode.',
@@ -176,6 +184,7 @@ export async function runSponsorCategoryGapsConnector() {
         { category: 'Banking', opportunity_score: 0.66, note: 'Moderate gap with sponsorship upside.' },
       ],
     },
+    allowedRoles: ['owner', 'admin', 'operator'],
     successMessage: {
       cli: 'Sponsor category-gap analysis completed through CSOS.',
       stub: 'Sponsor category-gap analysis completed through stub connector mode.',
@@ -196,9 +205,33 @@ export async function runSponsorMatchAlumniConnector() {
         { sponsor: 'North Metro Bank', alumni: 'Taylor Fields', confidence: 0.72, note: 'Strong executive affinity signal.' },
       ],
     },
+    allowedRoles: ['owner', 'admin', 'operator'],
     successMessage: {
       cli: 'Sponsor alumni-match analysis completed through CSOS.',
       stub: 'Sponsor alumni-match analysis completed through stub connector mode.',
+    },
+  });
+}
+
+export async function runProposalCreateConnector(company = 'Acme Roofing') {
+  return runConnectorAction({
+    connectorName: 'csos proposal create',
+    triggerCode: 'voice.proposal_create',
+    taskTitle: `Review proposal draft for ${company}`,
+    taskDescription: `Generated from the proposal-create connector path for ${company}.`,
+    cliArgs: ['proposal', 'create', '--company', company],
+    input: { company },
+    stubOutput: {
+      proposal: {
+        company,
+        status: 'draft',
+        summary: `Proposal draft prepared for ${company}.`,
+      },
+    },
+    allowedRoles: ['owner', 'admin', 'operator'],
+    successMessage: {
+      cli: `Proposal draft created through CSOS for ${company}.`,
+      stub: `Proposal draft created through stub connector mode for ${company}.`,
     },
   });
 }
