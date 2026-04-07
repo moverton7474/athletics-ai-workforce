@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { KnowledgeCard } from '../../components/knowledge/KnowledgeCard';
 import { KnowledgeIngestionForm } from '../../components/knowledge/KnowledgeIngestionForm';
 import { DataSourceNotice } from '../../components/system/DataSourceNotice';

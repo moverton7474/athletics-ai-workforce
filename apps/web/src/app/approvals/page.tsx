@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { ApprovalList } from '../../components/approvals/ApprovalList';
 import { DataSourceNotice } from '../../components/system/DataSourceNotice';
 import { listApprovals } from '../../lib/services/approvals';

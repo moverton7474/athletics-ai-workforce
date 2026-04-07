@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { DataSourceNotice } from '../../components/system/DataSourceNotice';
 import { listTasks } from '../../lib/services/tasks';
 

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { OpenTasksWidget } from '../../components/dashboard/OpenTasksWidget';
 import { PendingApprovalsWidget } from '../../components/dashboard/PendingApprovalsWidget';
 import { ConnectorRunsWidget } from '../../components/dashboard/ConnectorRunsWidget';

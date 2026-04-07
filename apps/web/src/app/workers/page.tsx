@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { WorkerCard } from '../../components/workers/WorkerCard';
 import { DataSourceNotice } from '../../components/system/DataSourceNotice';
 import { listWorkers } from '../../lib/services/workers';
