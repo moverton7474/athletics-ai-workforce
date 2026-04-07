@@ -11,9 +11,14 @@
     "dev": "cd apps/web && npm run dev",
     "build": "cd apps/web && npm run build",
     "lint": "echo \"Lint wiring in progress\"",
-    "typecheck": "echo \"Typecheck wiring in progress\""
+    "typecheck": "echo \"Typecheck wiring in progress\"",
+    "test:e2e": "playwright test",
+    "test:e2e:deployed": "PLAYWRIGHT_BASE_URL=https://athletics-ai-workforce-web.vercel.app playwright test"
   },
   "dependencies": {
     "styled-jsx": "^5.1.6"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.59.1"
   }
 }
