@@ -1,0 +1,8 @@
+node_modules/
+.next/
+.vercel/
+package-lock.json
+npm-debug.log*
+apps/web/.next/
+apps/web/node_modules/
+apps/web/.vercel/
