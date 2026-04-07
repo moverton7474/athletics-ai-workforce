@@ -89,10 +89,12 @@ Build the standalone platform skeleton and keep the architecture ready for voice
 - Supabase-backed production deployment is active on `athletics-ai-workforce-web`
 - safe server-side writes are live for org profile + knowledge items
 - live reads are active on dashboard/workers/tasks/approvals/knowledge via server-side query path
-- Playwright post-deploy suite is live and expanded through safe form-submit coverage
+- Playwright post-deploy suite is live and expanded through authenticated connector coverage
 - Supabase auth scaffold exists with login page, callback route, middleware session refresh, and membership-aware shell state
 - demo membership bootstrap path exists for signed-in users
-- first connector API path exists for sponsor attrition execution/logging
+- role-aware navigation and privileged action gating are active
+- connector API paths now exist for sponsor attrition, sponsor category gaps, sponsor match-alumni, and proposal create
+- connector run history is visible in the product through `Connector Runs`
 
 ### Immediate next build target
 Move from validated platform to authenticated, connector-aware tenant workflows.
@@ -170,6 +172,24 @@ Bridge the platform from validated demo behavior into authenticated, membership-
 - a connector action can be triggered by an authenticated user
 - connector runs are logged and produce follow-up task records
 - authenticated Playwright coverage validates the loop end-to-end
+
+## Phase 2.3 - Proposal Review + Workflow Orchestration
+### Goals
+Turn connector outputs into governed, reviewable operating workflows instead of isolated actions.
+
+### Workstreams
+- convert proposal-create outputs into structured approval requests
+- connect connector runs to approvals and next-action tasks
+- add role-aware action approval/reject flows
+- surface latest connector outcomes + approvals + queued work on the dashboard
+- expand authenticated Playwright coverage for multi-action orchestration
+
+### Exit Criteria
+- proposal-create generates a reviewable approval object
+- connector actions can feed an approval queue
+- dashboard shows actionable next steps instead of only raw records
+- privileged users can approve/reject proposal-stage actions
+- authenticated Playwright validates connector → approval → task flow
 
 ## Phase 3 - CSOS Connector Integration
 ### Goals
