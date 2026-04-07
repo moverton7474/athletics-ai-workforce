@@ -12,5 +12,8 @@
     "build": "cd apps/web && npm run build && cd ../.. && rm -rf .next && cp -R apps/web/.next .next",
     "lint": "echo \"Lint wiring in progress\"",
     "typecheck": "echo \"Typecheck wiring in progress\""
+  },
+  "dependencies": {
+    "styled-jsx": "^5.1.6"
   }
 }
