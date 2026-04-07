@@ -1,6 +1,18 @@
+'use client';
+
+import { useState } from 'react';
+
 export function OrgProfileForm() {
+  const [saved, setSaved] = useState(false);
+
   return (
-    <form style={{ display: 'grid', gap: 12, maxWidth: 640 }}>
+    <form
+      style={{ display: 'grid', gap: 12, maxWidth: 640 }}
+      onSubmit={(event) => {
+        event.preventDefault();
+        setSaved(true);
+      }}
+    >
       <label>
         Organization Name
         <input type="text" name="name" placeholder="KSU Athletics" />
@@ -22,6 +34,7 @@ export function OrgProfileForm() {
         <input type="text" name="toneOfVoice" placeholder="Professional, energetic, institutional" />
       </label>
       <button type="submit">Save Organization Profile</button>
+      {saved ? <p>Organization profile saved locally (stub).</p> : null}
     </form>
   );
 }

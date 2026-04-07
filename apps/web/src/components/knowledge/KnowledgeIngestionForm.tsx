@@ -1,6 +1,18 @@
+'use client';
+
+import { useState } from 'react';
+
 export function KnowledgeIngestionForm() {
+  const [submitted, setSubmitted] = useState(false);
+
   return (
-    <form style={{ display: 'grid', gap: 12, maxWidth: 640, marginBottom: 24 }}>
+    <form
+      style={{ display: 'grid', gap: 12, maxWidth: 640, marginBottom: 24 }}
+      onSubmit={(event) => {
+        event.preventDefault();
+        setSubmitted(true);
+      }}
+    >
       <label>
         Title
         <input type="text" name="title" placeholder="KSU Brand Guidelines" />
@@ -23,6 +35,7 @@ export function KnowledgeIngestionForm() {
         <textarea name="content" placeholder="Optional summary or ingestion notes" />
       </label>
       <button type="submit">Add Knowledge Item</button>
+      {submitted ? <p>Knowledge item submitted locally (stub).</p> : null}
     </form>
   );
 }

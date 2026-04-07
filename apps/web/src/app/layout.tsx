@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { AppShell } from '../components/layout/AppShell';
 
 export const metadata = {
   title: 'athletics-ai-workforce',
@@ -8,7 +9,9 @@ export const metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <AppShell>{children}</AppShell>
+      </body>
     </html>
   );
 }
