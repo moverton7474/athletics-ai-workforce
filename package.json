@@ -1,0 +1,16 @@
+{
+  "name": "athletics-ai-workforce",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.0.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "echo \"Scaffold in progress\"",
+    "build": "echo \"Build wiring in progress\"",
+    "lint": "echo \"Lint wiring in progress\"",
+    "typecheck": "echo \"Typecheck wiring in progress\""
+  }
+}
