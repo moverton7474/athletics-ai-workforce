@@ -1,16 +1,24 @@
 'use client';
 
 import { useState } from 'react';
+import { addKnowledgeItem } from '../../lib/browser-actions';
 
 export function KnowledgeIngestionForm() {
-  const [submitted, setSubmitted] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
 
   return (
     <form
       style={{ display: 'grid', gap: 12, maxWidth: 640, marginBottom: 24 }}
-      onSubmit={(event) => {
+      onSubmit={async (event) => {
         event.preventDefault();
-        setSubmitted(true);
+        const form = new FormData(event.currentTarget);
+        const result = await addKnowledgeItem({
+          title: String(form.get('title') || ''),
+          sourceType: String(form.get('sourceType') || ''),
+          sourceUrl: String(form.get('sourceUrl') || ''),
+          content: String(form.get('content') || ''),
+        });
+        setMessage(result.message);
       }}
     >
       <label>
@@ -35,7 +43,7 @@ export function KnowledgeIngestionForm() {
         <textarea name="content" placeholder="Optional summary or ingestion notes" />
       </label>
       <button type="submit">Add Knowledge Item</button>
-      {submitted ? <p>Knowledge item submitted locally (stub).</p> : null}
+      {message ? <p>{message}</p> : null}
     </form>
   );
 }
