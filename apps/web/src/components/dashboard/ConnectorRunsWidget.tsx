@@ -1,9 +1,10 @@
-export function ConnectorRunsWidget() {
-  const runs = [
-    { id: 'run-1', label: 'csos sponsor attrition --json', status: 'success' },
-    { id: 'run-2', label: 'csos proposal create', status: 'awaiting_approval' },
-  ];
+type ConnectorRunSummary = {
+  id: string;
+  label: string;
+  status: string;
+};
 
+export function ConnectorRunsWidget({ runs }: { runs: ConnectorRunSummary[] }) {
   return (
     <section>
       <h2>Connector Runs</h2>

@@ -1,11 +1,15 @@
-import { mockApprovals } from '../../data/mock-approvals';
+type ApprovalSummary = {
+  id: string;
+  title: string;
+  status: string;
+};
 
-export function PendingApprovalsWidget() {
+export function PendingApprovalsWidget({ approvals }: { approvals: ApprovalSummary[] }) {
   return (
     <section>
       <h2>Pending Approvals</h2>
       <ul>
-        {mockApprovals.map((approval) => (
+        {approvals.map((approval) => (
           <li key={approval.id}>
             <strong>{approval.title}</strong> — {approval.status}
           </li>

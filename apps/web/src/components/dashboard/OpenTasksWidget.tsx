@@ -1,11 +1,15 @@
-import { mockTasks } from '../../data/mock-tasks';
+type TaskSummary = {
+  id: string;
+  title: string;
+  status: string;
+};
 
-export function OpenTasksWidget() {
+export function OpenTasksWidget({ tasks }: { tasks: TaskSummary[] }) {
   return (
     <section>
       <h2>Open Tasks</h2>
       <ul>
-        {mockTasks.map((task) => (
+        {tasks.map((task) => (
           <li key={task.id}>
             <strong>{task.title}</strong> — {task.status}
           </li>
