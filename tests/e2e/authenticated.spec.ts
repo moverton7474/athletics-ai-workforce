@@ -25,7 +25,7 @@ async function createMagicLink() {
     type: 'magiclink',
     email: authTestEmail,
     options: {
-      redirectTo: `${baseUrl}/auth/callback`,
+      redirectTo: `${baseUrl}/auth/complete`,
     },
   });
 
@@ -33,7 +33,15 @@ async function createMagicLink() {
     throw error;
   }
 
-  return data.properties?.action_link as string;
+  const actionLink = new URL(data.properties?.action_link as string);
+  actionLink.searchParams.set('redirect_to', `${baseUrl}/auth/complete`);
+
+  const response = await fetch(actionLink.toString(), { redirect: 'manual' });
+  const redirected = new URL(response.headers.get('location') as string);
+  redirected.protocol = 'https:';
+  redirected.host = new URL(baseUrl).host;
+  redirected.pathname = '/auth/complete';
+  return redirected.toString();
 }
 
 test.describe('authenticated membership flow', () => {
@@ -43,7 +51,7 @@ test.describe('authenticated membership flow', () => {
     const magicLink = await createMagicLink();
 
     await page.goto(magicLink);
-    await page.goto('/login');
+    await page.waitForURL('**/login');
 
     await expect(page.getByText(new RegExp(authTestEmail, 'i'))).toBeVisible();
     await page.getByRole('button', { name: 'Claim demo organization' }).click();
