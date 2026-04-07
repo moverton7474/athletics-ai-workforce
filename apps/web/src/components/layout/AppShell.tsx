@@ -4,6 +4,20 @@ import { getCurrentUserContext } from '../../lib/server/membership';
 
 export async function AppShell({ children }: { children: ReactNode }) {
   const { user, memberships, authConfigured } = await getCurrentUserContext();
+  const roles = memberships.map((membership: any) => membership.role);
+  const isPrivileged = roles.some((role: string) => ['owner', 'admin', 'operator'].includes(role));
+  const hasMembership = memberships.length > 0;
+
+  const navItems = [
+    { href: '/dashboard', label: 'Dashboard', show: true },
+    { href: '/org/setup', label: 'Org Setup', show: isPrivileged },
+    { href: '/workers', label: 'Workers', show: hasMembership || !user },
+    { href: '/tasks', label: 'Tasks', show: hasMembership || !user },
+    { href: '/approvals', label: 'Approvals', show: isPrivileged },
+    { href: '/knowledge', label: 'Knowledge', show: true },
+    { href: '/voice', label: 'Voice', show: true },
+    { href: '/login', label: user ? 'Account' : 'Sign In', show: true },
+  ];
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', minHeight: '100vh' }}>
@@ -11,14 +25,9 @@ export async function AppShell({ children }: { children: ReactNode }) {
         <div>
           <h2>AAW</h2>
           <nav style={{ display: 'grid', gap: 8 }}>
-            <Link href="/dashboard">Dashboard</Link>
-            <Link href="/org/setup">Org Setup</Link>
-            <Link href="/workers">Workers</Link>
-            <Link href="/tasks">Tasks</Link>
-            <Link href="/approvals">Approvals</Link>
-            <Link href="/knowledge">Knowledge</Link>
-            <Link href="/voice">Voice</Link>
-            <Link href="/login">Sign In</Link>
+            {navItems.filter((item) => item.show).map((item) => (
+              <Link key={item.href} href={item.href}>{item.label}</Link>
+            ))}
           </nav>
         </div>
 
@@ -31,6 +40,7 @@ export async function AppShell({ children }: { children: ReactNode }) {
             <>
               <p style={{ marginBottom: 8 }}>Signed in as {user.email ?? user.id}</p>
               <p style={{ marginBottom: 8 }}>Memberships: {memberships.length}</p>
+              {roles.length ? <p style={{ marginBottom: 8 }}>Highest access: {isPrivileged ? 'privileged member' : 'collaborator member'}</p> : null}
               {memberships.length ? (
                 <ul style={{ paddingLeft: 18, margin: 0 }}>
                   {memberships.map((membership: any, index: number) => (

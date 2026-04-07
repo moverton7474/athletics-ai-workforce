@@ -6,6 +6,19 @@ import { getSupabaseServerClient } from './supabase-admin';
 
 const execFileAsync = promisify(execFile);
 
+type ConnectorActionConfig = {
+  connectorName: string;
+  triggerCode: string;
+  taskTitle: string;
+  taskDescription: string;
+  cliArgs: string[];
+  stubOutput: Record<string, unknown>;
+  successMessage: {
+    cli: string;
+    stub: string;
+  };
+};
+
 async function requireDemoMembership() {
   const authClient = await createAuthServerClient();
   const adminClient = getSupabaseServerClient();
@@ -40,9 +53,9 @@ async function requireDemoMembership() {
   return { ok: true as const, user, adminClient, membership: membership.data };
 }
 
-async function executeCsosSponsorAttrition() {
+async function executeCsosCommand(config: ConnectorActionConfig) {
   try {
-    const { stdout, stderr } = await execFileAsync('csos', ['sponsor', 'attrition', '--json']);
+    const { stdout, stderr } = await execFileAsync('csos', config.cliArgs);
     const parsed = stdout ? JSON.parse(stdout) : null;
     return {
       status: 'success',
@@ -59,26 +72,23 @@ async function executeCsosSponsorAttrition() {
       mode: 'stub' as const,
       rawOutput: null,
       normalizedOutput: {
+        ...config.stubOutput,
         stub: true,
         reason: message,
-        opportunities: [
-          { sponsor: 'Acme Roofing', risk_score: 0.82, note: 'Detected by stub connector path.' },
-          { sponsor: 'North Metro Bank', risk_score: 0.64, note: 'Stub follow-up candidate.' },
-        ],
       },
       errorText: null,
     };
   }
 }
 
-export async function runSponsorAttritionConnector() {
+async function runConnectorAction(config: ConnectorActionConfig) {
   const membershipCheck = await requireDemoMembership();
   if (!membershipCheck.ok) {
     return membershipCheck;
   }
 
   const { user, adminClient } = membershipCheck;
-  const connectorExecution = await executeCsosSponsorAttrition();
+  const connectorExecution = await executeCsosCommand(config);
 
   const agent = await adminClient
     .from('agents')
@@ -93,9 +103,9 @@ export async function runSponsorAttritionConnector() {
     .insert({
       organization_id: DEMO_ORGANIZATION_ID,
       agent_id: agent.data?.id ?? null,
-      connector_name: 'csos sponsor attrition --json',
+      connector_name: config.connectorName,
       input: {
-        trigger: 'voice.sponsor_attrition',
+        trigger: config.triggerCode,
         initiated_by_user_id: user.id,
       },
       output: connectorExecution.normalizedOutput,
@@ -113,8 +123,8 @@ export async function runSponsorAttritionConnector() {
   const task = await adminClient.from('tasks').insert({
     organization_id: DEMO_ORGANIZATION_ID,
     agent_id: agent.data?.id ?? null,
-    title: 'Review sponsor attrition analysis',
-    description: 'Generated from the first CSOS connector run path.',
+    title: config.taskTitle,
+    description: config.taskDescription,
     status: 'queued',
     priority: 'high',
   });
@@ -126,12 +136,49 @@ export async function runSponsorAttritionConnector() {
   return {
     ok: true as const,
     status: 200,
-    message:
-      connectorExecution.mode === 'cli'
-        ? 'Sponsor attrition analysis completed through CSOS.'
-        : 'Sponsor attrition analysis completed through stub connector mode.',
+    message: connectorExecution.mode === 'cli' ? config.successMessage.cli : config.successMessage.stub,
     connectorMode: connectorExecution.mode,
     connectorRunId: connectorRun.data.id,
     output: connectorExecution.normalizedOutput,
   };
+}
+
+export async function runSponsorAttritionConnector() {
+  return runConnectorAction({
+    connectorName: 'csos sponsor attrition --json',
+    triggerCode: 'voice.sponsor_attrition',
+    taskTitle: 'Review sponsor attrition analysis',
+    taskDescription: 'Generated from the sponsor attrition connector path.',
+    cliArgs: ['sponsor', 'attrition', '--json'],
+    stubOutput: {
+      opportunities: [
+        { sponsor: 'Acme Roofing', risk_score: 0.82, note: 'Detected by stub connector path.' },
+        { sponsor: 'North Metro Bank', risk_score: 0.64, note: 'Stub follow-up candidate.' },
+      ],
+    },
+    successMessage: {
+      cli: 'Sponsor attrition analysis completed through CSOS.',
+      stub: 'Sponsor attrition analysis completed through stub connector mode.',
+    },
+  });
+}
+
+export async function runSponsorCategoryGapsConnector() {
+  return runConnectorAction({
+    connectorName: 'csos sponsor category-gaps --json',
+    triggerCode: 'voice.sponsor_category_gaps',
+    taskTitle: 'Review sponsor category-gap analysis',
+    taskDescription: 'Generated from the sponsor category-gap connector path.',
+    cliArgs: ['sponsor', 'category-gaps', '--json'],
+    stubOutput: {
+      category_gaps: [
+        { category: 'Roofing', opportunity_score: 0.77, note: 'High-value alumni overlap candidate.' },
+        { category: 'Banking', opportunity_score: 0.66, note: 'Moderate gap with sponsorship upside.' },
+      ],
+    },
+    successMessage: {
+      cli: 'Sponsor category-gap analysis completed through CSOS.',
+      stub: 'Sponsor category-gap analysis completed through stub connector mode.',
+    },
+  });
 }
