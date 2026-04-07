@@ -1,4 +1,4 @@
-import type { TaskDTO } from '@athletics-ai-workforce/shared';
+import type { TaskDTO } from '../lib/types';
 
 export const mockTasks: TaskDTO[] = [
   {

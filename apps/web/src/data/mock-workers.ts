@@ -1,4 +1,4 @@
-import type { WorkerDTO } from '@athletics-ai-workforce/shared';
+import type { WorkerDTO } from '../lib/types';
 
 export const mockWorkers: WorkerDTO[] = [
   {
