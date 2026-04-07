@@ -10,10 +10,12 @@ Readiness is **mostly good**, with one major caveat already identified and parti
   2. `0002_org_profile_and_visibility.sql`
   3. `0003_knowledge_workflows_and_connector.sql`
   4. `0004_rls_policies.sql`
-  5. `0005_seed_workers.sql`
-  6. `0006_demo_org_seed.sql`
+  5. `0005_billing_and_subscription_tables.sql`
+  6. `0006_seed_workers.sql`
+  7. `0007_demo_org_seed.sql`
 - `0001_initial_schema.sql` enables `pgcrypto`, so `gen_random_uuid()` support is covered.
-- `0006_demo_org_seed.sql` correctly depends on structures added in `0002` and `0003`.
+- `0007_demo_org_seed.sql` correctly depends on structures added in `0002` and `0003`.
+- Remote apply exposed a real migration gap: `billing_plans` was present in the detailed schema doc but missing from the executable migration path, so `0005_billing_and_subscription_tables.sql` was added to repair the chain before the seed migrations.
 
 ## Important caveat
 ### RLS behavior

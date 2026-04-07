@@ -26,7 +26,9 @@ supabase db reset
 2. `0002_org_profile_and_visibility.sql`
 3. `0003_knowledge_workflows_and_connector.sql`
 4. `0004_rls_policies.sql`
-5. `0005_seed_workers.sql`
+5. `0005_billing_and_subscription_tables.sql`
+6. `0006_seed_workers.sql`
+7. `0007_demo_org_seed.sql`
 
 ## Notes
 - Apply migrations from the repo root

@@ -1,4 +1,4 @@
--- 0006_demo_org_seed.sql
+-- 0007_demo_org_seed.sql
 
 insert into organizations (
   id,

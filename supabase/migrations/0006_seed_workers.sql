@@ -1,4 +1,4 @@
--- 0005_seed_workers.sql
+-- 0006_seed_workers.sql
 
 insert into billing_plans (name, code, billing_period, price_cents, features)
 values
