@@ -1,8 +1,8 @@
 import { fetchConnectorRuns } from '../supabase-queries';
 
 const mockConnectorRuns = [
-  { id: 'run-1', label: 'csos sponsor attrition --json', status: 'success' },
-  { id: 'run-2', label: 'csos proposal create', status: 'awaiting_approval' },
+  { id: 'run-1', label: 'csos sponsor attrition --json', status: 'success', summary: 'Stub connector run' },
+  { id: 'run-2', label: 'csos proposal create', status: 'awaiting_approval', summary: 'Awaiting approval' },
 ];
 
 export async function listConnectorRuns() {
@@ -19,6 +19,11 @@ export async function listConnectorRuns() {
       id: run.id,
       label: run.connector_name,
       status: run.status,
+      summary:
+        run.output?.reason ||
+        run.output?.opportunities?.[0]?.note ||
+        run.error_text ||
+        'Connector run recorded.',
     }));
 
   return {

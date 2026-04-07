@@ -30,7 +30,16 @@ export async function AppShell({ children }: { children: ReactNode }) {
           {user ? (
             <>
               <p style={{ marginBottom: 8 }}>Signed in as {user.email ?? user.id}</p>
-              <p style={{ margin: 0 }}>Memberships: {memberships.length}</p>
+              <p style={{ marginBottom: 8 }}>Memberships: {memberships.length}</p>
+              {memberships.length ? (
+                <ul style={{ paddingLeft: 18, margin: 0 }}>
+                  {memberships.map((membership: any, index: number) => (
+                    <li key={`${membership.organization?.id ?? 'org'}-${index}`}>
+                      {membership.organization?.name ?? 'Organization'} — {membership.role}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
             </>
           ) : (
             <p style={{ margin: 0 }}>No active session.</p>
