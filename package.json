@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "dev": "cd apps/web && npm run dev",
-    "build": "cd apps/web && npm run build && cd ../.. && rm -rf .next && cp -R apps/web/.next .next",
+    "build": "cd apps/web && npm run build && cd ../.. && rm -rf .next && cp -R apps/web/.next .next && mkdir -p node_modules/next/node_modules && rm -rf node_modules/next/node_modules/styled-jsx && cp -R node_modules/styled-jsx node_modules/next/node_modules/styled-jsx",
     "lint": "echo \"Lint wiring in progress\"",
     "typecheck": "echo \"Typecheck wiring in progress\""
   },
