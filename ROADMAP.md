@@ -1,17 +1,19 @@
 # ROADMAP.md
 
 ## Strategic Direction
-Build `athletics-ai-workforce` as a Marblism-style AI workforce platform with stronger enterprise governance and a clearer execution backend strategy.
+Build `athletics-ai-workforce` as a Marblism-style AI workforce platform with stronger enterprise governance, a clearer execution backend strategy, and a voice-first path aligned to Milton's Three Pillars architecture.
 
 ### Core split
 - **KSU CSOS** = athletics domain execution layer / connector target
 - **athletics-ai-workforce** = orchestration, onboarding, shared knowledge, worker workspaces, approvals, billing, and productization
+- **Voice layer** = command routing and interaction layer that should operate across the workforce without replacing manual navigation
 
 ### Inputs now shaping the roadmap
 - Marblism onboarding and worker UX
 - Marblism pricing / conversion / support patterns
 - uploaded agentic staffing platform package
 - KSU CSOS command surface and connector potential
+- Batman's Three Pillars / voice-first integration recommendations
 
 ---
 
@@ -35,7 +37,7 @@ Substantially complete.
 
 ## Phase 1 - Foundation
 ### Goals
-Build the standalone platform skeleton.
+Build the standalone platform skeleton and keep the architecture ready for voice-first interaction.
 
 ### Workstreams
 1. **Repo / Project Setup**
@@ -78,6 +80,32 @@ Build the standalone platform skeleton.
 - Agents can be created and assigned as personal/shared
 - Knowledge objects can be stored and scoped
 - Tasks can be created and logged
+- Core data structures can support future voice command routing without redesign
+
+---
+
+## Phase 1.5 - Voice Command Foundation
+### Goals
+Introduce a voice-command abstraction layer early so the product can become voice-first without delaying the MVP.
+
+### Workstreams
+- voice command routing model
+- command-to-action mapping for each initial worker
+- parity principle: every important UI action should have a voice path
+- state continuity between manual and voice interactions
+- coordination with Batman MO / existing voice infrastructure patterns
+
+### Initial Voice Targets
+- sponsor attrition analysis
+- alumni matching requests
+- proposal creation requests
+- executive briefings
+- approvals review
+
+### Exit Criteria
+- command model defined for all five MVP workers
+- first CSOS workflows mapped to voice triggers
+- voice/manual interaction model documented
 
 ---
 
