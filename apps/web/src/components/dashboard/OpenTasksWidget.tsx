@@ -8,13 +8,17 @@ export function OpenTasksWidget({ tasks }: { tasks: TaskSummary[] }) {
   return (
     <section>
       <h2>Open Tasks</h2>
-      <ul>
-        {tasks.map((task) => (
-          <li key={task.id}>
-            <strong>{task.title}</strong> — {task.status}
-          </li>
-        ))}
-      </ul>
+      {tasks.length ? (
+        <ul>
+          {tasks.map((task) => (
+            <li key={task.id}>
+              <strong>{task.title}</strong> — {task.status}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>No open tasks yet.</p>
+      )}
     </section>
   );
 }

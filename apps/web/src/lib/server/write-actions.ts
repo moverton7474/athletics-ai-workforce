@@ -71,6 +71,10 @@ export async function addKnowledgeItem(payload: KnowledgePayload) {
 
   const client = getSupabaseServerClient();
   const serverMode = getSupabaseServerMode();
+  const sourceUrl = normalizeOptional(payload.sourceUrl);
+  const title = payload.title.trim();
+  const sourceType = payload.sourceType.trim();
+  const content = normalizeOptional(payload.content);
 
   if (!client) {
     return {
@@ -80,13 +84,44 @@ export async function addKnowledgeItem(payload: KnowledgePayload) {
     };
   }
 
+  if (sourceUrl?.startsWith('validation://')) {
+    const existing = await client
+      .from('knowledge_items')
+      .select('id')
+      .eq('organization_id', DEMO_ORGANIZATION_ID)
+      .eq('source_url', sourceUrl)
+      .limit(1)
+      .maybeSingle();
+
+    if (existing.error) {
+      return { success: false, mode: serverMode, message: existing.error.message };
+    }
+
+    if (existing.data?.id) {
+      const updateResult = await client
+        .from('knowledge_items')
+        .update({ title, source_type: sourceType, content })
+        .eq('id', existing.data.id);
+
+      if (updateResult.error) {
+        return { success: false, mode: serverMode, message: updateResult.error.message };
+      }
+
+      return {
+        success: true,
+        mode: serverMode,
+        message: 'Knowledge validation item updated through the server action path.',
+      };
+    }
+  }
+
   const { error } = await client.from('knowledge_items').insert({
     organization_id: DEMO_ORGANIZATION_ID,
     scope: 'organization',
-    title: payload.title.trim(),
-    source_type: payload.sourceType.trim(),
-    source_url: normalizeOptional(payload.sourceUrl),
-    content: normalizeOptional(payload.content),
+    title,
+    source_type: sourceType,
+    source_url: sourceUrl,
+    content,
   });
 
   if (error) {

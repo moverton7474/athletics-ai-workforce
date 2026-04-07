@@ -8,13 +8,17 @@ export function PendingApprovalsWidget({ approvals }: { approvals: ApprovalSumma
   return (
     <section>
       <h2>Pending Approvals</h2>
-      <ul>
-        {approvals.map((approval) => (
-          <li key={approval.id}>
-            <strong>{approval.title}</strong> — {approval.status}
-          </li>
-        ))}
-      </ul>
+      {approvals.length ? (
+        <ul>
+          {approvals.map((approval) => (
+            <li key={approval.id}>
+              <strong>{approval.title}</strong> — {approval.status}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>No pending approvals right now.</p>
+      )}
     </section>
   );
 }

@@ -3,7 +3,7 @@ import { fetchWorkers } from '../supabase-queries';
 
 export async function listWorkers() {
   const result = await fetchWorkers();
-  if (result.error || !result.data.length) {
+  if (result.error) {
     return {
       workers: mockWorkers,
       source: 'mock' as const,

@@ -3,7 +3,7 @@ import { fetchTasks } from '../supabase-queries';
 
 export async function listTasks() {
   const result = await fetchTasks();
-  if (result.error || !result.data.length) {
+  if (result.error) {
     return {
       tasks: mockTasks,
       source: 'mock' as const,

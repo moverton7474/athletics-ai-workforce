@@ -3,7 +3,7 @@ import { fetchKnowledgeItems } from '../supabase-queries';
 
 export async function listKnowledgeItems() {
   const result = await fetchKnowledgeItems();
-  if (result.error || !result.data.length) {
+  if (result.error) {
     return {
       items: mockKnowledge,
       source: 'mock' as const,

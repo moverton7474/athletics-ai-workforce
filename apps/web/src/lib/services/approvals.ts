@@ -3,7 +3,7 @@ import { fetchApprovals } from '../supabase-queries';
 
 export async function listApprovals() {
   const result = await fetchApprovals();
-  if (result.error || !result.data.length) {
+  if (result.error) {
     return {
       approvals: mockApprovals,
       source: 'mock' as const,

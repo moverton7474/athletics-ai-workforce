@@ -31,11 +31,11 @@ for (const route of routes) {
   });
 }
 
-test('dashboard shows runtime data state', async ({ page }) => {
+test('dashboard shows live runtime data state', async ({ page }) => {
   await page.goto('/dashboard');
   await expect(page.getByRole('heading', { name: 'Supabase Runtime Status' })).toBeVisible();
-  await expect(page.getByText(/Public Supabase environment variables/i)).toBeVisible();
-  await expect(page.getByText(/Dashboard widgets are/i)).toBeVisible();
+  await expect(page.getByText(/Public Supabase environment variables are present/i)).toBeVisible();
+  await expect(page.getByText(/Dashboard widgets are loading from live Supabase data/i)).toBeVisible();
 });
 
 test('org setup form renders expected fields', async ({ page }) => {

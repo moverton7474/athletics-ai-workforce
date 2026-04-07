@@ -7,7 +7,7 @@ const mockConnectorRuns = [
 
 export async function listConnectorRuns() {
   const result = await fetchConnectorRuns();
-  if (result.error || !result.data.length) {
+  if (result.error) {
     return {
       runs: mockConnectorRuns,
       source: 'mock' as const,
