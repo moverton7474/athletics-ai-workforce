@@ -8,8 +8,8 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "echo \"Scaffold in progress\"",
-    "build": "echo \"Build wiring in progress\"",
+    "dev": "cd apps/web && npm run dev",
+    "build": "cd apps/web && npm run build",
     "lint": "echo \"Lint wiring in progress\"",
     "typecheck": "echo \"Typecheck wiring in progress\""
   }
