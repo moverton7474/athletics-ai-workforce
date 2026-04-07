@@ -84,6 +84,19 @@ Build the standalone platform skeleton and keep the architecture ready for voice
 
 ---
 
+## Current Live State (2026-04-07)
+### Confirmed now live
+- Supabase-backed production deployment is active on `athletics-ai-workforce-web`
+- safe server-side writes are live for org profile + knowledge items
+- live reads are active on dashboard/workers/tasks/approvals/knowledge via server-side query path
+- Playwright post-deploy suite is live and expanded through safe form-submit coverage
+- Supabase auth scaffold exists with login page, callback route, middleware session refresh, and membership-aware shell state
+- demo membership bootstrap path exists for signed-in users
+- first connector API path exists for sponsor attrition execution/logging
+
+### Immediate next build target
+Move from validated platform to authenticated, connector-aware tenant workflows.
+
 ## Phase 1.5 - Voice Command Foundation
 ### Goals
 Introduce a voice-command abstraction layer early so the product can become voice-first without delaying the MVP.
@@ -138,6 +151,25 @@ Launch the first high-value athletics workforce with product-grade onboarding an
 - Agent tasks and outputs are auditable
 
 ---
+
+## Phase 2.2 - Authenticated Tenant + First Connector Action Loop
+### Goals
+Bridge the platform from validated demo behavior into authenticated, membership-aware operations with the first real connector-backed workflow.
+
+### Workstreams
+- bind Supabase Auth users into `organization_members`
+- implement role-aware organization membership flows
+- replace placeholder read policies with membership-based policies
+- add authenticated Playwright coverage for sign-in + org claim + connector execution
+- ship first connector API route for sponsor attrition analysis
+- create first connector run → task loop for review and follow-up
+
+### Exit Criteria
+- signed-in user can claim or join an organization
+- tenant-aware policies govern reads for core org-scoped tables
+- a connector action can be triggered by an authenticated user
+- connector runs are logged and produce follow-up task records
+- authenticated Playwright coverage validates the loop end-to-end
 
 ## Phase 3 - CSOS Connector Integration
 ### Goals

@@ -38,10 +38,9 @@ async function createMagicLink() {
 
   const response = await fetch(actionLink.toString(), { redirect: 'manual' });
   const redirected = new URL(response.headers.get('location') as string);
-  redirected.protocol = 'https:';
-  redirected.host = new URL(baseUrl).host;
-  redirected.pathname = '/auth/complete';
-  return redirected.toString();
+  const completionUrl = new URL('/auth/complete', baseUrl);
+  completionUrl.hash = redirected.hash;
+  return completionUrl.toString();
 }
 
 test.describe('authenticated membership flow', () => {
@@ -53,7 +52,7 @@ test.describe('authenticated membership flow', () => {
     await page.goto(magicLink);
     await page.waitForURL('**/login');
 
-    await expect(page.getByText(new RegExp(authTestEmail, 'i'))).toBeVisible();
+    await expect(page.getByText(new RegExp(authTestEmail, 'i')).first()).toBeVisible();
     await page.getByRole('button', { name: 'Claim demo organization' }).click();
     await expect(page.getByText(/Demo organization membership granted/i)).toBeVisible();
 
