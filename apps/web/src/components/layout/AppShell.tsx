@@ -13,6 +13,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <Link href="/tasks">Tasks</Link>
           <Link href="/approvals">Approvals</Link>
           <Link href="/knowledge">Knowledge</Link>
+          <Link href="/voice">Voice</Link>
         </nav>
       </aside>
       <div>{children}</div>
