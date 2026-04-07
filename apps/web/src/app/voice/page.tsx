@@ -2,6 +2,7 @@ import { mockVoiceIntents } from '../../data/mock-voice-intents';
 import { VoiceIntentCard } from '../../components/voice/VoiceIntentCard';
 import { RunSponsorAttritionButton } from '../../components/voice/RunSponsorAttritionButton';
 import { RunSponsorCategoryGapsButton } from '../../components/voice/RunSponsorCategoryGapsButton';
+import { RunSponsorMatchAlumniButton } from '../../components/voice/RunSponsorMatchAlumniButton';
 import { RecentConnectorRunsPanel } from '../../components/voice/RecentConnectorRunsPanel';
 
 export default function VoicePage() {
@@ -12,6 +13,7 @@ export default function VoicePage() {
       <div style={{ display: 'grid', gap: 16 }}>
         <RunSponsorAttritionButton />
         <RunSponsorCategoryGapsButton />
+        <RunSponsorMatchAlumniButton />
         <RecentConnectorRunsPanel />
         {mockVoiceIntents.map((intent) => (
           <VoiceIntentCard key={intent.code} intent={intent} />

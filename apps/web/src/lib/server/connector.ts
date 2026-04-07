@@ -182,3 +182,23 @@ export async function runSponsorCategoryGapsConnector() {
     },
   });
 }
+
+export async function runSponsorMatchAlumniConnector() {
+  return runConnectorAction({
+    connectorName: 'csos sponsor match-alumni --json',
+    triggerCode: 'voice.sponsor_match_alumni',
+    taskTitle: 'Review sponsor alumni-match analysis',
+    taskDescription: 'Generated from the sponsor alumni-match connector path.',
+    cliArgs: ['sponsor', 'match-alumni', '--json'],
+    stubOutput: {
+      matches: [
+        { sponsor: 'Acme Roofing', alumni: 'Jordan Tate', confidence: 0.81, note: 'Former booster leadership overlap.' },
+        { sponsor: 'North Metro Bank', alumni: 'Taylor Fields', confidence: 0.72, note: 'Strong executive affinity signal.' },
+      ],
+    },
+    successMessage: {
+      cli: 'Sponsor alumni-match analysis completed through CSOS.',
+      stub: 'Sponsor alumni-match analysis completed through stub connector mode.',
+    },
+  });
+}

@@ -16,6 +16,7 @@ export async function AppShell({ children }: { children: ReactNode }) {
     { href: '/approvals', label: 'Approvals', show: isPrivileged },
     { href: '/knowledge', label: 'Knowledge', show: true },
     { href: '/voice', label: 'Voice', show: true },
+    { href: '/connector-runs', label: 'Connector Runs', show: hasMembership || isPrivileged },
     { href: '/login', label: user ? 'Account' : 'Sign In', show: true },
   ];
 
