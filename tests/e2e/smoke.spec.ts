@@ -11,17 +11,18 @@ const routes = [
   { path: '/voice', heading: 'Voice' },
 ];
 
-test('global navigation is visible', async ({ page }) => {
+test('public navigation reflects role-aware gating', async ({ page }) => {
   await page.goto('/');
 
   await expect(page.getByRole('heading', { name: 'AAW' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Dashboard' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Org Setup' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Workers' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Tasks' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Approvals' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Knowledge' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Voice' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Sign In' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Org Setup' })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: 'Approvals' })).toHaveCount(0);
 });
 
 for (const route of routes) {
