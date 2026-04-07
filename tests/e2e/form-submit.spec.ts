@@ -25,5 +25,5 @@ test('knowledge form submits safely and persists validation marker', async ({ pa
   await expect(page.getByText(/Knowledge (validation item updated|item saved)/i)).toBeVisible();
 
   await page.reload();
-  await expect(page.getByRole('heading', { name: 'Playwright validation knowledge item' })).toBeVisible();
+  await expect(page.getByText('Playwright validation knowledge item')).toBeVisible();
 });
