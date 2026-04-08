@@ -84,7 +84,7 @@ Build the standalone platform skeleton and keep the architecture ready for voice
 
 ---
 
-## Current Live State (2026-04-07)
+## Current Live State (2026-04-08)
 ### Confirmed now live
 - Supabase-backed production deployment is active on `athletics-ai-workforce-web`
 - safe server-side writes are live for org profile + knowledge items
@@ -93,11 +93,13 @@ Build the standalone platform skeleton and keep the architecture ready for voice
 - Supabase auth scaffold exists with login page, callback route, middleware session refresh, and membership-aware shell state
 - demo membership bootstrap path exists for signed-in users
 - role-aware navigation and privileged action gating are active
-- connector API paths now exist for sponsor attrition, sponsor category gaps, sponsor match-alumni, and proposal create
+- connector API paths now exist for sponsor attrition, sponsor category gaps, sponsor match-alumni, proposal create, proposal view, proposal submit, and reporting
 - connector run history is visible in the product through `Connector Runs`
+- proposal review workflow now has structured approval metadata, approval decision endpoints, dashboard approval visibility, and a dedicated approval review page
+- CSOS production repo (`GF-Accelerate/ksu-csos`) has now been reviewed directly and will guide the next integration phase
 
 ### Immediate next build target
-Move from validated platform to authenticated, connector-aware tenant workflows.
+Move from authenticated connector stubs into an adapter-driven CSOS integration model while continuing to harden proposal review orchestration.
 
 ## Phase 1.5 - Voice Command Foundation
 ### Goals
@@ -183,36 +185,42 @@ Turn connector outputs into governed, reviewable operating workflows instead of 
 - add role-aware action approval/reject flows
 - surface latest connector outcomes + approvals + queued work on the dashboard
 - expand authenticated Playwright coverage for multi-action orchestration
+- persist richer approval workflow metadata and downstream outcome task state
+- improve approval review UX and workflow state visibility
 
 ### Exit Criteria
 - proposal-create generates a reviewable approval object
 - connector actions can feed an approval queue
 - dashboard shows actionable next steps instead of only raw records
 - privileged users can approve/reject proposal-stage actions
+- approval detail/review surface exists with structured metadata
 - authenticated Playwright validates connector → approval → task flow
 
-## Phase 3 - CSOS Connector Integration
+## Phase 3 - CSOS Adapter / Integration Gateway
 ### Goals
-Use CSOS as the athletics backend execution engine.
+Use CSOS as the athletics backend execution engine through a stable adapter/gateway contract rather than brittle direct coupling.
 
-### Connector Design
-- CLI execution adapter first
-- direct RPC adapter later
+### Integration Design
+- adapter/gateway first
+- server-side auth and payload normalization
+- direct reads from vetted stable CSOS tables where appropriate
+- narrow invocation of vetted CSOS Edge Functions for workflow mutations
 - strict service-role isolation through connector service
-- normalized command run logs and result objects
+- normalized run logs, audit metadata, and result objects
 
 ### Initial CSOS Operations to Support
-- sponsor attrition
-- sponsor category gaps
-- alumni crossref / decision-maker matching
-- proposal create / view / submit
-- reporting
+- sponsorship pipeline reads
+- sponsor attrition / category / match workflows as normalized workforce actions
+- proposal generate / approve / send
+- dashboard/reporting reads
+- Salesforce sync visibility and controlled execution
 
 ### Exit Criteria
-- Workforce agents can trigger CSOS operations through connector service
-- Structured JSON results flow back into task/workflow engine
-- All runs are logged with input/output metadata
+- Workforce agents can trigger CSOS-backed operations through a stable adapter contract
+- Structured normalized results flow back into the task/workflow engine
+- All runs are logged with input/output/audit metadata
 - approvals can gate sensitive connector actions
+- athletics-ai-workforce is not directly dependent on unstable CSOS frontend service contracts
 
 ---
 
@@ -306,9 +314,16 @@ Voice remains important but should not delay the athletics MVP core.
 
 ---
 
+## Session Continuity / Delivery Discipline
+- Always update `ROADMAP.md` when direction, features, or goals materially change
+- Maintain fresh handoff/spec docs for active implementation slices
+- Treat session memory loss as a product/process problem and mitigate it with startup protocols + durable files
+- Prefer repo-backed continuity and explicit next-action notes over chat-only continuity
+
 ## Guiding Principles
 - Do not disturb working CSOS operations
 - Use CSOS as a connector, not a codebase to rewrite
+- Normalize CSOS integration through a stable adapter/gateway
 - Keep secrets isolated in connector services, not broad agent access
 - Favor structured outputs and auditability over opaque autonomy
 - Human approval gates for sensitive or external actions
