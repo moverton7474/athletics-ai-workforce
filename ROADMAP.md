@@ -144,6 +144,7 @@ Focus on the core workforce product before broad connector expansion.
 - connector run history is visible in the product through `Connector Runs`
 - proposal review workflow now has structured approval metadata, approval decision endpoints, dashboard approval visibility, and a dedicated approval review page
 - worker workspace shell now has stronger chat / outputs / guidelines / settings surfaces with role-specific mock content
+- workers view now distinguishes shared vs personal worker models more clearly in roster, copy, and settings surfaces
 - org setup now includes a clearer onboarding promise and live recommended team preview during intake
 - CSOS production repo (`GF-Accelerate/ksu-csos`) has now been reviewed directly and will guide the next integration phase
 
