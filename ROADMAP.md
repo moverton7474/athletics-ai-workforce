@@ -143,6 +143,8 @@ Focus on the core workforce product before broad connector expansion.
 - connector API paths now exist for sponsor attrition, sponsor category gaps, sponsor match-alumni, proposal create, proposal view, proposal submit, and reporting
 - connector run history is visible in the product through `Connector Runs`
 - proposal review workflow now has structured approval metadata, approval decision endpoints, dashboard approval visibility, and a dedicated approval review page
+- worker workspace shell now has stronger chat / outputs / guidelines / settings surfaces with role-specific mock content
+- org setup now includes a clearer onboarding promise and live recommended team preview during intake
 - CSOS production repo (`GF-Accelerate/ksu-csos`) has now been reviewed directly and will guide the next integration phase
 
 ### Immediate next build target
