@@ -101,6 +101,12 @@ Build the standalone platform skeleton and keep the architecture ready for voice
 ### Immediate next build target
 Move from authenticated connector stubs into an adapter-driven CSOS integration model while continuing to harden proposal review orchestration.
 
+### Immediate implementation priorities
+1. finalize and refine the CSOS adapter contract
+2. add code scaffolding for the adapter in the app runtime
+3. map proposal review actions to adapter-oriented workflow actions
+4. begin the first live CSOS-backed read path
+
 ## Phase 1.5 - Voice Command Foundation
 ### Goals
 Introduce a voice-command abstraction layer early so the product can become voice-first without delaying the MVP.

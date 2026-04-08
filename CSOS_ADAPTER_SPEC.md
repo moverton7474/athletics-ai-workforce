@@ -184,7 +184,13 @@ Do not write directly to operational CSOS tables from athletics-ai-workforce in 
 2. update roadmap to reflect adapter-first CSOS integration
 3. add a lightweight adapter module/server contract in athletics-ai-workforce
 4. wire proposal review workflow to adapter-oriented action metadata
-5. only after that begin first live CSOS read path integration
+5. begin the first live CSOS-backed read path integration
+
+### Current execution status
+- roadmap updated for adapter-first CSOS direction
+- handoff updated to point future sessions at adapter docs
+- first code scaffold added at `apps/web/src/lib/server/csos-adapter.ts`
+- next implementation target is wiring a real first read path through the adapter
 
 ## Future Connector Expansion
 The adapter/gateway should become the integration backbone for institution systems such as:
