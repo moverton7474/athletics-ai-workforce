@@ -113,7 +113,13 @@ Focus on the core workforce product before broad connector expansion.
 - roadmap discipline
 - durable memory updates as part of normal delivery
 
-#### 6. Minimal strategic connector proof only
+#### 6. Agent memory infrastructure
+- robust session-to-session memory persistence
+- scoped memory for worker continuity
+- agent-to-agent communication memory / handoff model
+- task remembrance across sessions so work does not disappear with context resets
+
+#### 7. Minimal strategic connector proof only
 - keep CSOS adapter work narrow
 - implement one live CSOS-backed read path
 - avoid broad connector expansion until the core product shell is stronger
@@ -123,6 +129,7 @@ Focus on the core workforce product before broad connector expansion.
 - proposal send path through adapter-oriented workflow actions
 - selective expansion of reporting / sponsorship reads
 - deeper voice/manual parity for top workflows
+- stronger in-product memory controls and agent-to-agent continuity surfaces
 
 ### LATER — Broad integration + productization
 - expanded CSOS mutation coverage
@@ -327,17 +334,22 @@ Extend the MVP into reusable staffing infrastructure.
 ### Workstreams
 - policy gateway
 - role-based dashboards
+- enterprise admin management console
+- tenant / deployment / connector health management
 - immutable audit/event log
 - config versioning
 - replay/simulation
 - coverage / backup workers
 - export/compliance tooling
 - richer approval workflows
+- memory governance and agent communication oversight
 
 ### Exit Criteria
 - Enterprise accounts can govern worker behavior safely
+- Admin users can manage deployments, tenants, connectors, and policy surfaces through a dedicated management console
 - Runtime supports versioning and rollback
 - Audit and export requirements are supportable
+- Memory and agent communication flows are observable and governable
 
 ---
 
@@ -388,5 +400,7 @@ Voice remains important but should not delay the athletics MVP core.
 - Keep secrets isolated in connector services, not broad agent access
 - Favor structured outputs and auditability over opaque autonomy
 - Human approval gates for sensitive or external actions
+- Treat memory continuity as core infrastructure, not an optional enhancement
+- Build agent communication and task remembrance so work survives session resets
 - Sell the team before the software
 - Treat workers as products with their own workspaces, not just prompts
