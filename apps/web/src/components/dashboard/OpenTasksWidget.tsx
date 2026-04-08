@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import type { TaskDTO } from '../../lib/types';
 
 export function OpenTasksWidget({ tasks }: { tasks: TaskDTO[] }) {
@@ -10,7 +11,8 @@ export function OpenTasksWidget({ tasks }: { tasks: TaskDTO[] }) {
         <ul>
           {nextActions.map((task) => (
             <li key={task.id}>
-              <strong>{task.title}</strong> — {task.status} ({task.priority})
+              <strong>{task.title}</strong> — {task.status} ({task.priority}){' '}
+              <Link href={`/tasks/${task.id}`}>Open task</Link>
             </li>
           ))}
         </ul>
