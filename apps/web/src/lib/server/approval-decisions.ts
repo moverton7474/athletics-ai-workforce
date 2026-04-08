@@ -62,6 +62,15 @@ export async function decideApproval(approvalId: string, decision: ApprovalDecis
   }
 
   const approval = approvalResult.data;
+
+  if (approval.status !== 'pending') {
+    return {
+      ok: false as const,
+      status: 409,
+      message: `This approval has already been decided (${approval.status.replaceAll('_', ' ')}).`,
+    };
+  }
+
   const trimmedNote = note?.trim() || null;
   const now = new Date().toISOString();
 
@@ -123,6 +132,15 @@ export async function decideApproval(approvalId: string, decision: ApprovalDecis
 
   if (followUpTask.error) {
     return { ok: false as const, status: 400, message: followUpTask.error.message };
+  }
+
+  const outcomeTaskUpdate = await adminClient
+    .from('approvals')
+    .update({ outcome_task_id: followUpTask.data.id })
+    .eq('id', approvalId);
+
+  if (outcomeTaskUpdate.error) {
+    return { ok: false as const, status: 400, message: outcomeTaskUpdate.error.message };
   }
 
   return {

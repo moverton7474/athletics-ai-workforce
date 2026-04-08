@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import type { ApprovalDTO } from '../../lib/types';
 import { ApprovalActions } from './ApprovalActions';
 
@@ -9,12 +10,13 @@ export function ApprovalList({ approvals, canDecide }: { approvals: ApprovalDTO[
   return (
     <div style={{ display: 'grid', gap: 16 }}>
       {approvals.map((approval) => {
-        const company = typeof approval.details?.company === 'string' ? approval.details.company : null;
-        const stage = typeof approval.details?.stage === 'string' ? approval.details.stage : null;
+        const company = approval.entityName ?? (typeof approval.details?.company === 'string' ? approval.details.company : null);
+        const stage = approval.stage ?? (typeof approval.details?.stage === 'string' ? approval.details.stage : null);
         const nextAction =
-          typeof approval.details?.recommended_next_action === 'string'
+          approval.nextActionLabel ??
+          (typeof approval.details?.recommended_next_action === 'string'
             ? approval.details.recommended_next_action
-            : null;
+            : null);
 
         return (
           <article key={approval.id} style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16 }}>
@@ -33,6 +35,11 @@ export function ApprovalList({ approvals, canDecide }: { approvals: ApprovalDTO[
                   {nextAction ? <li>Recommended next action: {nextAction}</li> : null}
                 </ul>
               ) : null}
+              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+                <Link href={`/approvals/${approval.id}`}>Open review</Link>
+                {approval.requestedAction ? <span>Action: {approval.requestedAction.replaceAll('_', ' ')}</span> : null}
+                {approval.targetSystem ? <span>System: {approval.targetSystem.replaceAll('_', ' ')}</span> : null}
+              </div>
               {approval.decisionNote ? <p style={{ margin: 0 }}>Decision note: {approval.decisionNote}</p> : null}
               <ApprovalActions approvalId={approval.id} approvalStatus={approval.status} canDecide={canDecide} />
             </div>

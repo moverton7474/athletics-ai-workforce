@@ -83,6 +83,9 @@ test.describe('authenticated membership flow', () => {
 
     await page.goto('/approvals');
     await expect(page.getByText(/Approve proposal package for Acme Roofing/i).first()).toBeVisible();
+    await page.getByRole('link', { name: /Open review/i }).last().click();
+    await expect(page.getByRole('heading', { name: /Approval Review/i })).toBeVisible();
+    await expect(page.getByText(/Requested action: proposal submit/i)).toBeVisible();
     await page.getByLabel('Review note').last().fill('Looks good. Move this into submission prep.');
     await page.getByRole('button', { name: 'Approve' }).last().click();
     await expect(page.getByText(/Approval recorded and proposal workflow advanced/i)).toBeVisible();

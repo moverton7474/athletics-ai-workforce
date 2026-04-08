@@ -37,10 +37,17 @@ export interface ApprovalDTO {
   organizationId: string;
   taskId?: string | null;
   connectorRunId?: string | null;
+  outcomeTaskId?: string | null;
   title: string;
   summary?: string;
   status: ApprovalStatus;
   approvalType: string;
+  requestedAction?: string;
+  targetSystem?: string;
+  entityType?: string;
+  entityName?: string;
+  stage?: string;
+  nextActionLabel?: string;
   decisionNote?: string | null;
   details?: Record<string, unknown>;
   createdAt?: string;

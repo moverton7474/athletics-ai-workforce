@@ -1,6 +1,7 @@
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { DEMO_ORGANIZATION_ID } from '../constants';
+import { buildProposalApprovalRecord } from './approval-records';
 import { PRIVILEGED_ORG_ROLES, requireDemoMembership } from './access';
 
 const execFileAsync = promisify(execFile);
@@ -141,21 +142,38 @@ async function runConnectorAction(config: ConnectorActionConfig) {
   let approvalId: string | null = null;
 
   if (config.createApproval) {
+    const proposalApproval =
+      config.approvalType === 'proposal_review' && typeof config.input?.company === 'string'
+        ? buildProposalApprovalRecord({
+            company: config.input.company,
+            connectorName: config.connectorName,
+            connectorOutput: connectorExecution.normalizedOutput,
+          })
+        : null;
+
     const approval = await adminClient
       .from('approvals')
       .insert({
         organization_id: DEMO_ORGANIZATION_ID,
         task_id: task.data.id,
         connector_run_id: connectorRun.data.id,
-        approval_type: config.approvalType ?? 'proposal_review',
-        title: config.approvalTitle ?? config.taskTitle,
-        summary: config.approvalSummary ?? config.taskDescription,
-        details: {
-          connector_name: config.connectorName,
-          requested_action: 'proposal_review',
-          ...(config.approvalDetails ?? {}),
-          connector_output: connectorExecution.normalizedOutput,
-        },
+        approval_type: proposalApproval?.approvalType ?? config.approvalType ?? 'proposal_review',
+        title: proposalApproval?.title ?? config.approvalTitle ?? config.taskTitle,
+        summary: proposalApproval?.summary ?? config.approvalSummary ?? config.taskDescription,
+        requested_action: proposalApproval?.requestedAction ?? 'proposal_review',
+        target_system: proposalApproval?.targetSystem ?? 'ksu_csos',
+        entity_type: proposalApproval?.entityType ?? null,
+        entity_name: proposalApproval?.entityName ?? null,
+        stage: proposalApproval?.stage ?? null,
+        next_action_label: proposalApproval?.nextActionLabel ?? null,
+        details: proposalApproval
+          ? proposalApproval.details
+          : {
+              connector_name: config.connectorName,
+              requested_action: 'proposal_review',
+              ...(config.approvalDetails ?? {}),
+              connector_output: connectorExecution.normalizedOutput,
+            },
         requested_by_agent_id: agentId,
         requested_by_user_id: user.id,
         status: 'pending',

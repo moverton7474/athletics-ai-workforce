@@ -41,6 +41,7 @@ export function ApprovalActions({ approvalId, approvalStatus, canDecide }: Appro
 
     setDecision(payload.message ?? `Decision recorded: ${nextDecision}`);
     setLoadingDecision(null);
+    window.location.reload();
   }
 
   if (!canDecide) {
