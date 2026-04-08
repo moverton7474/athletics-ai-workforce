@@ -46,7 +46,7 @@ async function createMagicLink() {
 test.describe('authenticated membership flow', () => {
   test.skip(!requiredConfigured, 'Missing Supabase service-role env vars for authenticated Playwright coverage.');
 
-  test('user can sign in, claim demo org, and run the connector workflow set', async ({ page }) => {
+  test('user can run connector workflows through approval orchestration', async ({ page }) => {
     const magicLink = await createMagicLink();
 
     await page.goto(magicLink);
@@ -73,12 +73,26 @@ test.describe('authenticated membership flow', () => {
 
     await page.getByLabel('Company').fill('Acme Roofing');
     await page.getByRole('button', { name: 'Run proposal create' }).click();
-    await expect(page.getByText(/Proposal draft created/i)).toBeVisible();
+    await expect(page.getByText(/routed into approvals/i)).toBeVisible();
 
     await page.goto('/connector-runs');
     await expect(page.getByText(/csos sponsor attrition --json/i).first()).toBeVisible();
     await expect(page.getByText(/csos sponsor category-gaps --json/i).first()).toBeVisible();
     await expect(page.getByText(/csos sponsor match-alumni --json/i).first()).toBeVisible();
     await expect(page.getByText(/csos proposal create/i).first()).toBeVisible();
+
+    await page.goto('/approvals');
+    await expect(page.getByText(/Approve proposal package for Acme Roofing/i).first()).toBeVisible();
+    await page.getByLabel('Review note').last().fill('Looks good. Move this into submission prep.');
+    await page.getByRole('button', { name: 'Approve' }).last().click();
+    await expect(page.getByText(/Approval recorded and proposal workflow advanced/i)).toBeVisible();
+
+    await page.goto('/tasks');
+    await expect(page.getByText(/Prepare proposal submission for Acme Roofing/i).first()).toBeVisible();
+
+    await page.goto('/dashboard');
+    await expect(page.getByText(/Queued approvals:/i)).toBeVisible();
+    await expect(page.getByText(/Next Actions/i)).toBeVisible();
+    await expect(page.getByText(/Latest Connector Outcomes/i)).toBeVisible();
   });
 });

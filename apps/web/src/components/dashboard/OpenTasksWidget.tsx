@@ -1,23 +1,21 @@
-type TaskSummary = {
-  id: string;
-  title: string;
-  status: string;
-};
+import type { TaskDTO } from '../../lib/types';
 
-export function OpenTasksWidget({ tasks }: { tasks: TaskSummary[] }) {
+export function OpenTasksWidget({ tasks }: { tasks: TaskDTO[] }) {
+  const nextActions = tasks.filter((task) => task.status !== 'completed' && task.status !== 'canceled').slice(0, 6);
+
   return (
     <section>
-      <h2>Open Tasks</h2>
-      {tasks.length ? (
+      <h2>Next Actions</h2>
+      {nextActions.length ? (
         <ul>
-          {tasks.map((task) => (
+          {nextActions.map((task) => (
             <li key={task.id}>
-              <strong>{task.title}</strong> — {task.status}
+              <strong>{task.title}</strong> — {task.status} ({task.priority})
             </li>
           ))}
         </ul>
       ) : (
-        <p>No open tasks yet.</p>
+        <p>No queued next actions yet.</p>
       )}
     </section>
   );

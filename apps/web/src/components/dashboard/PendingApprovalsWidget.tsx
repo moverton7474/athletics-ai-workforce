@@ -1,23 +1,22 @@
-type ApprovalSummary = {
-  id: string;
-  title: string;
-  status: string;
-};
+import type { ApprovalDTO } from '../../lib/types';
 
-export function PendingApprovalsWidget({ approvals }: { approvals: ApprovalSummary[] }) {
+export function PendingApprovalsWidget({ approvals }: { approvals: ApprovalDTO[] }) {
+  const queuedApprovals = approvals.filter((approval) => approval.status === 'pending').slice(0, 5);
+
   return (
     <section>
-      <h2>Pending Approvals</h2>
-      {approvals.length ? (
+      <h2>Queued Approvals</h2>
+      {queuedApprovals.length ? (
         <ul>
-          {approvals.map((approval) => (
+          {queuedApprovals.map((approval) => (
             <li key={approval.id}>
-              <strong>{approval.title}</strong> — {approval.status}
+              <strong>{approval.title}</strong>
+              {approval.summary ? ` — ${approval.summary}` : ''}
             </li>
           ))}
         </ul>
       ) : (
-        <p>No pending approvals right now.</p>
+        <p>No queued approvals right now.</p>
       )}
     </section>
   );
