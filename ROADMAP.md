@@ -84,6 +84,53 @@ Build the standalone platform skeleton and keep the architecture ready for voice
 
 ---
 
+## Execution Priority - Now / Next / Later
+
+### NOW — Primary build focus (Option B)
+Focus on the core workforce product before broad connector expansion.
+
+#### 1. Core workforce UX / product shell
+- strengthen worker workspace quality
+- improve chat / outputs / guidelines / settings experience
+- make the roster + worker surfaces feel product-grade
+
+#### 2. Shared vs personal worker model
+- make the operating model clearer in UX and data flow
+- reinforce team collaboration vs private worker behavior
+
+#### 3. Onboarding / team generation
+- move toward a real intake → team recommendation/generation flow
+- build the product layer that sells the workforce before deep backend integration
+
+#### 4. Workflow / approval operating loop
+- continue hardening proposal review orchestration
+- improve next-action visibility, task clarity, and review flows
+- keep the app centered on governed work, not just connector actions
+
+#### 5. Session continuity / memory discipline
+- startup protocol
+- handoff discipline
+- roadmap discipline
+- durable memory updates as part of normal delivery
+
+#### 6. Minimal strategic connector proof only
+- keep CSOS adapter work narrow
+- implement one live CSOS-backed read path
+- avoid broad connector expansion until the core product shell is stronger
+
+### NEXT — After the core shell is stronger
+- first live CSOS adapter-backed read path
+- proposal send path through adapter-oriented workflow actions
+- selective expansion of reporting / sponsorship reads
+- deeper voice/manual parity for top workflows
+
+### LATER — Broad integration + productization
+- expanded CSOS mutation coverage
+- Salesforce / Paciolan / Blackbaud gateway expansion
+- billing / packaging / self-serve onboarding
+- enterprise governance depth
+- broader vertical generalization
+
 ## Current Live State (2026-04-08)
 ### Confirmed now live
 - Supabase-backed production deployment is active on `athletics-ai-workforce-web`
@@ -99,13 +146,14 @@ Build the standalone platform skeleton and keep the architecture ready for voice
 - CSOS production repo (`GF-Accelerate/ksu-csos`) has now been reviewed directly and will guide the next integration phase
 
 ### Immediate next build target
-Move from authenticated connector stubs into an adapter-driven CSOS integration model while continuing to harden proposal review orchestration.
+Execute Option B: finish the core workforce system shell and workflow loop first, while limiting connector work to a narrow proof of architecture.
 
 ### Immediate implementation priorities
-1. finalize and refine the CSOS adapter contract
-2. add code scaffolding for the adapter in the app runtime
-3. map proposal review actions to adapter-oriented workflow actions
-4. begin the first live CSOS-backed read path
+1. strengthen worker/workspace product quality
+2. define or improve the onboarding → team generation flow
+3. continue Phase 2.3 workflow/approval hardening
+4. enforce startup/handoff/memory continuity discipline
+5. keep CSOS integration limited to adapter refinement + one live read path
 
 ## Phase 1.5 - Voice Command Foundation
 ### Goals
@@ -205,6 +253,9 @@ Turn connector outputs into governed, reviewable operating workflows instead of 
 ## Phase 3 - CSOS Adapter / Integration Gateway
 ### Goals
 Use CSOS as the athletics backend execution engine through a stable adapter/gateway contract rather than brittle direct coupling.
+
+### Priority note
+This phase should advance in a constrained way until the core workforce product shell is stronger. Prioritize one live read path and one governed mutation path before expanding connector breadth.
 
 ### Integration Design
 - adapter/gateway first

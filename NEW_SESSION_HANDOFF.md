@@ -90,10 +90,10 @@ Because the current CSOS command surface already strongly supports:
 - define the first stable CSOS adapter contract in `CSOS_ADAPTER_SPEC.md`
 
 ### Technical work
+- prioritize the core workforce shell before broad connector work
 - continue Phase 2.3 proposal review/orchestration hardening
-- map athletics-ai-workforce approval actions to CSOS adapter actions
-- implement the first live CSOS-backed read path through the adapter
-- define Salesforce / Paciolan / Blackbaud-ready extension points in the gateway design
+- improve worker/workspace UX and onboarding/team-generation direction
+- keep CSOS adapter work limited to one live read path until the core shell is stronger
 
 ### Process / memory work
 - enforce `SESSION_STARTUP_PROTOCOL.md` at startup
