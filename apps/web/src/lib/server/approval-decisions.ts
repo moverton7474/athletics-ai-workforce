@@ -62,6 +62,10 @@ export async function decideApproval(approvalId: string, decision: ApprovalDecis
   }
 
   const approval = approvalResult.data;
+  const existingDetails = approval.details ?? {};
+  const existingDecisionHistory = Array.isArray(existingDetails.decision_history)
+    ? existingDetails.decision_history
+    : [];
 
   if (approval.status !== 'pending') {
     return {
@@ -81,6 +85,24 @@ export async function decideApproval(approvalId: string, decision: ApprovalDecis
       decision_note: trimmedNote,
       approved_by_user_id: user.id,
       decided_at: now,
+      details: {
+        ...existingDetails,
+        latest_decision: {
+          decision,
+          note: trimmedNote,
+          decided_at: now,
+          decided_by_user_id: user.id,
+        },
+        decision_history: [
+          ...existingDecisionHistory,
+          {
+            decision,
+            note: trimmedNote,
+            decided_at: now,
+            decided_by_user_id: user.id,
+          },
+        ],
+      },
     })
     .eq('id', approvalId);
 
@@ -136,7 +158,34 @@ export async function decideApproval(approvalId: string, decision: ApprovalDecis
 
   const outcomeTaskUpdate = await adminClient
     .from('approvals')
-    .update({ outcome_task_id: followUpTask.data.id })
+    .update({
+      outcome_task_id: followUpTask.data.id,
+      details: {
+        ...existingDetails,
+        latest_decision: {
+          decision,
+          note: trimmedNote,
+          decided_at: now,
+          decided_by_user_id: user.id,
+        },
+        decision_history: [
+          ...existingDecisionHistory,
+          {
+            decision,
+            note: trimmedNote,
+            decided_at: now,
+            decided_by_user_id: user.id,
+          },
+        ],
+        outcome_task_id: followUpTask.data.id,
+        workflow_state:
+          decision === 'approved'
+            ? 'submission_prep'
+            : decision === 'changes_requested'
+              ? 'revision_requested'
+              : 'closed_rejected',
+      },
+    })
     .eq('id', approvalId);
 
   if (outcomeTaskUpdate.error) {

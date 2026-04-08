@@ -97,5 +97,6 @@ test.describe('authenticated membership flow', () => {
     await expect(page.getByText(/Queued approvals:/i)).toBeVisible();
     await expect(page.getByText(/Next Actions/i)).toBeVisible();
     await expect(page.getByText(/Latest Connector Outcomes/i)).toBeVisible();
+    await expect(page.getByRole('link', { name: /Open review/i }).first()).toBeVisible();
   });
 });

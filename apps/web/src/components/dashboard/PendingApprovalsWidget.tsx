@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import type { ApprovalDTO } from '../../lib/types';
 
 export function PendingApprovalsWidget({ approvals }: { approvals: ApprovalDTO[] }) {
@@ -12,6 +13,11 @@ export function PendingApprovalsWidget({ approvals }: { approvals: ApprovalDTO[]
             <li key={approval.id}>
               <strong>{approval.title}</strong>
               {approval.summary ? ` — ${approval.summary}` : ''}
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                <Link href={`/approvals/${approval.id}`}>Open review</Link>
+                {approval.entityName ? <span>Entity: {approval.entityName}</span> : null}
+                {approval.requestedAction ? <span>Action: {approval.requestedAction.replaceAll('_', ' ')}</span> : null}
+              </div>
             </li>
           ))}
         </ul>
