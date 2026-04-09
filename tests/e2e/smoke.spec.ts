@@ -63,9 +63,11 @@ test('knowledge form renders expected fields', async ({ page }) => {
 test('connector runs page surfaces workflow lineage', async ({ page }) => {
   await page.goto('/connector-runs');
   await expect(page.getByRole('heading', { name: 'Connector run history' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Connector workflow snapshot' })).toBeVisible();
 
   if ((await page.getByRole('heading', { name: 'Workflow lineage' }).count()) > 0) {
     await expect(page.getByRole('heading', { name: 'Workflow lineage' }).first()).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Operator next action' }).first()).toBeVisible();
   } else {
     await expect(page.getByText('No connector runs yet.')).toBeVisible();
   }
