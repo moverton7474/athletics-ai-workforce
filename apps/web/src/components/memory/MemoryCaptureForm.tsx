@@ -34,7 +34,8 @@ export function MemoryCaptureForm({
       style={{ display: 'grid', gap: 12, maxWidth: 720 }}
       onSubmit={async (event) => {
         event.preventDefault();
-        const form = new FormData(event.currentTarget);
+        const formElement = event.currentTarget;
+        const form = new FormData(formElement);
         const rawTags = String(form.get('tags') || '');
         const result = await addMemoryEntry({
           memoryType: String(form.get('memoryType') || ''),
@@ -51,15 +52,16 @@ export function MemoryCaptureForm({
         });
         setMessage(result.message);
         if (result.success) {
-          event.currentTarget.reset();
+          formElement.reset();
           if (lockWorker && initialWorkerId) {
-            const workerInput = event.currentTarget.elements.namedItem('workerId') as HTMLInputElement | null;
+            const workerInput = formElement.elements.namedItem('workerId') as HTMLInputElement | null;
             if (workerInput) {
               workerInput.value = initialWorkerId;
             }
           }
-          onCreated?.(result.entry);
-          if (refreshOnSuccess) {
+          if (result.entry) {
+            onCreated?.(result.entry);
+          } else if (refreshOnSuccess) {
             router.refresh();
           }
         }
