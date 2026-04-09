@@ -166,7 +166,7 @@ Focus on the core workforce product before broad connector expansion.
 - tenant-safe memory policy tightening is now staged and remotely applied through dedicated memory-entry RLS/index migrations
 - memory capture now supports optional approval linkage, and approval review surfaces can show approval-linked memory directly
 - pinned memory is now elevated into dashboard and worker continuity rollups
-- dashboard now includes continuity coverage mapping across workers, open tasks, and pending approvals so continuity gaps are visible instead of hidden
+- dashboard now includes continuity coverage mapping across workers, open tasks, and pending approvals so continuity gaps are visible instead of hidden, including a resolve-next queue for the most urgent continuity gaps
 - memory capture, edit, pin/unpin, and delete actions now update in place across the current surface instead of forcing a full-page reload
 - CSOS production repo (`GF-Accelerate/ksu-csos`) has now been reviewed directly and will guide the next integration phase
 
