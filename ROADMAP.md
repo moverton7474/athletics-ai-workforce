@@ -323,12 +323,80 @@ Required MVP architecture:
 Core principle:
 - voice is not a second app. It is another entry path into the same product shell.
 
+#### 5) Route contract plan (next planning layer)
+Goal: define the exact product routes the MVP needs so voice navigation can move the operator through the same shell manual users use.
+
+MVP route groups:
+- **segment discovery routes**
+  - filtered lists / queues for non-renewals, hot leads, donor leads, and future high-value cohorts
+- **campaign builder route**
+  - opens blank or prefilled
+  - preserves the segment context that launched it
+- **generated asset review route**
+  - review all generated campaign assets by channel
+- **approval route**
+  - human decision surface for launch-critical actions
+- **campaign results / follow-up route**
+  - results, notifications, success/failure assessment, recommended next campaign
+
+Suggested route contract principles:
+- every route should support direct manual entry and system-driven navigation
+- route state should be shareable/bookmarkable whenever possible
+- prefill-heavy routes should degrade gracefully if state is partial or stale
+- approval routes should always be recoverable from dashboard/history surfaces
+
+#### 6) State contract plan (next planning layer)
+Goal: define the structured payloads that move between answer, navigation, prefill, approval, and follow-up stages.
+
+Minimum state contracts to define before voice implementation:
+- `SegmentContext`
+  - source type
+  - deterministic filter or source query
+  - display label
+  - audience count
+  - generated summary / rationale
+- `CampaignBuilderState`
+  - linked segment context
+  - objective
+  - sport / business domain
+  - selected channels
+  - prefilled fields
+  - operator edits
+- `GeneratedAssetReviewState`
+  - campaign draft ID
+  - asset groups by channel
+  - review status by asset
+  - change requests / operator notes
+- `ApprovalDecisionState`
+  - what action is awaiting approval
+  - what has already been approved
+  - what is blocked pending human review
+- `CampaignFollowUpState`
+  - execution status
+  - result summary
+  - scheduled notifications
+  - recommendation for next campaign if underperforming
+
+State contract rules:
+- state must be serializable enough to survive route transitions cleanly
+- state should not depend on the voice layer being present
+- state should be meaningful to the UI, workflows, and future agent orchestration equally
+- manual UI edits must override prefilled voice state cleanly and visibly
+
+#### 7) Recommended next planning outputs
+Before full voice implementation, the roadmap should drive creation of:
+1. a route inventory for the campaign/approval/follow-up MVP shell
+2. a typed state contract spec for segment → builder → review → approval → follow-up
+3. a mapping table that shows which voice commands enter which route/state combination
+4. a manual fallback path for every voice-triggerable workflow
+
 #### Proposed MVP deliverable sequence
 1. define campaign builder route + prefill contract
 2. define segment object / deterministic filter handoff contract
 3. define generated-asset review state model
 4. define route/state parity contract for voice/manual entry
-5. only after those are stable, begin voice-trigger implementation
+5. define route inventory + state contracts tightly enough for implementation
+6. only after those are stable, begin voice-trigger implementation
 
 ### Exit Criteria
 - command model defined for all five MVP workers
