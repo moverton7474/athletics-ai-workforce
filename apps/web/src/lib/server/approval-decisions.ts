@@ -39,6 +39,30 @@ function followUpDescription(decision: ApprovalDecision, note?: string) {
     : 'Proposal was rejected for now.';
 }
 
+function mapDraftStatusFromDecision(decision: ApprovalDecision) {
+  if (decision === 'approved') {
+    return 'approved_for_launch';
+  }
+
+  if (decision === 'changes_requested') {
+    return 'changes_requested';
+  }
+
+  return 'rejected';
+}
+
+function mapDraftWorkflowState(decision: ApprovalDecision) {
+  if (decision === 'approved') {
+    return 'approved_for_launch';
+  }
+
+  if (decision === 'changes_requested') {
+    return 'revision_requested';
+  }
+
+  return 'closed_rejected';
+}
+
 export async function decideApproval(approvalId: string, decision: ApprovalDecision, note?: string) {
   const membershipCheck = await requireDemoMembership([...PRIVILEGED_ORG_ROLES]);
   if (!membershipCheck.ok) {
@@ -156,6 +180,13 @@ export async function decideApproval(approvalId: string, decision: ApprovalDecis
     return { ok: false as const, status: 400, message: followUpTask.error.message };
   }
 
+  const workflowState =
+    decision === 'approved'
+      ? 'submission_prep'
+      : decision === 'changes_requested'
+        ? 'revision_requested'
+        : 'closed_rejected';
+
   const outcomeTaskUpdate = await adminClient
     .from('approvals')
     .update({
@@ -178,18 +209,56 @@ export async function decideApproval(approvalId: string, decision: ApprovalDecis
           },
         ],
         outcome_task_id: followUpTask.data.id,
-        workflow_state:
-          decision === 'approved'
-            ? 'submission_prep'
-            : decision === 'changes_requested'
-              ? 'revision_requested'
-              : 'closed_rejected',
+        workflow_state: workflowState,
       },
     })
     .eq('id', approvalId);
 
   if (outcomeTaskUpdate.error) {
     return { ok: false as const, status: 400, message: outcomeTaskUpdate.error.message };
+  }
+
+  const draftKey = typeof existingDetails.draft_key === 'string' ? existingDetails.draft_key : null;
+  if (draftKey) {
+    const draftResult = await adminClient
+      .from('campaign_drafts')
+      .select('details')
+      .eq('draft_key', draftKey)
+      .eq('organization_id', DEMO_ORGANIZATION_ID)
+      .maybeSingle();
+
+    if (draftResult.error) {
+      return { ok: false as const, status: 400, message: draftResult.error.message };
+    }
+
+    if (draftResult.data) {
+      const currentDraftDetails = draftResult.data.details && typeof draftResult.data.details === 'object'
+        ? draftResult.data.details
+        : {};
+
+      const updateDraft = await adminClient
+        .from('campaign_drafts')
+        .update({
+          status: mapDraftStatusFromDecision(decision),
+          details: {
+            ...currentDraftDetails,
+            approvalId: approvalId,
+            approvalStatus: decision,
+            approvalDecision: decision,
+            approvalDecisionNote: trimmedNote,
+            approvalDecidedAt: now,
+            outcomeTaskId: followUpTask.data.id,
+            workflowState: mapDraftWorkflowState(decision),
+          },
+          updated_at: now,
+        })
+        .eq('draft_key', draftKey)
+        .eq('organization_id', DEMO_ORGANIZATION_ID);
+
+      if (updateDraft.error) {
+        return { ok: false as const, status: 400, message: updateDraft.error.message };
+      }
+    }
   }
 
   return {

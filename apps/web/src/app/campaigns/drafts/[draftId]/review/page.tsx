@@ -21,6 +21,8 @@ export default async function CampaignDraftReviewPage({
       : {};
   const approvalRoute = typeof draftDetails.nextApprovalRoute === 'string' ? draftDetails.nextApprovalRoute : undefined;
   const approvalStatus = typeof draftDetails.approvalStatus === 'string' ? draftDetails.approvalStatus : undefined;
+  const approvalDecisionNote = typeof draftDetails.approvalDecisionNote === 'string' ? draftDetails.approvalDecisionNote : undefined;
+  const approvalDecidedAt = typeof draftDetails.approvalDecidedAt === 'string' ? draftDetails.approvalDecidedAt : undefined;
 
   return (
     <main style={{ padding: 32, fontFamily: 'sans-serif', display: 'grid', gap: 24 }}>
@@ -39,6 +41,8 @@ export default async function CampaignDraftReviewPage({
         <p style={{ margin: '8px 0' }}>Draft key: {draftRecord.draftKey}</p>
         <p style={{ margin: '8px 0' }}>Last updated: {draftRecord.updatedAt ?? 'Not persisted yet'}</p>
         <p style={{ margin: '8px 0' }}>Approval status: <strong>{approvalStatus ?? 'not submitted'}</strong></p>
+        {approvalDecisionNote ? <p style={{ margin: '8px 0' }}>Latest approval note: {approvalDecisionNote}</p> : null}
+        {approvalDecidedAt ? <p style={{ margin: '8px 0' }}>Approval decided at: {approvalDecidedAt}</p> : null}
         <p style={{ margin: '8px 0 0' }}>Pending channels: {reviewState.pendingChannels.join(', ')}</p>
       </section>
 
