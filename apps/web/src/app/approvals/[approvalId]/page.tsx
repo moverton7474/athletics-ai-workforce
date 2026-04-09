@@ -33,6 +33,28 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
         : approval.status === 'rejected'
           ? 'Review the origin task, capture rationale, and repackage the next attempt.'
           : 'Review the latest decision note and confirm the next operator handoff is clear.';
+  const escalationLevel = !approval
+    ? null
+    : approval.status === 'pending'
+      ? 'high'
+      : approval.status === 'rejected'
+        ? 'medium'
+        : 'low';
+  const escalationSummary = !approval
+    ? null
+    : approval.status === 'pending'
+      ? 'A pending approval means connector or workflow output is waiting on a human decision to move forward.'
+      : approval.status === 'rejected'
+        ? 'The workflow has been stopped and should be repackaged with clearer rationale before retrying.'
+        : approval.status === 'approved'
+          ? 'The main risk is no longer decision delay but making sure the approved downstream work actually executes.'
+          : 'Review the latest decision state and make sure the next handoff is still obvious to the operator.';
+  const escalationStyles =
+    escalationLevel === 'high'
+      ? { border: '#fca5a5', background: '#fef2f2' }
+      : escalationLevel === 'medium'
+        ? { border: '#fdba74', background: '#fff7ed' }
+        : { border: '#86efac', background: '#ecfdf3' };
 
   return (
     <main style={{ padding: 32, fontFamily: 'sans-serif', display: 'grid', gap: 24 }}>
@@ -92,6 +114,22 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
               <h2 style={{ marginTop: 0, marginBottom: 8 }}>Operator Next Action</h2>
               <p style={{ margin: 0 }}>{recommendedApprovalAction}</p>
             </div>
+            <section
+              style={{
+                border: `1px solid ${escalationStyles.border}`,
+                background: escalationStyles.background,
+                borderRadius: 12,
+                padding: 12,
+                display: 'grid',
+                gap: 8,
+              }}
+            >
+              <div>
+                <h3 style={{ marginTop: 0, marginBottom: 8 }}>Escalation clarity</h3>
+                <p style={{ margin: 0 }}>Level: <strong>{escalationLevel}</strong></p>
+              </div>
+              <p style={{ margin: 0 }}>{escalationSummary}</p>
+            </section>
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
               {originTask ? <Link href={`/tasks/${originTask.id}`}>Open origin task</Link> : null}
               {outcomeTask ? <Link href={`/tasks/${outcomeTask.id}`}>Open outcome task</Link> : null}

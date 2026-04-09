@@ -43,6 +43,24 @@ export default async function TaskDetailPage({ params }: TaskDetailPageProps) {
       : task.status === 'completed'
         ? 'Capture the final operating notes so this work stays durable for the next session.'
         : 'Package the next operator step and attach any missing continuity notes before handoff.';
+  const escalationLevel = pendingOriginApprovals.length
+    ? 'high'
+    : task.priority === 'high' || task.status === 'in_progress'
+      ? 'medium'
+      : 'low';
+  const escalationSummary = pendingOriginApprovals.length
+    ? 'This task is blocked behind a pending approval and should stay in view until a decision lands.'
+    : task.priority === 'high'
+      ? 'This is a high-priority task and should remain near the top of the operator queue.'
+      : task.status === 'completed'
+        ? 'Execution is complete; the main risk now is losing continuity or final operating notes.'
+        : 'No immediate escalation signal is visible, but the next handoff step should still be explicit.';
+  const escalationStyles =
+    escalationLevel === 'high'
+      ? { border: '#fca5a5', background: '#fef2f2' }
+      : escalationLevel === 'medium'
+        ? { border: '#fdba74', background: '#fff7ed' }
+        : { border: '#86efac', background: '#ecfdf3' };
 
   return (
     <main style={{ padding: 32, fontFamily: 'sans-serif', display: 'grid', gap: 24 }}>
@@ -73,6 +91,23 @@ export default async function TaskDetailPage({ params }: TaskDetailPageProps) {
           <h2 style={{ marginTop: 0, marginBottom: 8 }}>Operator Next Action</h2>
           <p style={{ margin: 0 }}>{recommendedTaskAction}</p>
         </div>
+
+        <section
+          style={{
+            border: `1px solid ${escalationStyles.border}`,
+            background: escalationStyles.background,
+            borderRadius: 12,
+            padding: 12,
+            display: 'grid',
+            gap: 8,
+          }}
+        >
+          <div>
+            <h3 style={{ marginTop: 0, marginBottom: 8 }}>Escalation clarity</h3>
+            <p style={{ margin: 0 }}>Level: <strong>{escalationLevel}</strong></p>
+          </div>
+          <p style={{ margin: 0 }}>{escalationSummary}</p>
+        </section>
 
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
           {pendingOriginApprovals[0] ? <Link href={`/approvals/${pendingOriginApprovals[0].id}`}>Open pending approval</Link> : null}

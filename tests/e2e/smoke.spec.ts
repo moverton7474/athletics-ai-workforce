@@ -39,6 +39,9 @@ test('dashboard shows live runtime data state', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Supabase Runtime Status' })).toBeVisible();
   await expect(page.getByText(/Public Supabase environment variables are (present|missing) for this runtime/i)).toBeVisible();
   await expect(page.getByText(/Dashboard widgets are (loading from live Supabase data|currently falling back to seeded\/mock data)/i)).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Latest Connector Outcomes' })).toBeVisible();
+  await expect(page.getByText('Awaiting approval')).toBeVisible();
+  await expect(page.getByText('Linked approvals')).toBeVisible();
 });
 
 test('org setup form renders expected fields', async ({ page }) => {
@@ -79,6 +82,7 @@ test('task and approval detail pages surface clear operator next actions', async
   await expect(taskLinks.first()).toBeVisible();
   await taskLinks.first().click();
   await expect(page.getByRole('heading', { name: 'Operator Next Action' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Escalation clarity' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Capture continuity note' })).toBeVisible();
 
   await page.goto('/approvals');
@@ -86,6 +90,7 @@ test('task and approval detail pages surface clear operator next actions', async
   if ((await approvalLinks.count()) > 0) {
     await approvalLinks.first().click();
     await expect(page.getByRole('heading', { name: 'Operator Next Action' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Escalation clarity' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Capture decision context' })).toBeVisible();
   } else {
     await expect(page.getByText('No approval requests yet.')).toBeVisible();

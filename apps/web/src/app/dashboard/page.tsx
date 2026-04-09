@@ -46,7 +46,7 @@ export default async function DashboardPage() {
         <PinnedMemoryWidget entries={memoryEntries} workers={workers} />
         <RecentMemoryWidget entries={memoryEntries} workers={workers} />
         <MemoryRelationshipWidget entries={memoryEntries} tasks={tasks} approvals={approvals} workers={workers} />
-        <ConnectorRunsWidget runs={runs} />
+        <ConnectorRunsWidget runs={runs} approvals={approvals} tasks={tasks} />
       </div>
     </main>
   );
