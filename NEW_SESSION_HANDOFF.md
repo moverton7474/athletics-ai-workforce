@@ -92,12 +92,13 @@ Because the current CSOS command surface already strongly supports:
 ### Technical work
 - prioritize the core workforce shell before broad connector work
 - continue Phase 2.3 proposal review/orchestration hardening
-- improve worker/workspace UX and onboarding/team-generation direction
+- deepen the knowledge/memory + continuity product shell
 - keep CSOS adapter work limited to one live read path until the core shell is stronger
 
 ### Process / memory work
 - enforce `SESSION_STARTUP_PROTOCOL.md` at startup
 - reduce session drift with stronger handoff + roadmap discipline
+- use `SESSION_HANDOFF_2026-04-08_EVENING.md` as the primary current handoff
 
 ## Important Notes
 - Several credentials/tokens were pasted during the session; do not preserve them in durable docs.
@@ -105,4 +106,4 @@ Because the current CSOS command surface already strongly supports:
 - Browser Relay / direct Marblism access was not fully completed during this session; much of the reverse-engineering was done via screenshots and observed URLs.
 
 ## Recommended First Prompt For New Session
-"Read NEW_SESSION_HANDOFF.md, ROADMAP.md, PHASE_2_3_IMPLEMENTATION_PLAN.md, CSOS_ADAPTER_SPEC.md, INTEGRATION_GATEWAY_ARCHITECTURE.md, SESSION_HANDOFF_2026-04-07_LATE.md, and SESSION_STARTUP_PROTOCOL.md. Then continue athletics-ai-workforce as an approval-driven orchestration platform that integrates with KSU CSOS through a stable adapter/gateway. Prioritize roadmap fidelity, handoff continuity, and the next implementation slice."
+"Read NEW_SESSION_HANDOFF.md, ROADMAP.md, PHASE_2_3_IMPLEMENTATION_PLAN.md, CSOS_ADAPTER_SPEC.md, INTEGRATION_GATEWAY_ARCHITECTURE.md, SESSION_HANDOFF_2026-04-08_EVENING.md, and SESSION_STARTUP_PROTOCOL.md. Then continue athletics-ai-workforce as a core-first workforce platform with strong memory/continuity discipline, approval-driven orchestration, and narrow adapter-based CSOS integration. Prioritize roadmap fidelity, handoff continuity, and the next implementation slice."
