@@ -44,6 +44,7 @@ export function KnowledgeMemorySection({
             workers={workers.map((worker) => ({ id: worker.id, name: worker.name, roleName: worker.roleName }))}
             tasks={tasks.map((task) => ({ id: task.id, title: task.title }))}
             approvals={approvals.map((approval) => ({ id: approval.id, title: approval.title }))}
+            refreshOnSuccess
             onCreated={(entry) => {
               if (!entry) {
                 return;

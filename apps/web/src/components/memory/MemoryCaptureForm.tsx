@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { addMemoryEntry } from '../../lib/browser-actions';
 import type { MemoryEntryDTO } from '../../lib/types';
@@ -13,6 +14,7 @@ export function MemoryCaptureForm({
   initialApprovalId,
   lockWorker = false,
   onCreated,
+  refreshOnSuccess = false,
 }: {
   workers: Array<{ id: string; name: string; roleName: string }>;
   tasks: Array<{ id: string; title: string }>;
@@ -22,7 +24,9 @@ export function MemoryCaptureForm({
   initialApprovalId?: string;
   lockWorker?: boolean;
   onCreated?: (entry: MemoryEntryDTO) => void;
+  refreshOnSuccess?: boolean;
 }) {
+  const router = useRouter();
   const [message, setMessage] = useState<string | null>(null);
 
   return (
@@ -55,6 +59,9 @@ export function MemoryCaptureForm({
             }
           }
           onCreated?.(result.entry);
+          if (refreshOnSuccess) {
+            router.refresh();
+          }
         }
       }}
     >

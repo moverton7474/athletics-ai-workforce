@@ -48,6 +48,7 @@ export function WorkerMemoryWorkspaceSection({
           approvals={approvals.map((approval) => ({ id: approval.id, title: approval.title }))}
           initialWorkerId={worker.id}
           lockWorker
+          refreshOnSuccess
           onCreated={(entry) => {
             if (!entry) {
               return;
