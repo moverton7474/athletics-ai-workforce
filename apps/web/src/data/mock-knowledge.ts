@@ -11,4 +11,10 @@ export const mockKnowledge = [
     sourceType: 'memory',
     scope: 'worker',
   },
+  {
+    id: 'knowledge-3',
+    title: 'Executive preference notes',
+    sourceType: 'memory',
+    scope: 'personal',
+  },
 ];

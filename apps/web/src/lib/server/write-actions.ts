@@ -14,6 +14,7 @@ type KnowledgePayload = {
   sourceType: string;
   sourceUrl?: string;
   content?: string;
+  scope?: string;
 };
 
 function normalizeOptional(value?: string) {
@@ -75,6 +76,7 @@ export async function addKnowledgeItem(payload: KnowledgePayload) {
   const title = payload.title.trim();
   const sourceType = payload.sourceType.trim();
   const content = normalizeOptional(payload.content);
+  const scope = normalizeOptional(payload.scope) ?? 'organization';
 
   if (!client) {
     return {
@@ -117,7 +119,7 @@ export async function addKnowledgeItem(payload: KnowledgePayload) {
 
   const { error } = await client.from('knowledge_items').insert({
     organization_id: DEMO_ORGANIZATION_ID,
-    scope: 'organization',
+    scope,
     title,
     source_type: sourceType,
     source_url: sourceUrl,

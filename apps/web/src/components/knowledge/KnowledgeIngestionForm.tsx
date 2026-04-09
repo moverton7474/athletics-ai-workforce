@@ -17,6 +17,7 @@ export function KnowledgeIngestionForm() {
           sourceType: String(form.get('sourceType') || ''),
           sourceUrl: String(form.get('sourceUrl') || ''),
           content: String(form.get('content') || ''),
+          scope: String(form.get('scope') || 'organization'),
         });
         setMessage(result.message);
       }}
@@ -24,6 +25,14 @@ export function KnowledgeIngestionForm() {
       <label>
         Title
         <input type="text" name="title" placeholder="KSU Brand Guidelines" />
+      </label>
+      <label>
+        Scope
+        <select name="scope" defaultValue="organization">
+          <option value="organization">Organization Memory</option>
+          <option value="worker">Worker Memory</option>
+          <option value="personal">Personal Memory</option>
+        </select>
       </label>
       <label>
         Source Type

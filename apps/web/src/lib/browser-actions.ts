@@ -11,6 +11,7 @@ type KnowledgePayload = {
   sourceType: string;
   sourceUrl?: string;
   content?: string;
+  scope?: string;
 };
 
 async function postJson(path: string, payload: unknown) {
