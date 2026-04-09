@@ -22,6 +22,7 @@ type MemoryPayload = {
   visibilityScope?: string;
   workerId?: string;
   taskId?: string;
+  approvalId?: string;
   summary?: string;
   content: string;
   tags?: string[];
@@ -29,6 +30,7 @@ type MemoryPayload = {
 
 type MemoryUpdatePayload = {
   taskId?: string;
+  approvalId?: string;
   summary?: string;
   content: string;
   tags?: string[];
@@ -173,6 +175,7 @@ export async function addMemoryEntry(payload: MemoryPayload) {
   const visibilityScope = normalizeOptional(payload.visibilityScope) ?? 'organization';
   const workerId = normalizeOptional(payload.workerId);
   const taskId = normalizeOptional(payload.taskId);
+  const approvalId = normalizeOptional(payload.approvalId);
   const content = payload.content.trim();
   const summary = normalizeOptional(payload.summary);
   const tags = Array.isArray(payload.tags)
@@ -197,6 +200,7 @@ export async function addMemoryEntry(payload: MemoryPayload) {
       summary,
       tags,
       taskId,
+      approvalId,
       pinned: false,
     },
   });
@@ -264,6 +268,7 @@ export async function updateMemoryEntry(memoryEntryId: string, payload: MemoryUp
         summary: normalizeOptional(payload.summary),
         tags,
         taskId: normalizeOptional(payload.taskId),
+        approvalId: normalizeOptional(payload.approvalId),
         pinned: payload.pinned === true,
       },
     })

@@ -19,6 +19,7 @@ type MemoryPayload = {
   visibilityScope?: string;
   workerId?: string;
   taskId?: string;
+  approvalId?: string;
   summary?: string;
   content: string;
   tags?: string[];
@@ -26,6 +27,7 @@ type MemoryPayload = {
 
 type MemoryUpdatePayload = {
   taskId?: string;
+  approvalId?: string;
   summary?: string;
   content: string;
   tags?: string[];

@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic';
 import { OpenTasksWidget } from '../../components/dashboard/OpenTasksWidget';
 import { PendingApprovalsWidget } from '../../components/dashboard/PendingApprovalsWidget';
 import { ConnectorRunsWidget } from '../../components/dashboard/ConnectorRunsWidget';
+import { PinnedMemoryWidget } from '../../components/dashboard/PinnedMemoryWidget';
 import { RecentMemoryWidget } from '../../components/dashboard/RecentMemoryWidget';
 import { DataSourceNotice } from '../../components/system/DataSourceNotice';
 import { SupabaseStatusCard } from '../../components/system/SupabaseStatusCard';
@@ -41,6 +42,7 @@ export default async function DashboardPage() {
         </section>
         <OpenTasksWidget tasks={tasks} />
         <PendingApprovalsWidget approvals={approvals} />
+        <PinnedMemoryWidget entries={memoryEntries} workers={workers} />
         <RecentMemoryWidget entries={memoryEntries} workers={workers} />
         <ConnectorRunsWidget runs={runs} />
       </div>

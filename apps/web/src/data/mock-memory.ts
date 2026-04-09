@@ -19,6 +19,7 @@ export const mockMemoryEntries: MemoryEntryDTO[] = [
     organizationId: 'org-demo',
     workerId: 'worker-sponsorship-intelligence',
     taskId: 'task-1',
+    approvalId: 'approval-1',
     memoryType: 'signal',
     visibilityScope: 'organization',
     content: 'Roofing and banking remain the clearest category gaps, but any proposal-stage recommendation should route through approval review first.',

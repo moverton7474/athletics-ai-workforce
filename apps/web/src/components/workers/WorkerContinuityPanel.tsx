@@ -13,6 +13,8 @@ export function WorkerContinuityPanel({
   approvals: ApprovalDTO[];
   memoryEntries: MemoryEntryDTO[];
 }) {
+  const pinnedEntries = memoryEntries.filter((entry) => entry.pinned);
+
   return (
     <section style={{ border: '1px solid #eee', borderRadius: 12, padding: 16, display: 'grid', gap: 16 }}>
       <div>
@@ -60,6 +62,20 @@ export function WorkerContinuityPanel({
           )}
         </section>
       </div>
+
+      {pinnedEntries.length ? (
+        <div style={{ display: 'grid', gap: 12 }}>
+          <div>
+            <h4 style={{ marginTop: 0, marginBottom: 8 }}>Pinned Memory</h4>
+            <p style={{ margin: 0 }}>High-signal continuity notes that should stay top-of-mind for this worker.</p>
+          </div>
+          <div style={{ display: 'grid', gap: 12 }}>
+            {pinnedEntries.map((entry) => (
+              <MemoryEntryCard key={entry.id} item={entry} />
+            ))}
+          </div>
+        </div>
+      ) : null}
 
       <div style={{ display: 'grid', gap: 12 }}>
         <div>

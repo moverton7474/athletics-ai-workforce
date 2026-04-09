@@ -5,6 +5,7 @@ import { KnowledgeIngestionForm } from '../../components/knowledge/KnowledgeInge
 import { MemoryCaptureForm } from '../../components/memory/MemoryCaptureForm';
 import { MemoryEntryCard } from '../../components/memory/MemoryEntryCard';
 import { DataSourceNotice } from '../../components/system/DataSourceNotice';
+import { listApprovals } from '../../lib/services/approvals';
 import { listKnowledgeItems } from '../../lib/services/knowledge';
 import { listMemoryEntries } from '../../lib/services/memory';
 import { listTasks } from '../../lib/services/tasks';
@@ -16,11 +17,13 @@ export default async function KnowledgePage() {
     { entries: memoryEntries, source: memorySource, error: memoryError },
     { workers },
     { tasks },
+    { approvals },
   ] = await Promise.all([
     listKnowledgeItems(),
     listMemoryEntries(),
     listWorkers(),
     listTasks(),
+    listApprovals(),
   ]);
 
   const byScope = {
@@ -57,6 +60,7 @@ export default async function KnowledgePage() {
           <MemoryCaptureForm
             workers={workers.map((worker) => ({ id: worker.id, name: worker.name, roleName: worker.roleName }))}
             tasks={tasks.map((task) => ({ id: task.id, title: task.title }))}
+            approvals={approvals.map((approval) => ({ id: approval.id, title: approval.title }))}
           />
         </section>
         <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16, display: 'grid', gap: 12 }}>

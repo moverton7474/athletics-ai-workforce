@@ -23,6 +23,11 @@ export function MemoryEntryCard({ item }: { item: MemoryEntryDTO }) {
           Linked task: <Link href={`/tasks/${item.taskId}`}>{item.taskId}</Link>
         </p>
       ) : null}
+      {item.approvalId ? (
+        <p style={{ margin: 0 }}>
+          Linked approval: <Link href={`/approvals/${item.approvalId}`}>{item.approvalId}</Link>
+        </p>
+      ) : null}
       {item.tags.length ? (
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           {item.tags.map((tag) => (

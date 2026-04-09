@@ -21,6 +21,7 @@ export function MemoryEntryActions({ item }: { item: MemoryEntryDTO }) {
             const nextPinned = !pinned;
             const result = await updateMemoryEntry(item.id, {
               taskId: item.taskId ?? undefined,
+              approvalId: item.approvalId ?? undefined,
               summary,
               content,
               tags: tags.split(',').map((tag) => tag.trim()).filter(Boolean),
@@ -64,6 +65,7 @@ export function MemoryEntryActions({ item }: { item: MemoryEntryDTO }) {
             event.preventDefault();
             const result = await updateMemoryEntry(item.id, {
               taskId: item.taskId ?? undefined,
+              approvalId: item.approvalId ?? undefined,
               summary,
               content,
               tags: tags.split(',').map((tag) => tag.trim()).filter(Boolean),

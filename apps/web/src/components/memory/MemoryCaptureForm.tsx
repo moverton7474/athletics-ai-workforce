@@ -6,14 +6,18 @@ import { addMemoryEntry } from '../../lib/browser-actions';
 export function MemoryCaptureForm({
   workers,
   tasks,
+  approvals,
   initialWorkerId,
   initialTaskId,
+  initialApprovalId,
   lockWorker = false,
 }: {
   workers: Array<{ id: string; name: string; roleName: string }>;
   tasks: Array<{ id: string; title: string }>;
+  approvals: Array<{ id: string; title: string }>;
   initialWorkerId?: string;
   initialTaskId?: string;
+  initialApprovalId?: string;
   lockWorker?: boolean;
 }) {
   const [message, setMessage] = useState<string | null>(null);
@@ -30,6 +34,7 @@ export function MemoryCaptureForm({
           visibilityScope: String(form.get('visibilityScope') || 'organization'),
           workerId: String(form.get('workerId') || ''),
           taskId: String(form.get('taskId') || ''),
+          approvalId: String(form.get('approvalId') || ''),
           summary: String(form.get('summary') || ''),
           content: String(form.get('content') || ''),
           tags: rawTags
@@ -82,6 +87,17 @@ export function MemoryCaptureForm({
           {tasks.map((task) => (
             <option key={task.id} value={task.id}>
               {task.title}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label>
+        Related Approval
+        <select name="approvalId" defaultValue={initialApprovalId ?? ''}>
+          <option value="">No specific approval</option>
+          {approvals.map((approval) => (
+            <option key={approval.id} value={approval.id}>
+              {approval.title}
             </option>
           ))}
         </select>

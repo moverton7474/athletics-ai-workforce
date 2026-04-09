@@ -13,6 +13,7 @@ function mapMemoryEntryRow(entry: any): MemoryEntryDTO {
     organizationId: entry.organization_id,
     workerId: entry.agent_id,
     taskId: typeof metadata.taskId === 'string' ? metadata.taskId : null,
+    approvalId: typeof metadata.approvalId === 'string' ? metadata.approvalId : null,
     memoryType: entry.memory_type,
     visibilityScope: entry.visibility_scope ?? 'organization',
     content: entry.content,
@@ -64,6 +65,17 @@ export async function listMemoryEntriesForTask(taskId: string) {
 
   return {
     entries: taskEntries,
+    source: result.source,
+    error: result.error,
+  };
+}
+
+export async function listMemoryEntriesForApproval(approvalId: string) {
+  const result = await listMemoryEntries();
+  const approvalEntries = result.entries.filter((entry) => entry.approvalId === approvalId).slice(0, 6);
+
+  return {
+    entries: approvalEntries,
     source: result.source,
     error: result.error,
   };

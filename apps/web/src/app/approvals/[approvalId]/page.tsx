@@ -2,17 +2,20 @@ export const dynamic = 'force-dynamic';
 
 import Link from 'next/link';
 import { ApprovalActions } from '../../../components/approvals/ApprovalActions';
+import { MemoryEntryCard } from '../../../components/memory/MemoryEntryCard';
 import { DataSourceNotice } from '../../../components/system/DataSourceNotice';
 import { getCurrentUserContext } from '../../../lib/server/membership';
 import { getApprovalById } from '../../../lib/services/approvals';
+import { listMemoryEntriesForApproval } from '../../../lib/services/memory';
 import { listTasks } from '../../../lib/services/tasks';
 
 export default async function ApprovalDetailPage({ params }: { params: Promise<{ approvalId: string }> }) {
   const { approvalId } = await params;
-  const [{ approval, source, error }, { memberships }, { tasks }] = await Promise.all([
+  const [{ approval, source, error }, { memberships }, { tasks }, { entries: memoryEntries }] = await Promise.all([
     getApprovalById(approvalId),
     getCurrentUserContext(),
     listTasks(),
+    listMemoryEntriesForApproval(approvalId),
   ]);
 
   const canDecide = memberships.some((membership: any) => ['owner', 'admin', 'operator'].includes(membership.role));
@@ -133,6 +136,20 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
               </ul>
             ) : (
               <p style={{ margin: 0 }}>No decision history recorded yet.</p>
+            )}
+          </section>
+
+          <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16, display: 'grid', gap: 12 }}>
+            <h2 style={{ margin: 0 }}>Related Memory</h2>
+            <p style={{ margin: 0 }}>Approval-linked memory keeps review context, decision rationale, and handoff notes attached to this approval surface.</p>
+            {memoryEntries.length ? (
+              <div style={{ display: 'grid', gap: 12 }}>
+                {memoryEntries.map((entry) => (
+                  <MemoryEntryCard key={entry.id} item={entry} />
+                ))}
+              </div>
+            ) : (
+              <p style={{ margin: 0 }}>No approval-linked memory captured yet.</p>
             )}
           </section>
 
