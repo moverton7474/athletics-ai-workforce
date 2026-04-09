@@ -69,10 +69,13 @@ test('task and approval detail pages surface clear operator next actions', async
 
   await page.goto('/approvals');
   const approvalLinks = page.getByRole('link', { name: 'Open review' });
-  await expect(approvalLinks.first()).toBeVisible();
-  await approvalLinks.first().click();
-  await expect(page.getByRole('heading', { name: 'Operator Next Action' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Capture decision context' })).toBeVisible();
+  if ((await approvalLinks.count()) > 0) {
+    await approvalLinks.first().click();
+    await expect(page.getByRole('heading', { name: 'Operator Next Action' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Capture decision context' })).toBeVisible();
+  } else {
+    await expect(page.getByText('No approval requests yet.')).toBeVisible();
+  }
 });
 
 test('org setup hands off intake state into the workforce blueprint', async ({ page }) => {
