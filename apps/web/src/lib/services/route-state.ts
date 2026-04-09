@@ -13,6 +13,7 @@ import {
 import type {
   CampaignBuilderState,
   CampaignChannelConfig,
+  CampaignDraftRecordDTO,
   CampaignFollowUpState,
   GeneratedAsset,
   GeneratedAssetReviewState,
@@ -56,6 +57,41 @@ function mapSegmentRow(row: any): SegmentContext {
       typeof row.metadata?.recoverableUrl === 'string'
         ? row.metadata.recoverableUrl
         : fallback.recoverableUrl,
+  };
+}
+
+function mapCampaignDraftRecord(row: any): CampaignDraftRecordDTO {
+  return {
+    draftKey: row.draft_key,
+    campaignKey: row.campaign_key,
+    segmentKey: row.segment_key,
+    title: row.title,
+    objective: row.objective,
+    status: row.status,
+    selectedChannels: Array.isArray(row.selected_channels) ? row.selected_channels : [],
+    assets: Array.isArray(row.assets) ? row.assets : [],
+    details: row.details && typeof row.details === 'object' ? row.details : {},
+    updatedAt: row.updated_at,
+  };
+}
+
+function createFallbackDraftRecord(builderState: CampaignBuilderState): CampaignDraftRecordDTO {
+  return {
+    draftKey: builderState.draftId ?? `${builderState.linkedSegment.segmentKey}-draft`,
+    campaignKey: builderState.campaignId ?? `${builderState.linkedSegment.segmentKey}-campaign`,
+    segmentKey: builderState.linkedSegment.segmentKey,
+    title: builderState.campaignName ?? 'Campaign draft',
+    objective: builderState.campaignObjective,
+    status: 'draft',
+    selectedChannels: builderState.selectedChannels,
+    assets: [],
+    details: {
+      operatorNotes: builderState.operatorNotes,
+      prefilledFields: builderState.prefilledFields,
+      operatorOverrides: builderState.operatorOverrides,
+      missingRequiredFields: builderState.missingRequiredFields,
+      approvalRequired: builderState.approvalRequired,
+    },
   };
 }
 
@@ -172,6 +208,7 @@ export async function getCampaignBuilderForRouteState(segmentKey?: string, mode:
 
     return {
       builderState: fallback,
+      draftRecord: createFallbackDraftRecord(fallback),
       source: 'mock' as const,
       error: result.error,
     };
@@ -179,6 +216,7 @@ export async function getCampaignBuilderForRouteState(segmentKey?: string, mode:
 
   return {
     builderState: mapCampaignDraftRow(row),
+    draftRecord: mapCampaignDraftRecord(row),
     source: 'supabase' as const,
     error: null,
   };
@@ -189,8 +227,27 @@ export async function getCampaignReviewForRouteState(draftId: string, segmentKey
   const row = (result.data as any[]).find((draft) => draft.draft_key === draftId);
 
   if (result.error || !row) {
+    const reviewState = mockCampaignReviewRecords[draftId] ?? getGeneratedAssetReviewState(draftId, segmentKey);
     return {
-      reviewState: mockCampaignReviewRecords[draftId] ?? getGeneratedAssetReviewState(draftId, segmentKey),
+      reviewState,
+      draftRecord: {
+        draftKey: reviewState.draftId,
+        campaignKey: `${reviewState.linkedSegment.segmentKey}-campaign`,
+        segmentKey: reviewState.linkedSegment.segmentKey,
+        title: `${reviewState.linkedSegment.label} Campaign Draft`,
+        objective: reviewState.linkedSegment.recommendedObjective,
+        status: 'ready_for_review',
+        selectedChannels: reviewState.assets.map((asset) => ({ channel: asset.channel, enabled: true })),
+        assets: reviewState.assets,
+        details: {
+          reviewSummary: reviewState.reviewSummary,
+          pendingChannels: reviewState.pendingChannels,
+          approvedChannels: reviewState.approvedChannels,
+          rejectedChannels: reviewState.rejectedChannels,
+          nextApprovalRoute: reviewState.nextApprovalRoute,
+        },
+        updatedAt: undefined,
+      },
       source: 'mock' as const,
       error: result.error,
     };
@@ -198,6 +255,7 @@ export async function getCampaignReviewForRouteState(draftId: string, segmentKey
 
   return {
     reviewState: mapCampaignReviewState(row),
+    draftRecord: mapCampaignDraftRecord(row),
     source: 'supabase' as const,
     error: null,
   };

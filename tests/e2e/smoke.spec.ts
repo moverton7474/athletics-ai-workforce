@@ -118,7 +118,7 @@ test('segment to campaign shell path stays navigable end to end', async ({ page 
   await page.getByRole('link', { name: 'Open generated asset review shell' }).click();
 
   await expect(page.getByRole('heading', { name: 'Campaign Asset Review' })).toBeVisible();
-  await expect(page.getByText(/Review Summary/i)).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Review Summary', exact: true })).toBeVisible();
   await page.getByRole('link', { name: 'Open launch approval shell' }).click();
 
   await expect(page.getByRole('heading', { name: 'Approval Review' })).toBeVisible();

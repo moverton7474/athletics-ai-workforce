@@ -9,7 +9,7 @@ export default async function NewCampaignFromSegmentPage({
   searchParams?: Promise<{ segmentKey?: string }>;
 }) {
   const resolvedSearchParams = await searchParams;
-  const { builderState, source, error } = await getCampaignBuilderForRouteState(resolvedSearchParams?.segmentKey, 'voice');
+  const { builderState, draftRecord, source, error } = await getCampaignBuilderForRouteState(resolvedSearchParams?.segmentKey, 'voice');
   const draftKey = builderState.draftId ?? `${builderState.linkedSegment.segmentKey}-draft`;
 
   return (
@@ -29,6 +29,9 @@ export default async function NewCampaignFromSegmentPage({
         <p style={{ margin: '8px 0' }}>Objective: {builderState.campaignObjective}</p>
         <p style={{ margin: '8px 0' }}>Prefilled fields: {builderState.prefilledFields.join(', ')}</p>
         <p style={{ margin: '8px 0' }}>Operator overrides: {builderState.operatorOverrides.join(', ') || 'None yet'}</p>
+        <p style={{ margin: '8px 0' }}>Draft status: <strong>{draftRecord.status}</strong></p>
+        <p style={{ margin: '8px 0' }}>Draft key: {draftRecord.draftKey}</p>
+        <p style={{ margin: '8px 0' }}>Last updated: {draftRecord.updatedAt ?? 'Not persisted yet'}</p>
         <p style={{ margin: '8px 0 0' }}>Review route: {builderState.reviewRoute}</p>
       </section>
 

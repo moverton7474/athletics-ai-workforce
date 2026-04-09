@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { CampaignDraftPersistencePanel } from '../../../../../components/campaigns/CampaignDraftPersistencePanel';
+import { CampaignReviewSummaryEditor } from '../../../../../components/campaigns/CampaignReviewSummaryEditor';
 import { DataSourceNotice } from '../../../../../components/system/DataSourceNotice';
 import { getCampaignReviewForRouteState } from '../../../../../lib/services/route-state';
 
@@ -12,7 +13,7 @@ export default async function CampaignDraftReviewPage({
 }) {
   const { draftId } = await params;
   const resolvedSearchParams = await searchParams;
-  const { reviewState, source, error } = await getCampaignReviewForRouteState(draftId, resolvedSearchParams?.segmentKey);
+  const { reviewState, draftRecord, source, error } = await getCampaignReviewForRouteState(draftId, resolvedSearchParams?.segmentKey);
 
   return (
     <main style={{ padding: 32, fontFamily: 'sans-serif', display: 'grid', gap: 24 }}>
@@ -27,8 +28,13 @@ export default async function CampaignDraftReviewPage({
         <h2 style={{ marginTop: 0 }}>Review Summary</h2>
         <p style={{ margin: '8px 0' }}>Segment: {reviewState.linkedSegment.label}</p>
         <p style={{ margin: '8px 0' }}>{reviewState.reviewSummary}</p>
+        <p style={{ margin: '8px 0' }}>Draft status: <strong>{draftRecord.status}</strong></p>
+        <p style={{ margin: '8px 0' }}>Draft key: {draftRecord.draftKey}</p>
+        <p style={{ margin: '8px 0' }}>Last updated: {draftRecord.updatedAt ?? 'Not persisted yet'}</p>
         <p style={{ margin: '8px 0 0' }}>Pending channels: {reviewState.pendingChannels.join(', ')}</p>
       </section>
+
+      <CampaignReviewSummaryEditor draftKey={draftRecord.draftKey} initialSummary={reviewState.reviewSummary} />
 
       <CampaignDraftPersistencePanel
         mode="update"
