@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic';
 import { OpenTasksWidget } from '../../components/dashboard/OpenTasksWidget';
 import { PendingApprovalsWidget } from '../../components/dashboard/PendingApprovalsWidget';
 import { ConnectorRunsWidget } from '../../components/dashboard/ConnectorRunsWidget';
+import { MemoryRelationshipWidget } from '../../components/dashboard/MemoryRelationshipWidget';
 import { PinnedMemoryWidget } from '../../components/dashboard/PinnedMemoryWidget';
 import { RecentMemoryWidget } from '../../components/dashboard/RecentMemoryWidget';
 import { DataSourceNotice } from '../../components/system/DataSourceNotice';
@@ -44,6 +45,7 @@ export default async function DashboardPage() {
         <PendingApprovalsWidget approvals={approvals} />
         <PinnedMemoryWidget entries={memoryEntries} workers={workers} />
         <RecentMemoryWidget entries={memoryEntries} workers={workers} />
+        <MemoryRelationshipWidget entries={memoryEntries} tasks={tasks} approvals={approvals} workers={workers} />
         <ConnectorRunsWidget runs={runs} />
       </div>
     </main>

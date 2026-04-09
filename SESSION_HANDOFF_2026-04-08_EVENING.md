@@ -63,6 +63,7 @@ Follow the reordered roadmap (Option B):
 - memory capture forms now support optional task linkage, and task detail now prioritizes task-linked memory in addition to worker context
 - migration `0012_memory_entry_policy_hardening.sql` was applied remotely; repo config now matches remote Postgres major version 17
 - memory capture now supports approval linkage, approval detail now surfaces approval-linked memory, and dashboard/worker pages elevate pinned memory rollups
+- dashboard now includes a continuity coverage view showing which workers, tasks, and approvals still lack attached memory
 - startup/session continuity protocol has been documented in the workspace
 - CSOS repo `GF-Accelerate/ksu-csos` was reviewed directly
 - CSOS adapter architecture/spec and code scaffold were added
