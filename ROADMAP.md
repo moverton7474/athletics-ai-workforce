@@ -228,12 +228,21 @@ These findings reinforce the correct MVP direction for athletics-ai-workforce: v
 
 ### MVP Voice-Complete Workflow Candidates
 These are the strongest first workflows to make voice-complete while staying inside the MVP shell:
-1. "Show me hot leads" / "Show me donor leads" → answer + navigate to filtered queue/list
-2. "Show me sponsor attrition risks" → answer + navigate to connector/task surface
-3. "Build a proposal for [sponsor]" → create workflow shell + route into review surface
-4. "Open pending approvals" / "Approve this" / "Request changes" → governed approval loop
-5. "What should I work next?" → dashboard/queue summary + navigate to the top next action
-6. "Build a campaign for this segment" → carry context from a visible list into campaign/proposal workflow launch
+1. **Query non-renewed 2026 KSU football season ticket holders** → answer from live data + immediately navigate to the relevant filtered queue/list
+2. **Build KSU Football Season Ticket Sales Campaign** → open a prefilled campaign builder from the current segment context, let the user choose channel mix (email / SMS / voice call / personalized video), generate campaign assets, route those assets into review, require human approval, then schedule execution
+3. **Show hot leads / donor leads** → answer + immediately navigate to the relevant filtered list while the conversation continues
+4. "Show me sponsor attrition risks" → answer + navigate to connector/task surface
+5. "Build a proposal for [sponsor]" → create workflow shell + route into review surface
+6. "Open pending approvals" / "Approve this" / "Request changes" → governed approval loop
+7. "What should I work next?" → dashboard/queue summary + navigate to the top next action
+8. **Ask for campaign results / campaign follow-up** → voice agent should be able to report results, surface scheduled follow-up notifications, and recommend a next campaign when the previous one underperformed
++
++### Product Decisions Confirmed By Milton (2026-04-09)
++- voice navigation should **immediately navigate while answering**, following the stronger CSOS behavior pattern rather than pausing to ask whether the page should open
++- all meaningful workflow execution should remain **human-in-the-loop**, especially campaign approval, launch, and other consequential actions
++- the first campaign-building MVP should **open a prefilled builder page** rather than silently completing the entire flow in the background; the user should retain visible control over segment, channel selection, asset review, approval, and scheduling
++- campaign channel selection in the voice-driven builder flow should support **email, SMS, voice call, and personalized video message**
++- the voice agent should eventually support **campaign result follow-up**, including timed notifications and recommendation of a new campaign when the prior campaign is not successful
 
 ### Exit Criteria
 - command model defined for all five MVP workers
