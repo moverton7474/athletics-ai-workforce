@@ -236,13 +236,13 @@ These are the strongest first workflows to make voice-complete while staying ins
 6. "Open pending approvals" / "Approve this" / "Request changes" → governed approval loop
 7. "What should I work next?" → dashboard/queue summary + navigate to the top next action
 8. **Ask for campaign results / campaign follow-up** → voice agent should be able to report results, surface scheduled follow-up notifications, and recommend a next campaign when the previous one underperformed
-+
-+### Product Decisions Confirmed By Milton (2026-04-09)
-+- voice navigation should **immediately navigate while answering**, following the stronger CSOS behavior pattern rather than pausing to ask whether the page should open
-+- all meaningful workflow execution should remain **human-in-the-loop**, especially campaign approval, launch, and other consequential actions
-+- the first campaign-building MVP should **open a prefilled builder page** rather than silently completing the entire flow in the background; the user should retain visible control over segment, channel selection, asset review, approval, and scheduling
-+- campaign channel selection in the voice-driven builder flow should support **email, SMS, voice call, and personalized video message**
-+- the voice agent should eventually support **campaign result follow-up**, including timed notifications and recommendation of a new campaign when the prior campaign is not successful
+
+### Product Decisions Confirmed By Milton (2026-04-09)
+- voice navigation should **immediately navigate while answering**, following the stronger CSOS behavior pattern rather than pausing to ask whether the page should open
+- all meaningful workflow execution should remain **human-in-the-loop**, especially campaign approval, launch, and other consequential actions
+- the first campaign-building MVP should **open a prefilled builder page** rather than silently completing the entire flow in the background; the user should retain visible control over segment, channel selection, asset review, approval, and scheduling
+- campaign channel selection in the voice-driven builder flow should support **email, SMS, voice call, and personalized video message**
+- the voice agent should eventually support **campaign result follow-up**, including timed notifications and recommendation of a new campaign when the prior campaign is not successful
 
 ### Voice-Complete MVP Implementation Plan (planning only — do not build the full voice layer yet)
 #### 1) Campaign builder shell / prefill model
@@ -389,6 +389,18 @@ Before full voice implementation, the roadmap should drive creation of:
 2. a typed state contract spec for segment → builder → review → approval → follow-up
 3. a mapping table that shows which voice commands enter which route/state combination
 4. a manual fallback path for every voice-triggerable workflow
+
+### Current planning output (2026-04-09)
+The first dedicated route/state planning artifact for this work now exists at:
+- `VOICE_ROUTE_STATE_CONTRACTS.md`
+
+It defines:
+- the route inventory table for segment discovery, campaign builder, asset review, approvals, and follow-up
+- typed state contract shapes for `SegmentContext`, `CampaignBuilderState`, `GeneratedAssetReviewState`, `ApprovalDecisionState`, and `CampaignFollowUpState`
+- the voice-command → route/state mapping for the first voice-complete workflows
+- manual fallback behavior for the first three voice-complete workflows
+
+This means the next implementation step should be to translate these planning contracts into shared app types and route-level shell behavior, not to build broad voice plumbing yet.
 
 #### Proposed MVP deliverable sequence
 1. define campaign builder route + prefill contract

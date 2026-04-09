@@ -7,14 +7,15 @@ Before any new implementation or planning work, read these in this exact order:
 1. `/data/.openclaw/workspace/MEMORY.md` **fully, end to end, every word**
 2. `SESSION_HANDOFF_2026-04-09_FINAL.md` **fully, end to end**
 3. `ROADMAP.md`
-4. `PRODUCT_DESCRIPTION.md`
-5. `SESSION_HANDOFF_2026-04-09_END_OF_SESSION.md`
-6. `SESSION_HANDOFF_2026-04-08_EVENING.md`
-7. `SESSION_HANDOFF_2026-04-07_LATE.md`
-8. `NEW_SESSION_HANDOFF.md`
-9. `VOICE_FIRST_INTEGRATION_PLAN.md`
-10. `THREE_PILLARS_ALIGNMENT.md`
-11. `CSOS_ADAPTER_SPEC.md`
+4. `VOICE_ROUTE_STATE_CONTRACTS.md`
+5. `PRODUCT_DESCRIPTION.md`
+6. `SESSION_HANDOFF_2026-04-09_END_OF_SESSION.md`
+7. `SESSION_HANDOFF_2026-04-08_EVENING.md`
+8. `SESSION_HANDOFF_2026-04-07_LATE.md`
+9. `NEW_SESSION_HANDOFF.md`
+10. `VOICE_FIRST_INTEGRATION_PLAN.md`
+11. `THREE_PILLARS_ALIGNMENT.md`
+12. `CSOS_ADAPTER_SPEC.md`
 
 Do not start coding or planning before that reading sequence is complete.
 
