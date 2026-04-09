@@ -24,6 +24,15 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
   const decisionHistory = Array.isArray(approval?.details?.decision_history)
     ? approval?.details?.decision_history.filter((entry): entry is Record<string, unknown> => !!entry && typeof entry === 'object')
     : [];
+  const recommendedApprovalAction = !approval
+    ? null
+    : approval.status === 'pending'
+      ? 'Decide this approval or request changes before the workflow stalls.'
+      : approval.status === 'approved'
+        ? 'Open the linked outcome task and make sure the approved work is moving.'
+        : approval.status === 'rejected'
+          ? 'Review the origin task, capture rationale, and repackage the next attempt.'
+          : 'Review the latest decision note and confirm the next operator handoff is clear.';
 
   return (
     <main style={{ padding: 32, fontFamily: 'sans-serif', display: 'grid', gap: 24 }}>
@@ -76,6 +85,18 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
             ) : null}
 
             <ApprovalActions approvalId={approval.id} approvalStatus={approval.status} canDecide={canDecide} />
+          </section>
+
+          <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16, display: 'grid', gap: 16 }}>
+            <div>
+              <h2 style={{ marginTop: 0, marginBottom: 8 }}>Operator Next Action</h2>
+              <p style={{ margin: 0 }}>{recommendedApprovalAction}</p>
+            </div>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+              {originTask ? <Link href={`/tasks/${originTask.id}`}>Open origin task</Link> : null}
+              {outcomeTask ? <Link href={`/tasks/${outcomeTask.id}`}>Open outcome task</Link> : null}
+              <Link href="/knowledge">Capture decision context</Link>
+            </div>
           </section>
 
           <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16, display: 'grid', gap: 16 }}>

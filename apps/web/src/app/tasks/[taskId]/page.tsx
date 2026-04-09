@@ -35,6 +35,14 @@ export default async function TaskDetailPage({ params }: TaskDetailPageProps) {
   const memoryEntries = [...taskMemoryEntries, ...workerMemoryEntries.filter((entry) => entry.taskId !== task.id)];
   const originApprovals = approvals.filter((approval) => approval.taskId === task.id);
   const outcomeApprovals = approvals.filter((approval) => approval.outcomeTaskId === task.id);
+  const pendingOriginApprovals = originApprovals.filter((approval) => approval.status === 'pending');
+  const recommendedTaskAction = pendingOriginApprovals.length
+    ? 'Review the linked pending approval before advancing this task.'
+    : outcomeApprovals.length
+      ? 'Review the outcome approval chain and confirm the downstream follow-up stays aligned.'
+      : task.status === 'completed'
+        ? 'Capture the final operating notes so this work stays durable for the next session.'
+        : 'Package the next operator step and attach any missing continuity notes before handoff.';
 
   return (
     <main style={{ padding: 32, fontFamily: 'sans-serif', display: 'grid', gap: 24 }}>
@@ -58,6 +66,19 @@ export default async function TaskDetailPage({ params }: TaskDetailPageProps) {
           <li>Organization ID: {task.organizationId}</li>
           <li>Use this surface to package workflow context, approvals, and next-step actions together rather than leaving them scattered.</li>
         </ul>
+      </section>
+
+      <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16, display: 'grid', gap: 16 }}>
+        <div>
+          <h2 style={{ marginTop: 0, marginBottom: 8 }}>Operator Next Action</h2>
+          <p style={{ margin: 0 }}>{recommendedTaskAction}</p>
+        </div>
+
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+          {pendingOriginApprovals[0] ? <Link href={`/approvals/${pendingOriginApprovals[0].id}`}>Open pending approval</Link> : null}
+          {task.workerId ? <Link href={`/workers/${task.workerId}`}>Open assigned worker</Link> : null}
+          <Link href="/knowledge">Capture continuity note</Link>
+        </div>
       </section>
 
       <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16, display: 'grid', gap: 16 }}>

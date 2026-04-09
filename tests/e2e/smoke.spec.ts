@@ -10,6 +10,8 @@ const routes = [
   { path: '/approvals', heading: 'Approvals' },
   { path: '/knowledge', heading: 'Knowledge Brain' },
   { path: '/voice', heading: 'Voice Commands' },
+  { path: '/tasks/task-1', heading: 'Task Detail' },
+  { path: '/approvals/approval-1', heading: 'Approval Review' },
 ];
 
 test('public navigation reflects role-aware gating', async ({ page }) => {
@@ -55,6 +57,18 @@ test('knowledge form renders expected fields', async ({ page }) => {
   await expect(page.getByLabel('URL / Reference')).toBeVisible();
   await expect(page.getByLabel('Content Notes')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Add Knowledge Item' })).toBeVisible();
+});
+
+test('task and approval detail pages surface clear operator next actions', async ({ page }) => {
+  await page.goto('/tasks/task-1');
+  await expect(page.getByRole('heading', { name: 'Operator Next Action' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Open pending approval' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Capture continuity note' })).toBeVisible();
+
+  await page.goto('/approvals/approval-1');
+  await expect(page.getByRole('heading', { name: 'Operator Next Action' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Open origin task' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Capture decision context' })).toBeVisible();
 });
 
 test('org setup hands off intake state into the workforce blueprint', async ({ page }) => {
