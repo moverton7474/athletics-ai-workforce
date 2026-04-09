@@ -20,6 +20,7 @@ function mapMemoryEntryRow(entry: any): MemoryEntryDTO {
         ? metadata.summary
         : entry.content,
     tags,
+    pinned: metadata.pinned === true,
     createdAt: entry.created_at,
   };
 }
@@ -34,7 +35,9 @@ export async function listMemoryEntries() {
     };
   }
 
-  const entries: MemoryEntryDTO[] = (result.data as Array<any>).map(mapMemoryEntryRow);
+  const entries: MemoryEntryDTO[] = (result.data as Array<any>)
+    .map(mapMemoryEntryRow)
+    .sort((a, b) => Number(b.pinned === true) - Number(a.pinned === true));
 
   return {
     entries,

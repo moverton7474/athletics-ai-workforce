@@ -59,6 +59,7 @@ Follow the reordered roadmap (Option B):
 - approval detail now surfaces the workflow transition more clearly with origin task, decision state, outcome task, and decision history
 - knowledge page now includes a server-backed memory capture form that writes to `memory_entries` through `/api/memory-entries`
 - worker chat pages now include worker-scoped memory capture, and dashboard now surfaces recent memory alongside tasks and approvals
+- memory cards now support edit, delete, and pin/unpin actions through `/api/memory-entries/[memoryEntryId]`
 - startup/session continuity protocol has been documented in the workspace
 - CSOS repo `GF-Accelerate/ksu-csos` was reviewed directly
 - CSOS adapter architecture/spec and code scaffold were added

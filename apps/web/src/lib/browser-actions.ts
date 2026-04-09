@@ -23,16 +23,27 @@ type MemoryPayload = {
   tags?: string[];
 };
 
-async function postJson(path: string, payload: unknown) {
+type MemoryUpdatePayload = {
+  summary?: string;
+  content: string;
+  tags?: string[];
+  pinned?: boolean;
+};
+
+async function sendJson(path: string, method: 'POST' | 'PATCH' | 'DELETE', payload?: unknown) {
   const response = await fetch(path, {
-    method: 'POST',
+    method,
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(payload),
+    body: payload ? JSON.stringify(payload) : undefined,
   });
 
   return response.json();
+}
+
+async function postJson(path: string, payload: unknown) {
+  return sendJson(path, 'POST', payload);
 }
 
 export async function saveOrgProfile(payload: OrgProfilePayload) {
@@ -45,4 +56,12 @@ export async function addKnowledgeItem(payload: KnowledgePayload) {
 
 export async function addMemoryEntry(payload: MemoryPayload) {
   return postJson('/api/memory-entries', payload);
+}
+
+export async function updateMemoryEntry(memoryEntryId: string, payload: MemoryUpdatePayload) {
+  return sendJson(`/api/memory-entries/${memoryEntryId}`, 'PATCH', payload);
+}
+
+export async function deleteMemoryEntry(memoryEntryId: string) {
+  return sendJson(`/api/memory-entries/${memoryEntryId}`, 'DELETE');
 }

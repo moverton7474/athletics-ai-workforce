@@ -10,6 +10,7 @@ export const mockMemoryEntries: MemoryEntryDTO[] = [
     content: 'Leadership review should start from approvals and task queue changes before opening any connector detail screens.',
     summary: 'Leadership review should begin with approvals and next actions.',
     tags: ['leadership', 'workflow'],
+    pinned: true,
     createdAt: '2026-04-08T18:20:00.000Z',
   },
   {

@@ -72,5 +72,6 @@ export interface MemoryEntryDTO {
   content: string;
   summary?: string;
   tags: string[];
+  pinned?: boolean;
   createdAt?: string;
 }

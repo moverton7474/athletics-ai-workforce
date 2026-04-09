@@ -26,6 +26,13 @@ type MemoryPayload = {
   tags?: string[];
 };
 
+type MemoryUpdatePayload = {
+  summary?: string;
+  content: string;
+  tags?: string[];
+  pinned?: boolean;
+};
+
 function normalizeOptional(value?: string) {
   const trimmed = value?.trim();
   return trimmed ? trimmed : null;
@@ -186,6 +193,7 @@ export async function addMemoryEntry(payload: MemoryPayload) {
     metadata: {
       summary,
       tags,
+      pinned: false,
     },
   });
 
@@ -200,5 +208,109 @@ export async function addMemoryEntry(payload: MemoryPayload) {
       serverMode === 'service_role'
         ? 'Memory entry saved through the server action path.'
         : 'Memory entry saved using the public Supabase key path.',
+  };
+}
+
+export async function updateMemoryEntry(memoryEntryId: string, payload: MemoryUpdatePayload) {
+  if (!memoryEntryId.trim()) {
+    return { success: false, mode: 'validation', message: 'Memory entry id is required.' };
+  }
+
+  if (!payload.content.trim()) {
+    return { success: false, mode: 'validation', message: 'Memory content is required.' };
+  }
+
+  const client = getSupabaseServerClient();
+  const serverMode = getSupabaseServerMode();
+
+  if (!client) {
+    return {
+      success: true,
+      mode: 'stub',
+      message: 'Supabase server env vars are not configured yet. Memory update validated but not persisted.',
+    };
+  }
+
+  const existing = await client
+    .from('memory_entries')
+    .select('metadata')
+    .eq('id', memoryEntryId)
+    .eq('organization_id', DEMO_ORGANIZATION_ID)
+    .maybeSingle();
+
+  if (existing.error) {
+    return { success: false, mode: serverMode, message: existing.error.message };
+  }
+
+  if (!existing.data) {
+    return { success: false, mode: serverMode, message: 'Memory entry not found.' };
+  }
+
+  const currentMetadata = existing.data.metadata && typeof existing.data.metadata === 'object' ? existing.data.metadata : {};
+  const tags = Array.isArray(payload.tags)
+    ? payload.tags.map((tag) => tag.trim()).filter(Boolean)
+    : [];
+
+  const { error } = await client
+    .from('memory_entries')
+    .update({
+      content: payload.content.trim(),
+      metadata: {
+        ...currentMetadata,
+        summary: normalizeOptional(payload.summary),
+        tags,
+        pinned: payload.pinned === true,
+      },
+    })
+    .eq('id', memoryEntryId)
+    .eq('organization_id', DEMO_ORGANIZATION_ID);
+
+  if (error) {
+    return { success: false, mode: serverMode, message: error.message };
+  }
+
+  return {
+    success: true,
+    mode: serverMode,
+    message:
+      serverMode === 'service_role'
+        ? 'Memory entry updated through the server action path.'
+        : 'Memory entry updated using the public Supabase key path.',
+  };
+}
+
+export async function deleteMemory(memoryEntryId: string) {
+  if (!memoryEntryId.trim()) {
+    return { success: false, mode: 'validation', message: 'Memory entry id is required.' };
+  }
+
+  const client = getSupabaseServerClient();
+  const serverMode = getSupabaseServerMode();
+
+  if (!client) {
+    return {
+      success: true,
+      mode: 'stub',
+      message: 'Supabase server env vars are not configured yet. Memory delete validated but not persisted.',
+    };
+  }
+
+  const { error } = await client
+    .from('memory_entries')
+    .delete()
+    .eq('id', memoryEntryId)
+    .eq('organization_id', DEMO_ORGANIZATION_ID);
+
+  if (error) {
+    return { success: false, mode: serverMode, message: error.message };
+  }
+
+  return {
+    success: true,
+    mode: serverMode,
+    message:
+      serverMode === 'service_role'
+        ? 'Memory entry deleted through the server action path.'
+        : 'Memory entry deleted using the public Supabase key path.',
   };
 }

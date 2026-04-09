@@ -161,6 +161,7 @@ Focus on the core workforce product before broad connector expansion.
 - task and approval detail pages now surface workflow transitions more clearly, including origin tasks, outcome tasks, decision history, and related memory context
 - in-product memory capture now exists through a server-backed `/api/memory-entries` path and a capture form in the knowledge surface
 - worker workspaces now support worker-scoped memory capture directly, and the dashboard now rolls recent memory into the command-center view
+- memory entries now support lightweight management actions in-product: edit, delete, and pin/unpin through server-backed routes
 - CSOS production repo (`GF-Accelerate/ksu-csos`) has now been reviewed directly and will guide the next integration phase
 
 ### Immediate next build target
