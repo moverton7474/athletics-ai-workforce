@@ -244,11 +244,98 @@ These are the strongest first workflows to make voice-complete while staying ins
 +- campaign channel selection in the voice-driven builder flow should support **email, SMS, voice call, and personalized video message**
 +- the voice agent should eventually support **campaign result follow-up**, including timed notifications and recommendation of a new campaign when the prior campaign is not successful
 
+### Voice-Complete MVP Implementation Plan (planning only — do not build the full voice layer yet)
+#### 1) Campaign builder shell / prefill model
+Goal: create the product shell that a future voice command can open and prefill without hiding the workflow from the operator.
+
+Planned MVP shell behavior:
+- a campaign builder route that can open in manual mode or prefilled mode
+- builder must accept a structured handoff payload, not just loose text
+- required builder inputs:
+  - segment / audience source
+  - campaign objective
+  - sport / business context
+  - channel mix (email, SMS, voice call, personalized video)
+  - operator notes / strategic intent
+- builder should show which fields came from voice/system context versus what the operator manually changed
+- the first version should focus on **prefill + review + edit**, not hidden autonomous completion
+
+Suggested MVP data model additions:
+- `segmentContext`
+- `campaignDraftIntent`
+- `channelSelection`
+- `prefillSource` (voice, manual, workflow, imported)
+- `operatorOverrides`
+
+#### 2) Segment-to-campaign handoff architecture
+Goal: let a user ask for a segment, inspect it, and then launch directly into a campaign build flow without losing context.
+
+Required behavior:
+- the system should preserve the selected segment context from the query surface into campaign creation
+- the handoff should work whether the segment was reached by manual navigation or voice query
+- first target segment examples:
+  - 2026 KSU football non-renewals
+  - hot leads / donor leads
+  - future sponsorship attrition cohorts
+- the handoff payload should include:
+  - segment ID or deterministic filter definition
+  - segment label
+  - count / estimated audience size
+  - why this segment exists
+  - recommended campaign objective
+
+MVP principle:
+- the segment should become a reusable object or deterministic filter state, not just a one-off voice result blob
+
+#### 3) Approval / review flow for generated assets
+Goal: generated campaign assets must move through a visible human review step before scheduling or launch.
+
+Required MVP flow:
+- campaign draft created
+- assets generated per selected channel
+- review surface shows generated assets grouped by channel
+- operator can approve, reject, or request changes
+- only approved assets can move into scheduling/execution
+- review flow must work whether the draft was launched manually or from a voice-prefilled builder
+
+First channel review targets:
+- email
+- SMS
+- voice call script
+- personalized video message
+
+MVP rule:
+- voice may initiate or prefill, but asset approval remains explicit and human-controlled
+
+#### 4) Shared route/state model for voice + manual parity
+Goal: voice and manual UI should hit the same underlying surfaces and state model.
+
+Required MVP architecture:
+- the same route should open whether reached by click or by voice navigation
+- the same action handlers should be used by manual buttons and future voice commands
+- state should distinguish:
+  - answer-only
+  - answer + navigate
+  - answer + navigate + prefill
+  - answer + navigate + action-pending-approval
+- visible UI should tell the operator what just happened and what remains to be done
+
+Core principle:
+- voice is not a second app. It is another entry path into the same product shell.
+
+#### Proposed MVP deliverable sequence
+1. define campaign builder route + prefill contract
+2. define segment object / deterministic filter handoff contract
+3. define generated-asset review state model
+4. define route/state parity contract for voice/manual entry
+5. only after those are stable, begin voice-trigger implementation
+
 ### Exit Criteria
 - command model defined for all five MVP workers
 - first CSOS workflows mapped to voice triggers
 - voice/manual interaction model documented
 - first voice-complete workflow pack defined for athletics-ai-workforce with answer + navigate + execute parity
+- campaign builder / segment handoff / asset review / shared route-state plan documented tightly enough to guide implementation without guesswork
 
 ---
 
