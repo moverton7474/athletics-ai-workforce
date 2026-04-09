@@ -9,3 +9,6 @@ apps/web/.vercel/
 .vercel
 playwright-report/
 test-results/
+supabase/.temp/
+backups/*.tar.gz
+backups/*.bundle
