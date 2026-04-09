@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { CampaignWorkflowStatusCard } from '../../../../components/campaigns/CampaignWorkflowStatusCard';
 import { DataSourceNotice } from '../../../../components/system/DataSourceNotice';
 import { getCampaignFollowUpForRouteState } from '../../../../lib/services/route-state';
 
@@ -11,7 +12,11 @@ export default async function CampaignFollowUpPage({
 }) {
   const { campaignId } = await params;
   const resolvedSearchParams = await searchParams;
-  const { followUpState, source, error } = await getCampaignFollowUpForRouteState(campaignId, resolvedSearchParams?.segmentKey);
+  const { followUpState, draftRecord, source, error } = await getCampaignFollowUpForRouteState(campaignId, resolvedSearchParams?.segmentKey);
+  const draftDetails: Record<string, unknown> =
+    draftRecord.details && typeof draftRecord.details === 'object'
+      ? (draftRecord.details as Record<string, unknown>)
+      : {};
 
   return (
     <main style={{ padding: 32, fontFamily: 'sans-serif', display: 'grid', gap: 24 }}>
@@ -21,6 +26,19 @@ export default async function CampaignFollowUpPage({
       </div>
 
       <DataSourceNotice source={source} entityLabel="Campaign follow-up" error={error} />
+
+      <CampaignWorkflowStatusCard
+        draftStatus={draftRecord.status}
+        approvalStatus={typeof draftDetails.approvalStatus === 'string' ? draftDetails.approvalStatus : undefined}
+        workflowState={typeof draftDetails.workflowState === 'string' ? draftDetails.workflowState : undefined}
+        latestApprovalNote={typeof draftDetails.approvalDecisionNote === 'string' ? draftDetails.approvalDecisionNote : undefined}
+        approvalDecidedAt={typeof draftDetails.approvalDecidedAt === 'string' ? draftDetails.approvalDecidedAt : undefined}
+        outcomeTaskId={typeof draftDetails.outcomeTaskId === 'string' ? draftDetails.outcomeTaskId : undefined}
+        reviewRoute={`/campaigns/drafts/${draftRecord.draftKey}/review?segmentKey=${draftRecord.segmentKey}`}
+        approvalRoute={typeof draftDetails.nextApprovalRoute === 'string' ? draftDetails.nextApprovalRoute : undefined}
+        resultsRoute={`/campaigns/${campaignId}/results?segmentKey=${draftRecord.segmentKey}`}
+        followUpRoute={`/campaigns/${campaignId}/follow-up?segmentKey=${draftRecord.segmentKey}`}
+      />
 
       <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16 }}>
         <h2 style={{ marginTop: 0 }}>Follow-Up Recommendation</h2>

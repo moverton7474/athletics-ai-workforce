@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { CampaignDraftPersistencePanel } from '../../../../../components/campaigns/CampaignDraftPersistencePanel';
 import { CampaignReviewSummaryEditor } from '../../../../../components/campaigns/CampaignReviewSummaryEditor';
+import { CampaignWorkflowStatusCard } from '../../../../../components/campaigns/CampaignWorkflowStatusCard';
 import { SubmitCampaignForApprovalButton } from '../../../../../components/campaigns/SubmitCampaignForApprovalButton';
 import { DataSourceNotice } from '../../../../../components/system/DataSourceNotice';
 import { getCampaignReviewForRouteState } from '../../../../../lib/services/route-state';
@@ -45,6 +46,19 @@ export default async function CampaignDraftReviewPage({
         {approvalDecidedAt ? <p style={{ margin: '8px 0' }}>Approval decided at: {approvalDecidedAt}</p> : null}
         <p style={{ margin: '8px 0 0' }}>Pending channels: {reviewState.pendingChannels.join(', ')}</p>
       </section>
+
+      <CampaignWorkflowStatusCard
+        draftStatus={draftRecord.status}
+        approvalStatus={approvalStatus}
+        workflowState={typeof draftDetails.workflowState === 'string' ? draftDetails.workflowState : undefined}
+        latestApprovalNote={approvalDecisionNote}
+        approvalDecidedAt={approvalDecidedAt}
+        outcomeTaskId={typeof draftDetails.outcomeTaskId === 'string' ? draftDetails.outcomeTaskId : undefined}
+        reviewRoute={`/campaigns/drafts/${draftRecord.draftKey}/review?segmentKey=${draftRecord.segmentKey}`}
+        approvalRoute={approvalRoute}
+        resultsRoute={`/campaigns/${draftRecord.campaignKey ?? `${draftRecord.segmentKey}-campaign`}/results?segmentKey=${draftRecord.segmentKey}`}
+        followUpRoute={`/campaigns/${draftRecord.campaignKey ?? `${draftRecord.segmentKey}-campaign`}/follow-up?segmentKey=${draftRecord.segmentKey}`}
+      />
 
       <CampaignReviewSummaryEditor draftKey={draftRecord.draftKey} initialSummary={reviewState.reviewSummary} />
 

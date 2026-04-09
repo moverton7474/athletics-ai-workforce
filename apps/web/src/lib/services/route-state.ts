@@ -278,6 +278,29 @@ export async function listCampaignDraftRecords() {
   };
 }
 
+export async function getCampaignDraftRecordByKey(draftKey: string) {
+  const result = await fetchCampaignDrafts();
+  const row = (result.data as any[]).find((draft) => draft.draft_key === draftKey);
+
+  if (result.error || !row) {
+    const fallback =
+      Object.values(mockCampaignBuilderRecords).find((draft) => (draft.draftId ?? `${draft.linkedSegment.segmentKey}-draft`) === draftKey) ??
+      null;
+
+    return {
+      draftRecord: fallback ? createFallbackDraftRecord(fallback) : null,
+      source: 'mock' as const,
+      error: result.error,
+    };
+  }
+
+  return {
+    draftRecord: mapCampaignDraftRecord(row),
+    source: 'supabase' as const,
+    error: null,
+  };
+}
+
 export async function getCampaignFollowUpForRouteState(campaignId: string, segmentKey?: string) {
   const result = await fetchCampaignDrafts();
   const row = (result.data as any[]).find((draft) => (draft.campaign_key ?? `${draft.segment_key}-campaign`) === campaignId);

@@ -2,12 +2,14 @@ export const dynamic = 'force-dynamic';
 
 import Link from 'next/link';
 import { ApprovalActions } from '../../../components/approvals/ApprovalActions';
+import { CampaignWorkflowStatusCard } from '../../../components/campaigns/CampaignWorkflowStatusCard';
 import { MemoryEntryList } from '../../../components/memory/MemoryEntryList';
 import { DataSourceNotice } from '../../../components/system/DataSourceNotice';
 import { getCurrentUserContext } from '../../../lib/server/membership';
 import { getApprovalDecisionState } from '../../../lib/voice-route-state';
 import { getApprovalById } from '../../../lib/services/approvals';
 import { listMemoryEntriesForApproval } from '../../../lib/services/memory';
+import { getCampaignDraftRecordByKey } from '../../../lib/services/route-state';
 import { listTasks } from '../../../lib/services/tasks';
 
 export default async function ApprovalDetailPage({
@@ -25,6 +27,8 @@ export default async function ApprovalDetailPage({
     listTasks(),
     listMemoryEntriesForApproval(approvalId),
   ]);
+  const linkedDraftKey = typeof approval?.details?.draft_key === 'string' ? approval.details.draft_key : null;
+  const { draftRecord } = linkedDraftKey ? await getCampaignDraftRecordByKey(linkedDraftKey) : { draftRecord: null };
 
   const canDecide = memberships.some((membership: any) => ['owner', 'admin', 'operator'].includes(membership.role));
   const fallbackState = !approval ? getApprovalDecisionState(approvalId, resolvedSearchParams?.segmentKey) : null;
@@ -159,6 +163,21 @@ export default async function ApprovalDetailPage({
 
             <ApprovalActions approvalId={approval.id} approvalStatus={approval.status} canDecide={canDecide} />
           </section>
+
+          {draftRecord ? (
+            <CampaignWorkflowStatusCard
+              draftStatus={draftRecord.status}
+              approvalStatus={approval.status}
+              workflowState={typeof draftRecord.details?.workflowState === 'string' ? draftRecord.details.workflowState : undefined}
+              latestApprovalNote={approval.decisionNote ?? (typeof draftRecord.details?.approvalDecisionNote === 'string' ? draftRecord.details.approvalDecisionNote : undefined)}
+              approvalDecidedAt={approval.decidedAt ?? (typeof draftRecord.details?.approvalDecidedAt === 'string' ? draftRecord.details.approvalDecidedAt : undefined)}
+              outcomeTaskId={approval.outcomeTaskId ?? (typeof draftRecord.details?.outcomeTaskId === 'string' ? draftRecord.details.outcomeTaskId : undefined)}
+              reviewRoute={`/campaigns/drafts/${draftRecord.draftKey}/review?segmentKey=${draftRecord.segmentKey}`}
+              approvalRoute={`/approvals/${approval.id}`}
+              resultsRoute={`/campaigns/${draftRecord.campaignKey ?? `${draftRecord.segmentKey}-campaign`}/results?segmentKey=${draftRecord.segmentKey}`}
+              followUpRoute={`/campaigns/${draftRecord.campaignKey ?? `${draftRecord.segmentKey}-campaign`}/follow-up?segmentKey=${draftRecord.segmentKey}`}
+            />
+          ) : null}
 
           <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16, display: 'grid', gap: 16 }}>
             <div>

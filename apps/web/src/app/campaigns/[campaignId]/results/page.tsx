@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { CampaignWorkflowStatusCard } from '../../../../components/campaigns/CampaignWorkflowStatusCard';
 import { DataSourceNotice } from '../../../../components/system/DataSourceNotice';
 import { getCampaignFollowUpForRouteState } from '../../../../lib/services/route-state';
 
@@ -29,13 +30,22 @@ export default async function CampaignResultsPage({
 
       <DataSourceNotice source={source} entityLabel="Campaign results" error={error} />
 
+      <CampaignWorkflowStatusCard
+        draftStatus={draftRecord.status}
+        approvalStatus={approvalStatus}
+        workflowState={typeof draftDetails.workflowState === 'string' ? draftDetails.workflowState : undefined}
+        latestApprovalNote={approvalDecisionNote}
+        approvalDecidedAt={typeof draftDetails.approvalDecidedAt === 'string' ? draftDetails.approvalDecidedAt : undefined}
+        outcomeTaskId={typeof draftDetails.outcomeTaskId === 'string' ? draftDetails.outcomeTaskId : undefined}
+        reviewRoute={`/campaigns/drafts/${draftRecord.draftKey}/review?segmentKey=${draftRecord.segmentKey}`}
+        approvalRoute={approvalRoute}
+        resultsRoute={`/campaigns/${campaignId}/results?segmentKey=${draftRecord.segmentKey}`}
+        followUpRoute={`/campaigns/${campaignId}/follow-up?segmentKey=${draftRecord.segmentKey}`}
+      />
+
       <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16 }}>
         <h2 style={{ marginTop: 0 }}>Performance Summary</h2>
         <p style={{ margin: '8px 0' }}>Status: {followUpState.resultStatus}</p>
-        <p style={{ margin: '8px 0' }}>Draft workflow status: <strong>{draftRecord.status}</strong></p>
-        <p style={{ margin: '8px 0' }}>Approval status: <strong>{approvalStatus ?? 'not submitted'}</strong></p>
-        {approvalDecisionNote ? <p style={{ margin: '8px 0' }}>Latest approval note: {approvalDecisionNote}</p> : null}
-        {approvalRoute ? <p style={{ margin: '8px 0' }}><Link href={approvalRoute}>Open linked approval</Link></p> : null}
         <p style={{ margin: '8px 0 0' }}>{followUpState.performanceSummary}</p>
       </section>
 
