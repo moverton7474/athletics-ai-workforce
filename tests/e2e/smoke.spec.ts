@@ -10,6 +10,7 @@ const routes = [
   { path: '/approvals', heading: 'Approvals' },
   { path: '/knowledge', heading: 'Knowledge Brain' },
   { path: '/voice', heading: 'Voice Commands' },
+  { path: '/connector-runs', heading: 'Connector Runs' },
   { path: '/tasks/task-1', heading: 'Task Detail' },
   { path: '/approvals/approval-1', heading: 'Approval Review' },
 ];
@@ -57,6 +58,17 @@ test('knowledge form renders expected fields', async ({ page }) => {
   await expect(page.getByLabel('URL / Reference')).toBeVisible();
   await expect(page.getByLabel('Content Notes')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Add Knowledge Item' })).toBeVisible();
+});
+
+test('connector runs page surfaces workflow lineage', async ({ page }) => {
+  await page.goto('/connector-runs');
+  await expect(page.getByRole('heading', { name: 'Connector run history' })).toBeVisible();
+
+  if ((await page.getByRole('heading', { name: 'Workflow lineage' }).count()) > 0) {
+    await expect(page.getByRole('heading', { name: 'Workflow lineage' }).first()).toBeVisible();
+  } else {
+    await expect(page.getByText('No connector runs yet.')).toBeVisible();
+  }
 });
 
 test('task and approval detail pages surface clear operator next actions', async ({ page }) => {
