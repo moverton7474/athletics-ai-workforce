@@ -5,8 +5,12 @@ import { addMemoryEntry } from '../../lib/browser-actions';
 
 export function MemoryCaptureForm({
   workers,
+  initialWorkerId,
+  lockWorker = false,
 }: {
   workers: Array<{ id: string; name: string; roleName: string }>;
+  initialWorkerId?: string;
+  lockWorker?: boolean;
 }) {
   const [message, setMessage] = useState<string | null>(null);
 
@@ -51,17 +55,21 @@ export function MemoryCaptureForm({
           <option value="personal">Personal</option>
         </select>
       </label>
-      <label>
-        Worker Context
-        <select name="workerId" defaultValue="">
-          <option value="">No specific worker</option>
-          {workers.map((worker) => (
-            <option key={worker.id} value={worker.id}>
-              {worker.name} — {worker.roleName}
-            </option>
-          ))}
-        </select>
-      </label>
+      {lockWorker ? (
+        <input type="hidden" name="workerId" value={initialWorkerId ?? ''} />
+      ) : (
+        <label>
+          Worker Context
+          <select name="workerId" defaultValue={initialWorkerId ?? ''}>
+            <option value="">No specific worker</option>
+            {workers.map((worker) => (
+              <option key={worker.id} value={worker.id}>
+                {worker.name} — {worker.roleName}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
       <label>
         Summary
         <input type="text" name="summary" placeholder="One-line handoff or reminder" />
