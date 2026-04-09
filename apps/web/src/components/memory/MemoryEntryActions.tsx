@@ -20,6 +20,7 @@ export function MemoryEntryActions({ item }: { item: MemoryEntryDTO }) {
           onClick={async () => {
             const nextPinned = !pinned;
             const result = await updateMemoryEntry(item.id, {
+              taskId: item.taskId ?? undefined,
               summary,
               content,
               tags: tags.split(',').map((tag) => tag.trim()).filter(Boolean),
@@ -62,6 +63,7 @@ export function MemoryEntryActions({ item }: { item: MemoryEntryDTO }) {
           onSubmit={async (event) => {
             event.preventDefault();
             const result = await updateMemoryEntry(item.id, {
+              taskId: item.taskId ?? undefined,
               summary,
               content,
               tags: tags.split(',').map((tag) => tag.trim()).filter(Boolean),

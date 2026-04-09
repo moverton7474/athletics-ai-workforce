@@ -18,12 +18,14 @@ type MemoryPayload = {
   memoryType: string;
   visibilityScope?: string;
   workerId?: string;
+  taskId?: string;
   summary?: string;
   content: string;
   tags?: string[];
 };
 
 type MemoryUpdatePayload = {
+  taskId?: string;
   summary?: string;
   content: string;
   tags?: string[];

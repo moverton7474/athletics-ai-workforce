@@ -79,6 +79,7 @@ export default async function WorkerDetailPage({ params }: WorkerPageProps) {
           </div>
           <MemoryCaptureForm
             workers={[{ id: worker.id, name: worker.name, roleName: worker.roleName }]}
+            tasks={workerTasks.map((task) => ({ id: task.id, title: task.title }))}
             initialWorkerId={worker.id}
             lockWorker
           />

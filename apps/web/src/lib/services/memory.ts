@@ -12,6 +12,7 @@ function mapMemoryEntryRow(entry: any): MemoryEntryDTO {
     id: entry.id,
     organizationId: entry.organization_id,
     workerId: entry.agent_id,
+    taskId: typeof metadata.taskId === 'string' ? metadata.taskId : null,
     memoryType: entry.memory_type,
     visibilityScope: entry.visibility_scope ?? 'organization',
     content: entry.content,
@@ -52,6 +53,17 @@ export async function listMemoryEntriesForWorker(workerId: string) {
 
   return {
     entries: workerEntries,
+    source: result.source,
+    error: result.error,
+  };
+}
+
+export async function listMemoryEntriesForTask(taskId: string) {
+  const result = await listMemoryEntries();
+  const taskEntries = result.entries.filter((entry) => entry.taskId === taskId).slice(0, 6);
+
+  return {
+    entries: taskEntries,
     source: result.source,
     error: result.error,
   };

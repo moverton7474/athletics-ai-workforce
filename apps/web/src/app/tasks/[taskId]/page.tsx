@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { MemoryEntryCard } from '../../../components/memory/MemoryEntryCard';
 import { listApprovals } from '../../../lib/services/approvals';
-import { listMemoryEntriesForWorker } from '../../../lib/services/memory';
+import { listMemoryEntriesForTask, listMemoryEntriesForWorker } from '../../../lib/services/memory';
 import { getTaskById } from '../../../lib/services/tasks';
 
 type TaskDetailPageProps = {
@@ -26,11 +26,13 @@ export default async function TaskDetailPage({ params }: TaskDetailPageProps) {
     );
   }
 
-  const [{ approvals }, { entries: memoryEntries }] = await Promise.all([
+  const [{ approvals }, { entries: workerMemoryEntries }, { entries: taskMemoryEntries }] = await Promise.all([
     listApprovals(),
     task.workerId ? listMemoryEntriesForWorker(task.workerId) : Promise.resolve({ entries: [], source: 'mock' as const, error: null }),
+    listMemoryEntriesForTask(task.id),
   ]);
 
+  const memoryEntries = [...taskMemoryEntries, ...workerMemoryEntries.filter((entry) => entry.taskId !== task.id)];
   const originApprovals = approvals.filter((approval) => approval.taskId === task.id);
   const outcomeApprovals = approvals.filter((approval) => approval.outcomeTaskId === task.id);
 

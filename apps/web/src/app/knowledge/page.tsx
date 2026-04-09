@@ -7,6 +7,7 @@ import { MemoryEntryCard } from '../../components/memory/MemoryEntryCard';
 import { DataSourceNotice } from '../../components/system/DataSourceNotice';
 import { listKnowledgeItems } from '../../lib/services/knowledge';
 import { listMemoryEntries } from '../../lib/services/memory';
+import { listTasks } from '../../lib/services/tasks';
 import { listWorkers } from '../../lib/services/workers';
 
 export default async function KnowledgePage() {
@@ -14,10 +15,12 @@ export default async function KnowledgePage() {
     { items, source, error },
     { entries: memoryEntries, source: memorySource, error: memoryError },
     { workers },
+    { tasks },
   ] = await Promise.all([
     listKnowledgeItems(),
     listMemoryEntries(),
     listWorkers(),
+    listTasks(),
   ]);
 
   const byScope = {
@@ -51,7 +54,10 @@ export default async function KnowledgePage() {
             <h2 style={{ marginTop: 0, marginBottom: 8 }}>Capture Memory</h2>
             <p style={{ margin: 0 }}>Write continuity notes directly into the backend so handoffs and reminders survive context resets.</p>
           </div>
-          <MemoryCaptureForm workers={workers.map((worker) => ({ id: worker.id, name: worker.name, roleName: worker.roleName }))} />
+          <MemoryCaptureForm
+            workers={workers.map((worker) => ({ id: worker.id, name: worker.name, roleName: worker.roleName }))}
+            tasks={tasks.map((task) => ({ id: task.id, title: task.title }))}
+          />
         </section>
         <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16, display: 'grid', gap: 12 }}>
           <div>

@@ -5,11 +5,15 @@ import { addMemoryEntry } from '../../lib/browser-actions';
 
 export function MemoryCaptureForm({
   workers,
+  tasks,
   initialWorkerId,
+  initialTaskId,
   lockWorker = false,
 }: {
   workers: Array<{ id: string; name: string; roleName: string }>;
+  tasks: Array<{ id: string; title: string }>;
   initialWorkerId?: string;
+  initialTaskId?: string;
   lockWorker?: boolean;
 }) {
   const [message, setMessage] = useState<string | null>(null);
@@ -25,6 +29,7 @@ export function MemoryCaptureForm({
           memoryType: String(form.get('memoryType') || ''),
           visibilityScope: String(form.get('visibilityScope') || 'organization'),
           workerId: String(form.get('workerId') || ''),
+          taskId: String(form.get('taskId') || ''),
           summary: String(form.get('summary') || ''),
           content: String(form.get('content') || ''),
           tags: rawTags
@@ -70,6 +75,17 @@ export function MemoryCaptureForm({
           </select>
         </label>
       )}
+      <label>
+        Related Task
+        <select name="taskId" defaultValue={initialTaskId ?? ''}>
+          <option value="">No specific task</option>
+          {tasks.map((task) => (
+            <option key={task.id} value={task.id}>
+              {task.title}
+            </option>
+          ))}
+        </select>
+      </label>
       <label>
         Summary
         <input type="text" name="summary" placeholder="One-line handoff or reminder" />

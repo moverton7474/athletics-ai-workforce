@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import type { MemoryEntryDTO } from '../../lib/types';
 import { MemoryEntryActions } from './MemoryEntryActions';
 
@@ -17,6 +18,11 @@ export function MemoryEntryCard({ item }: { item: MemoryEntryDTO }) {
         {item.createdAt ? <span style={{ color: '#555' }}>{new Date(item.createdAt).toLocaleString()}</span> : null}
       </div>
       <p style={{ margin: 0 }}>{item.summary ?? item.content}</p>
+      {item.taskId ? (
+        <p style={{ margin: 0 }}>
+          Linked task: <Link href={`/tasks/${item.taskId}`}>{item.taskId}</Link>
+        </p>
+      ) : null}
       {item.tags.length ? (
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           {item.tags.map((tag) => (
