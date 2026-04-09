@@ -13,6 +13,8 @@ export async function AppShell({ children }: { children: ReactNode }) {
     { href: '/org/setup', label: 'Org Setup', show: isPrivileged },
     { href: '/workers', label: 'Workers', show: hasMembership || !user },
     { href: '/tasks', label: 'Tasks', show: hasMembership || !user },
+    { href: '/segments', label: 'Segments', show: true },
+    { href: '/campaigns/new', label: 'Campaigns', show: true },
     { href: '/approvals', label: 'Approvals', show: isPrivileged },
     { href: '/knowledge', label: 'Knowledge', show: true },
     { href: '/voice', label: 'Voice', show: true },

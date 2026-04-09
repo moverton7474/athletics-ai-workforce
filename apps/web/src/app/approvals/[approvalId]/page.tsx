@@ -5,12 +5,20 @@ import { ApprovalActions } from '../../../components/approvals/ApprovalActions';
 import { MemoryEntryList } from '../../../components/memory/MemoryEntryList';
 import { DataSourceNotice } from '../../../components/system/DataSourceNotice';
 import { getCurrentUserContext } from '../../../lib/server/membership';
+import { getApprovalDecisionState } from '../../../lib/voice-route-state';
 import { getApprovalById } from '../../../lib/services/approvals';
 import { listMemoryEntriesForApproval } from '../../../lib/services/memory';
 import { listTasks } from '../../../lib/services/tasks';
 
-export default async function ApprovalDetailPage({ params }: { params: Promise<{ approvalId: string }> }) {
+export default async function ApprovalDetailPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ approvalId: string }>;
+  searchParams?: Promise<{ segmentKey?: string }>;
+}) {
   const { approvalId } = await params;
+  const resolvedSearchParams = await searchParams;
   const [{ approval, source, error }, { memberships }, { tasks }, { entries: memoryEntries }] = await Promise.all([
     getApprovalById(approvalId),
     getCurrentUserContext(),
@@ -19,6 +27,7 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
   ]);
 
   const canDecide = memberships.some((membership: any) => ['owner', 'admin', 'operator'].includes(membership.role));
+  const fallbackState = !approval ? getApprovalDecisionState(approvalId, resolvedSearchParams?.segmentKey) : null;
   const originTask = approval?.taskId ? tasks.find((task) => task.id === approval.taskId) ?? null : null;
   const outcomeTask = approval?.outcomeTaskId ? tasks.find((task) => task.id === approval.outcomeTaskId) ?? null : null;
   const decisionHistory = Array.isArray(approval?.details?.decision_history)
@@ -68,7 +77,49 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
 
       <DataSourceNotice source={source} entityLabel="Approval detail" error={error} />
 
-      {!approval ? (
+      {!approval && fallbackState ? (
+        <>
+          <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16, display: 'grid', gap: 12 }}>
+            <div>
+              <h2 style={{ marginTop: 0, marginBottom: 8 }}>{fallbackState.title}</h2>
+              <p style={{ margin: 0 }}>{fallbackState.summary}</p>
+            </div>
+            <p style={{ margin: 0 }}>
+              This approval shell is rendering from the shared route/state contract layer because no persisted approval record was found yet.
+            </p>
+            <ul style={{ margin: 0, paddingLeft: 18 }}>
+              <li>Approval type: {fallbackState.approvalType}</li>
+              <li>Decision note required: {fallbackState.decisionNoteRequired ? 'Yes' : 'No'}</li>
+              <li>Blocked actions: {fallbackState.blockedActions.join(', ')}</li>
+              <li>Available decisions: {fallbackState.availableDecisions.join(', ')}</li>
+            </ul>
+          </section>
+
+          <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16 }}>
+            <h2 style={{ marginTop: 0 }}>Dependencies</h2>
+            <ul style={{ marginBottom: 0, paddingLeft: 18 }}>
+              {fallbackState.dependencies.map((dependency) => (
+                <li key={`${dependency.dependencyType}-${dependency.label}`}>
+                  {dependency.label} — {dependency.status}
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          {fallbackState.linkedSegment ? (
+            <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+              <Link href={`/campaigns/drafts/${fallbackState.draftId}/review?segmentKey=${fallbackState.linkedSegment.segmentKey}`}>
+                Open asset review shell
+              </Link>
+              {fallbackState.postDecisionRoute ? (
+                <Link href={`${fallbackState.postDecisionRoute}?segmentKey=${fallbackState.linkedSegment.segmentKey}`}>
+                  Open post-decision results shell
+                </Link>
+              ) : null}
+            </section>
+          ) : null}
+        </>
+      ) : !approval ? (
         <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16 }}>
           <p style={{ margin: 0 }}>Approval not found.</p>
         </section>
