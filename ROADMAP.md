@@ -158,6 +158,7 @@ Focus on the core workforce product before broad connector expansion.
 - knowledge brain now distinguishes organization, worker, and personal memory scopes more clearly in the product shell
 - knowledge brain now includes a recent continuity feed so operational memory is visible alongside durable knowledge
 - worker workspace chat surface now includes continuity context with recent memory, linked tasks, and approval dependencies
+- task and approval detail pages now surface workflow transitions more clearly, including origin tasks, outcome tasks, decision history, and related memory context
 - CSOS production repo (`GF-Accelerate/ksu-csos`) has now been reviewed directly and will guide the next integration phase
 
 ### Immediate next build target

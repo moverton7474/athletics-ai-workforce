@@ -5,15 +5,22 @@ import { ApprovalActions } from '../../../components/approvals/ApprovalActions';
 import { DataSourceNotice } from '../../../components/system/DataSourceNotice';
 import { getCurrentUserContext } from '../../../lib/server/membership';
 import { getApprovalById } from '../../../lib/services/approvals';
+import { listTasks } from '../../../lib/services/tasks';
 
 export default async function ApprovalDetailPage({ params }: { params: Promise<{ approvalId: string }> }) {
   const { approvalId } = await params;
-  const [{ approval, source, error }, { memberships }] = await Promise.all([
+  const [{ approval, source, error }, { memberships }, { tasks }] = await Promise.all([
     getApprovalById(approvalId),
     getCurrentUserContext(),
+    listTasks(),
   ]);
 
   const canDecide = memberships.some((membership: any) => ['owner', 'admin', 'operator'].includes(membership.role));
+  const originTask = approval?.taskId ? tasks.find((task) => task.id === approval.taskId) ?? null : null;
+  const outcomeTask = approval?.outcomeTaskId ? tasks.find((task) => task.id === approval.outcomeTaskId) ?? null : null;
+  const decisionHistory = Array.isArray(approval?.details?.decision_history)
+    ? approval?.details?.decision_history.filter((entry): entry is Record<string, unknown> => !!entry && typeof entry === 'object')
+    : [];
 
   return (
     <main style={{ padding: 32, fontFamily: 'sans-serif', display: 'grid', gap: 24 }}>
@@ -53,8 +60,6 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
                 {approval.targetSystem ? <li>Target system: {approval.targetSystem.replaceAll('_', ' ')}</li> : null}
                 {approval.nextActionLabel ? <li>Recommended next action: {approval.nextActionLabel}</li> : null}
                 {approval.connectorRunId ? <li>Connector run id: {approval.connectorRunId}</li> : null}
-                {approval.taskId ? <li>Origin task id: {approval.taskId}</li> : null}
-                {approval.outcomeTaskId ? <li>Outcome task id: {approval.outcomeTaskId}</li> : null}
                 {approval.createdAt ? <li>Created: {approval.createdAt}</li> : null}
                 {approval.decidedAt ? <li>Decided: {approval.decidedAt}</li> : null}
               </ul>
@@ -68,6 +73,67 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
             ) : null}
 
             <ApprovalActions approvalId={approval.id} approvalStatus={approval.status} canDecide={canDecide} />
+          </section>
+
+          <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16, display: 'grid', gap: 16 }}>
+            <div>
+              <h2 style={{ marginTop: 0, marginBottom: 8 }}>Workflow Transition</h2>
+              <p style={{ margin: 0 }}>Make the task → approval → outcome chain visible so operators can see what this decision moved forward.</p>
+            </div>
+            <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+              <section style={{ border: '1px solid #f0f0f0', borderRadius: 12, padding: 14 }}>
+                <h3 style={{ marginTop: 0, marginBottom: 8 }}>Origin Task</h3>
+                {originTask ? (
+                  <div style={{ display: 'grid', gap: 6 }}>
+                    <Link href={`/tasks/${originTask.id}`}>{originTask.title}</Link>
+                    <div style={{ color: '#555' }}>{originTask.status.replaceAll('_', ' ')} · {originTask.priority}</div>
+                  </div>
+                ) : approval.taskId ? (
+                  <p style={{ margin: 0 }}>Linked task id: {approval.taskId}</p>
+                ) : (
+                  <p style={{ margin: 0 }}>No origin task linked.</p>
+                )}
+              </section>
+
+              <section style={{ border: '1px solid #f0f0f0', borderRadius: 12, padding: 14 }}>
+                <h3 style={{ marginTop: 0, marginBottom: 8 }}>Decision State</h3>
+                <p style={{ margin: 0 }}>
+                  {approval.status.replaceAll('_', ' ')}
+                  {approval.nextActionLabel ? ` · ${approval.nextActionLabel}` : ''}
+                </p>
+              </section>
+
+              <section style={{ border: '1px solid #f0f0f0', borderRadius: 12, padding: 14 }}>
+                <h3 style={{ marginTop: 0, marginBottom: 8 }}>Outcome Task</h3>
+                {outcomeTask ? (
+                  <div style={{ display: 'grid', gap: 6 }}>
+                    <Link href={`/tasks/${outcomeTask.id}`}>{outcomeTask.title}</Link>
+                    <div style={{ color: '#555' }}>{outcomeTask.status.replaceAll('_', ' ')} · {outcomeTask.priority}</div>
+                  </div>
+                ) : approval.outcomeTaskId ? (
+                  <p style={{ margin: 0 }}>Linked task id: {approval.outcomeTaskId}</p>
+                ) : (
+                  <p style={{ margin: 0 }}>No follow-up task created yet.</p>
+                )}
+              </section>
+            </div>
+          </section>
+
+          <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16, display: 'grid', gap: 12 }}>
+            <h2 style={{ margin: 0 }}>Decision History</h2>
+            {decisionHistory.length ? (
+              <ul style={{ margin: 0, paddingLeft: 18, display: 'grid', gap: 10 }}>
+                {decisionHistory.map((entry, index) => (
+                  <li key={`${String(entry.decided_at ?? index)}-${index}`}>
+                    <strong>{String(entry.decision ?? 'decision').replaceAll('_', ' ')}</strong>
+                    {typeof entry.decided_at === 'string' ? ` · ${entry.decided_at}` : ''}
+                    {typeof entry.note === 'string' && entry.note.trim().length > 0 ? ` · ${entry.note}` : ''}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p style={{ margin: 0 }}>No decision history recorded yet.</p>
+            )}
           </section>
 
           <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16, display: 'grid', gap: 12 }}>
