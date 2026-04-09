@@ -22,6 +22,11 @@ export default function OrgSetupPage() {
         </div>
         <OrgProfileForm />
       </section>
+      <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16 }}>
+        <h2 style={{ marginTop: 0, marginBottom: 8 }}>Next onboarding milestone</h2>
+        <p style={{ margin: '0 0 8px 0' }}>After intake, the product should hand the user into a generated workforce plan rather than dropping them into disconnected pages.</p>
+        <Link href="/team">Open generated workforce blueprint</Link>
+      </section>
     </main>
   );
 }

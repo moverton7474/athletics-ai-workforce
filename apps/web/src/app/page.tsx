@@ -12,6 +12,7 @@ export default function HomePage() {
         </p>
         <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
           <Link href="/org/setup">Start workforce setup</Link>
+          <Link href="/team">View generated workforce</Link>
           <Link href="/workers">Open workers</Link>
           <Link href="/dashboard">View dashboard</Link>
         </div>

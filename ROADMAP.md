@@ -153,6 +153,7 @@ Focus on the core workforce product before broad connector expansion.
 - worker workspace shell now has stronger chat / outputs / guidelines / settings surfaces with role-specific mock content
 - workers view now distinguishes shared vs personal worker models more clearly in roster, copy, and settings surfaces
 - org setup now includes a clearer onboarding promise and live recommended team preview during intake
+- generated workforce blueprint page now exists to bridge onboarding into the recommended team launch path
 - task queue now has a richer list surface plus task detail pages to support next-action workflow UX
 - CSOS production repo (`GF-Accelerate/ksu-csos`) has now been reviewed directly and will guide the next integration phase
 
