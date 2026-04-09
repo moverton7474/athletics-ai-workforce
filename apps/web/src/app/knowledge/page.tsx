@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 import { KnowledgeCard } from '../../components/knowledge/KnowledgeCard';
 import { KnowledgeIngestionForm } from '../../components/knowledge/KnowledgeIngestionForm';
 import { MemoryCaptureForm } from '../../components/memory/MemoryCaptureForm';
-import { MemoryEntryCard } from '../../components/memory/MemoryEntryCard';
+import { MemoryEntryList } from '../../components/memory/MemoryEntryList';
 import { DataSourceNotice } from '../../components/system/DataSourceNotice';
 import { listApprovals } from '../../lib/services/approvals';
 import { listKnowledgeItems } from '../../lib/services/knowledge';
@@ -76,15 +76,7 @@ export default async function KnowledgePage() {
           <h2 style={{ marginTop: 0, marginBottom: 8 }}>Recent Continuity Feed</h2>
           <p style={{ margin: 0 }}>Recent memory entries that keep tasks, handoffs, and operator guidance from disappearing between sessions.</p>
         </div>
-        {memoryEntries.length ? (
-          <div style={{ display: 'grid', gap: 12 }}>
-            {memoryEntries.slice(0, 6).map((entry) => (
-              <MemoryEntryCard key={entry.id} item={entry} />
-            ))}
-          </div>
-        ) : (
-          <p style={{ margin: 0 }}>No memory entries captured yet.</p>
-        )}
+        <MemoryEntryList initialEntries={memoryEntries} limit={6} emptyMessage="No memory entries captured yet." />
       </section>
       <section style={{ display: 'grid', gap: 24 }}>
         <div>

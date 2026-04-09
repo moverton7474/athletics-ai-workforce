@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { MemoryEntryCard } from '../../../components/memory/MemoryEntryCard';
+import { MemoryEntryList } from '../../../components/memory/MemoryEntryList';
 import { listApprovals } from '../../../lib/services/approvals';
 import { listMemoryEntriesForTask, listMemoryEntriesForWorker } from '../../../lib/services/memory';
 import { getTaskById } from '../../../lib/services/tasks';
@@ -109,15 +109,7 @@ export default async function TaskDetailPage({ params }: TaskDetailPageProps) {
           <h2 style={{ marginTop: 0, marginBottom: 8 }}>Related Memory</h2>
           <p style={{ margin: 0 }}>Recent worker continuity notes that should stay attached to the operating context for this task.</p>
         </div>
-        {memoryEntries.length ? (
-          <div style={{ display: 'grid', gap: 12 }}>
-            {memoryEntries.slice(0, 4).map((entry) => (
-              <MemoryEntryCard key={entry.id} item={entry} />
-            ))}
-          </div>
-        ) : (
-          <p style={{ margin: 0 }}>No related memory captured yet.</p>
-        )}
+        <MemoryEntryList initialEntries={memoryEntries} limit={4} emptyMessage="No related memory captured yet." />
       </section>
     </main>
   );

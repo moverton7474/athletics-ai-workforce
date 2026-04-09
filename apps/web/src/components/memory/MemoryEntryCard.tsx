@@ -6,7 +6,15 @@ function formatLabel(value: string) {
   return value.replaceAll('_', ' ');
 }
 
-export function MemoryEntryCard({ item }: { item: MemoryEntryDTO }) {
+export function MemoryEntryCard({
+  item,
+  onUpdated,
+  onDeleted,
+}: {
+  item: MemoryEntryDTO;
+  onUpdated?: (entry: MemoryEntryDTO) => void;
+  onDeleted?: (memoryEntryId: string) => void;
+}) {
   return (
     <article style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16, display: 'grid', gap: 10 }}>
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
@@ -37,7 +45,7 @@ export function MemoryEntryCard({ item }: { item: MemoryEntryDTO }) {
           ))}
         </div>
       ) : null}
-      <MemoryEntryActions item={item} />
+      <MemoryEntryActions item={item} onUpdated={onUpdated} onDeleted={onDeleted} />
     </article>
   );
 }

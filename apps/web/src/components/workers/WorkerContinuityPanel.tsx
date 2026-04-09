@@ -1,6 +1,22 @@
+'use client';
+
 import Link from 'next/link';
+import { useMemo, useState } from 'react';
 import type { ApprovalDTO, MemoryEntryDTO, TaskDTO, WorkerDTO } from '../../lib/types';
 import { MemoryEntryCard } from '../memory/MemoryEntryCard';
+
+function sortEntries(entries: MemoryEntryDTO[]) {
+  return [...entries].sort((left, right) => {
+    const pinnedDelta = Number(right.pinned === true) - Number(left.pinned === true);
+    if (pinnedDelta !== 0) {
+      return pinnedDelta;
+    }
+
+    const rightTime = right.createdAt ? new Date(right.createdAt).getTime() : 0;
+    const leftTime = left.createdAt ? new Date(left.createdAt).getTime() : 0;
+    return rightTime - leftTime;
+  });
+}
 
 export function WorkerContinuityPanel({
   worker,
@@ -13,7 +29,8 @@ export function WorkerContinuityPanel({
   approvals: ApprovalDTO[];
   memoryEntries: MemoryEntryDTO[];
 }) {
-  const pinnedEntries = memoryEntries.filter((entry) => entry.pinned);
+  const [entries, setEntries] = useState(() => sortEntries(memoryEntries));
+  const pinnedEntries = useMemo(() => entries.filter((entry) => entry.pinned), [entries]);
 
   return (
     <section style={{ border: '1px solid #eee', borderRadius: 12, padding: 16, display: 'grid', gap: 16 }}>
@@ -71,7 +88,16 @@ export function WorkerContinuityPanel({
           </div>
           <div style={{ display: 'grid', gap: 12 }}>
             {pinnedEntries.map((entry) => (
-              <MemoryEntryCard key={entry.id} item={entry} />
+              <MemoryEntryCard
+                key={entry.id}
+                item={entry}
+                onUpdated={(updatedEntry) => {
+                  setEntries((current) => sortEntries(current.map((entry) => (entry.id === updatedEntry.id ? updatedEntry : entry))));
+                }}
+                onDeleted={(deletedEntryId) => {
+                  setEntries((current) => current.filter((entry) => entry.id !== deletedEntryId));
+                }}
+              />
             ))}
           </div>
         </div>
@@ -82,10 +108,19 @@ export function WorkerContinuityPanel({
           <h4 style={{ marginTop: 0, marginBottom: 8 }}>Recent Memory</h4>
           <p style={{ margin: 0 }}>Operator handoffs, worker signals, and process reminders that should survive a context reset.</p>
         </div>
-        {memoryEntries.length ? (
+        {entries.length ? (
           <div style={{ display: 'grid', gap: 12 }}>
-            {memoryEntries.map((entry) => (
-              <MemoryEntryCard key={entry.id} item={entry} />
+            {entries.map((entry) => (
+              <MemoryEntryCard
+                key={entry.id}
+                item={entry}
+                onUpdated={(updatedEntry) => {
+                  setEntries((current) => sortEntries(current.map((entry) => (entry.id === updatedEntry.id ? updatedEntry : entry))));
+                }}
+                onDeleted={(deletedEntryId) => {
+                  setEntries((current) => current.filter((entry) => entry.id !== deletedEntryId));
+                }}
+              />
             ))}
           </div>
         ) : (

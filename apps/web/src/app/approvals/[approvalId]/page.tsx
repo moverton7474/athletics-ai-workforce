@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic';
 
 import Link from 'next/link';
 import { ApprovalActions } from '../../../components/approvals/ApprovalActions';
-import { MemoryEntryCard } from '../../../components/memory/MemoryEntryCard';
+import { MemoryEntryList } from '../../../components/memory/MemoryEntryList';
 import { DataSourceNotice } from '../../../components/system/DataSourceNotice';
 import { getCurrentUserContext } from '../../../lib/server/membership';
 import { getApprovalById } from '../../../lib/services/approvals';
@@ -142,15 +142,7 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
           <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16, display: 'grid', gap: 12 }}>
             <h2 style={{ margin: 0 }}>Related Memory</h2>
             <p style={{ margin: 0 }}>Approval-linked memory keeps review context, decision rationale, and handoff notes attached to this approval surface.</p>
-            {memoryEntries.length ? (
-              <div style={{ display: 'grid', gap: 12 }}>
-                {memoryEntries.map((entry) => (
-                  <MemoryEntryCard key={entry.id} item={entry} />
-                ))}
-              </div>
-            ) : (
-              <p style={{ margin: 0 }}>No approval-linked memory captured yet.</p>
-            )}
+            <MemoryEntryList initialEntries={memoryEntries} emptyMessage="No approval-linked memory captured yet." />
           </section>
 
           <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16, display: 'grid', gap: 12 }}>

@@ -1,4 +1,5 @@
 import { DEMO_ORGANIZATION_ID } from '../constants';
+import type { MemoryEntryDTO } from '../types';
 import { getSupabaseServerClient, getSupabaseServerMode } from './supabase-admin';
 
 type OrgProfilePayload = {
@@ -40,6 +41,31 @@ type MemoryUpdatePayload = {
 function normalizeOptional(value?: string) {
   const trimmed = value?.trim();
   return trimmed ? trimmed : null;
+}
+
+function mapMemoryEntryRow(entry: any): MemoryEntryDTO {
+  const metadata = entry.metadata && typeof entry.metadata === 'object' ? entry.metadata : {};
+  const tags = Array.isArray(metadata.tags)
+    ? metadata.tags.filter((tag: unknown): tag is string => typeof tag === 'string')
+    : [];
+
+  return {
+    id: entry.id,
+    organizationId: entry.organization_id,
+    workerId: entry.agent_id,
+    taskId: typeof metadata.taskId === 'string' ? metadata.taskId : null,
+    approvalId: typeof metadata.approvalId === 'string' ? metadata.approvalId : null,
+    memoryType: entry.memory_type,
+    visibilityScope: entry.visibility_scope ?? 'organization',
+    content: entry.content,
+    summary:
+      typeof metadata.summary === 'string' && metadata.summary.trim().length > 0
+        ? metadata.summary
+        : entry.content,
+    tags,
+    pinned: metadata.pinned === true,
+    createdAt: entry.created_at,
+  };
 }
 
 export async function saveOrgProfile(payload: OrgProfilePayload) {
@@ -190,20 +216,24 @@ export async function addMemoryEntry(payload: MemoryPayload) {
     };
   }
 
-  const { error } = await client.from('memory_entries').insert({
-    organization_id: DEMO_ORGANIZATION_ID,
-    agent_id: workerId,
-    memory_type: memoryType,
-    visibility_scope: visibilityScope,
-    content,
-    metadata: {
-      summary,
-      tags,
-      taskId,
-      approvalId,
-      pinned: false,
-    },
-  });
+  const { data, error } = await client
+    .from('memory_entries')
+    .insert({
+      organization_id: DEMO_ORGANIZATION_ID,
+      agent_id: workerId,
+      memory_type: memoryType,
+      visibility_scope: visibilityScope,
+      content,
+      metadata: {
+        summary,
+        tags,
+        taskId,
+        approvalId,
+        pinned: false,
+      },
+    })
+    .select('*')
+    .single();
 
   if (error) {
     return { success: false, mode: serverMode, message: error.message };
@@ -216,6 +246,7 @@ export async function addMemoryEntry(payload: MemoryPayload) {
       serverMode === 'service_role'
         ? 'Memory entry saved through the server action path.'
         : 'Memory entry saved using the public Supabase key path.',
+    entry: data ? mapMemoryEntryRow(data) : null,
   };
 }
 
@@ -259,7 +290,7 @@ export async function updateMemoryEntry(memoryEntryId: string, payload: MemoryUp
     ? payload.tags.map((tag) => tag.trim()).filter(Boolean)
     : [];
 
-  const { error } = await client
+  const { data, error } = await client
     .from('memory_entries')
     .update({
       content: payload.content.trim(),
@@ -273,7 +304,9 @@ export async function updateMemoryEntry(memoryEntryId: string, payload: MemoryUp
       },
     })
     .eq('id', memoryEntryId)
-    .eq('organization_id', DEMO_ORGANIZATION_ID);
+    .eq('organization_id', DEMO_ORGANIZATION_ID)
+    .select('*')
+    .single();
 
   if (error) {
     return { success: false, mode: serverMode, message: error.message };
@@ -286,6 +319,7 @@ export async function updateMemoryEntry(memoryEntryId: string, payload: MemoryUp
       serverMode === 'service_role'
         ? 'Memory entry updated through the server action path.'
         : 'Memory entry updated using the public Supabase key path.',
+    entry: data ? mapMemoryEntryRow(data) : null,
   };
 }
 

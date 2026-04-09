@@ -4,7 +4,13 @@ import { useState } from 'react';
 import { deleteMemoryEntry, updateMemoryEntry } from '../../lib/browser-actions';
 import type { MemoryEntryDTO } from '../../lib/types';
 
-export function MemoryEntryActions({ item }: { item: MemoryEntryDTO }) {
+type MemoryEntryActionsProps = {
+  item: MemoryEntryDTO;
+  onUpdated?: (entry: MemoryEntryDTO) => void;
+  onDeleted?: (memoryEntryId: string) => void;
+};
+
+export function MemoryEntryActions({ item, onUpdated, onDeleted }: MemoryEntryActionsProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [summary, setSummary] = useState(item.summary ?? '');
@@ -12,25 +18,38 @@ export function MemoryEntryActions({ item }: { item: MemoryEntryDTO }) {
   const [tags, setTags] = useState(item.tags.join(', '));
   const [pinned, setPinned] = useState(item.pinned === true);
 
+  async function saveChanges(nextPinned: boolean) {
+    const result = await updateMemoryEntry(item.id, {
+      taskId: item.taskId ?? undefined,
+      approvalId: item.approvalId ?? undefined,
+      summary,
+      content,
+      tags: tags.split(',').map((tag) => tag.trim()).filter(Boolean),
+      pinned: nextPinned,
+    });
+
+    setMessage(result.message);
+
+    if (result.success && result.entry) {
+      setPinned(result.entry.pinned === true);
+      setSummary(result.entry.summary ?? '');
+      setContent(result.entry.content);
+      setTags(result.entry.tags.join(', '));
+      onUpdated?.(result.entry);
+    }
+
+    return result;
+  }
+
   return (
     <div style={{ display: 'grid', gap: 10 }}>
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
         <button
           type="button"
           onClick={async () => {
-            const nextPinned = !pinned;
-            const result = await updateMemoryEntry(item.id, {
-              taskId: item.taskId ?? undefined,
-              approvalId: item.approvalId ?? undefined,
-              summary,
-              content,
-              tags: tags.split(',').map((tag) => tag.trim()).filter(Boolean),
-              pinned: nextPinned,
-            });
-            setPinned(nextPinned);
-            setMessage(result.message);
+            const result = await saveChanges(!pinned);
             if (result.success) {
-              window.location.reload();
+              setPinned((current) => !current);
             }
           }}
         >
@@ -50,7 +69,7 @@ export function MemoryEntryActions({ item }: { item: MemoryEntryDTO }) {
             const result = await deleteMemoryEntry(item.id);
             setMessage(result.message);
             if (result.success) {
-              window.location.reload();
+              onDeleted?.(item.id);
             }
           }}
         >
@@ -63,18 +82,9 @@ export function MemoryEntryActions({ item }: { item: MemoryEntryDTO }) {
           style={{ display: 'grid', gap: 10, border: '1px solid #eee', borderRadius: 12, padding: 12 }}
           onSubmit={async (event) => {
             event.preventDefault();
-            const result = await updateMemoryEntry(item.id, {
-              taskId: item.taskId ?? undefined,
-              approvalId: item.approvalId ?? undefined,
-              summary,
-              content,
-              tags: tags.split(',').map((tag) => tag.trim()).filter(Boolean),
-              pinned,
-            });
-            setMessage(result.message);
-            setIsEditing(false);
+            const result = await saveChanges(pinned);
             if (result.success) {
-              window.location.reload();
+              setIsEditing(false);
             }
           }}
         >

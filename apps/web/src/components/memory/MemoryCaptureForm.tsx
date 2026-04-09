@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { addMemoryEntry } from '../../lib/browser-actions';
+import type { MemoryEntryDTO } from '../../lib/types';
 
 export function MemoryCaptureForm({
   workers,
@@ -11,6 +12,7 @@ export function MemoryCaptureForm({
   initialTaskId,
   initialApprovalId,
   lockWorker = false,
+  onCreated,
 }: {
   workers: Array<{ id: string; name: string; roleName: string }>;
   tasks: Array<{ id: string; title: string }>;
@@ -19,6 +21,7 @@ export function MemoryCaptureForm({
   initialTaskId?: string;
   initialApprovalId?: string;
   lockWorker?: boolean;
+  onCreated?: (entry: MemoryEntryDTO) => void;
 }) {
   const [message, setMessage] = useState<string | null>(null);
 
@@ -45,6 +48,13 @@ export function MemoryCaptureForm({
         setMessage(result.message);
         if (result.success) {
           event.currentTarget.reset();
+          if (lockWorker && initialWorkerId) {
+            const workerInput = event.currentTarget.elements.namedItem('workerId') as HTMLInputElement | null;
+            if (workerInput) {
+              workerInput.value = initialWorkerId;
+            }
+          }
+          onCreated?.(result.entry);
         }
       }}
     >
