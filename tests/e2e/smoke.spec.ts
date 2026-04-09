@@ -69,9 +69,14 @@ test('org setup hands off intake state into the workforce blueprint', async ({ p
   await expect(page.getByText('Accelerate proposal throughput and tighten operator coordination.')).toBeVisible();
   await expect(page.getByText('Website: https://milton.example.com')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Recommended rollout sequence' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Start this team' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'First-week operating checklist' })).toBeVisible();
   await expect(page.getByText('Shared workers')).toBeVisible();
   await expect(page.getByText('Personal workers')).toBeVisible();
   await expect(page.getByText('Start first')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Launch worker setup' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Seed continuity memory' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Open approval queue' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Go to workers' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Open dashboard' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Open knowledge brain' })).toBeVisible();
