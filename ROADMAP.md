@@ -138,7 +138,7 @@ Focus on the core workforce product before broad connector expansion.
 - enterprise governance depth
 - broader vertical generalization
 
-## Current Live State (2026-04-08)
+## Current Live State (2026-04-09)
 ### Confirmed now live
 - Supabase-backed production deployment is active on `athletics-ai-workforce-web`
 - safe server-side writes are live for org profile + knowledge items
@@ -168,6 +168,11 @@ Focus on the core workforce product before broad connector expansion.
 - pinned memory is now elevated into dashboard and worker continuity rollups
 - dashboard now includes continuity coverage mapping across workers, open tasks, and pending approvals so continuity gaps are visible instead of hidden, including a resolve-next queue for the most urgent continuity gaps
 - memory capture, edit, pin/unpin, and delete actions now update in place across the current surface instead of forcing a full-page reload
+- onboarding now hands live intake state into the generated workforce blueprint instead of dropping into a disconnected static page
+- generated workforce blueprint now acts like a real launch package: org-specific summary, recommended rollout sequence, shared-vs-personal operating model summary, first-week operating checklist, and direct links into workers, dashboard, approvals, and knowledge surfaces
+- task detail and approval detail pages now include explicit operator next-action guidance plus direct navigation to related workflow surfaces
+- smoke coverage now validates the expanded product shell end to end across public pages, onboarding handoff, generated workforce blueprint, task detail surfaces, and approval detail surfaces; deployed production verification reached 17/17 passing tests in this session
+- user screenshots from this session confirm the live continuity coverage, workers, tasks, and knowledge surfaces are rendering in production as expected
 - CSOS production repo (`GF-Accelerate/ksu-csos`) has now been reviewed directly and will guide the next integration phase
 
 ### Immediate next build target
