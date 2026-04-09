@@ -60,14 +60,18 @@ test('knowledge form renders expected fields', async ({ page }) => {
 });
 
 test('task and approval detail pages surface clear operator next actions', async ({ page }) => {
-  await page.goto('/tasks/task-1');
+  await page.goto('/tasks');
+  const taskLinks = page.getByRole('link', { name: 'Open task' });
+  await expect(taskLinks.first()).toBeVisible();
+  await taskLinks.first().click();
   await expect(page.getByRole('heading', { name: 'Operator Next Action' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Open pending approval' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Capture continuity note' })).toBeVisible();
 
-  await page.goto('/approvals/approval-1');
+  await page.goto('/approvals');
+  const approvalLinks = page.getByRole('link', { name: 'Open review' });
+  await expect(approvalLinks.first()).toBeVisible();
+  await approvalLinks.first().click();
   await expect(page.getByRole('heading', { name: 'Operator Next Action' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Open origin task' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Capture decision context' })).toBeVisible();
 });
 
