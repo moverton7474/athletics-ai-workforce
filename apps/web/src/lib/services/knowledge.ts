@@ -12,11 +12,13 @@ export async function listKnowledgeItems() {
   }
 
   const items = (result.data as Array<any>).map((item) => ({
-      id: item.id,
-      title: item.title ?? 'Untitled knowledge item',
-      sourceType: item.source_type,
-      scope: item.scope,
-    }));
+    id: item.id,
+    title: item.title ?? 'Untitled knowledge item',
+    sourceType: item.source_type,
+    scope: item.scope,
+    content: item.content ?? '',
+    sourceUrl: item.source_url ?? '',
+  }));
 
   return {
     items,

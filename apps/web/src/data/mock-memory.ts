@@ -1,0 +1,47 @@
+import type { MemoryEntryDTO } from '../lib/types';
+
+export const mockMemoryEntries: MemoryEntryDTO[] = [
+  {
+    id: 'memory-entry-1',
+    organizationId: 'org-demo',
+    workerId: 'worker-chief-of-staff',
+    memoryType: 'handoff',
+    visibilityScope: 'organization',
+    content: 'Leadership review should start from approvals and task queue changes before opening any connector detail screens.',
+    summary: 'Leadership review should begin with approvals and next actions.',
+    tags: ['leadership', 'workflow'],
+    createdAt: '2026-04-08T18:20:00.000Z',
+  },
+  {
+    id: 'memory-entry-2',
+    organizationId: 'org-demo',
+    workerId: 'worker-sponsorship-intelligence',
+    memoryType: 'signal',
+    visibilityScope: 'organization',
+    content: 'Roofing and banking remain the clearest category gaps, but any proposal-stage recommendation should route through approval review first.',
+    summary: 'Category gaps are strong, but proposal actions still require approval gating.',
+    tags: ['sponsorship', 'approvals'],
+    createdAt: '2026-04-08T17:05:00.000Z',
+  },
+  {
+    id: 'memory-entry-3',
+    organizationId: 'org-demo',
+    workerId: 'worker-executive-assistant',
+    memoryType: 'preference',
+    visibilityScope: 'personal',
+    content: 'Daily briefings should group urgent items first, keep the tone calm, and surface blockers before context-heavy background notes.',
+    summary: 'Urgent items first, then blockers, then supporting context.',
+    tags: ['briefing', 'operator'],
+    createdAt: '2026-04-08T15:40:00.000Z',
+  },
+  {
+    id: 'memory-entry-4',
+    organizationId: 'org-demo',
+    memoryType: 'process',
+    visibilityScope: 'organization',
+    content: 'Treat session continuity as product infrastructure: handoffs, roadmap updates, and workspace memory should survive context resets.',
+    summary: 'Continuity artifacts should survive session resets.',
+    tags: ['continuity', 'memory'],
+    createdAt: '2026-04-08T14:15:00.000Z',
+  },
+];

@@ -62,3 +62,15 @@ export interface ConnectorRunDTO {
   detail?: string;
   createdAt?: string;
 }
+
+export interface MemoryEntryDTO {
+  id: string;
+  organizationId: string;
+  workerId?: string | null;
+  memoryType: string;
+  visibilityScope: string;
+  content: string;
+  summary?: string;
+  tags: string[];
+  createdAt?: string;
+}

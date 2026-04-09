@@ -53,6 +53,8 @@ Follow the reordered roadmap (Option B):
   - organization memory
   - worker memory
   - personal memory
+- knowledge brain now includes a recent continuity feed so memory stays visible alongside reference knowledge
+- worker workspace chat surface now includes continuity context with recent memory, linked tasks, and approval dependencies
 - startup/session continuity protocol has been documented in the workspace
 - CSOS repo `GF-Accelerate/ksu-csos` was reviewed directly
 - CSOS adapter architecture/spec and code scaffold were added

@@ -1,5 +1,9 @@
 import { getWorkerWorkspaceContent } from '../../../data/mock-worker-workspace';
+import { WorkerContinuityPanel } from '../../../components/workers/WorkerContinuityPanel';
 import { WorkerWorkspaceShell } from '../../../components/workers/WorkerWorkspaceShell';
+import { listApprovals } from '../../../lib/services/approvals';
+import { listMemoryEntriesForWorker } from '../../../lib/services/memory';
+import { listTasks } from '../../../lib/services/tasks';
 import { getWorkerById } from '../../../lib/services/workers';
 
 type WorkerPageProps = {
@@ -20,6 +24,16 @@ export default async function WorkerDetailPage({ params }: WorkerPageProps) {
   }
 
   const content = getWorkerWorkspaceContent(worker);
+  const [{ tasks }, { approvals }, { entries: memoryEntries }] = await Promise.all([
+    listTasks(),
+    listApprovals(),
+    listMemoryEntriesForWorker(worker.id),
+  ]);
+
+  const workerTasks = tasks.filter((task) => task.workerId === worker.id).slice(0, 4);
+  const workerApprovals = approvals
+    .filter((approval) => approval.taskId && workerTasks.some((task) => task.id === approval.taskId))
+    .slice(0, 4);
 
   return (
     <WorkerWorkspaceShell worker={worker} activeTab="chat">
@@ -49,6 +63,12 @@ export default async function WorkerDetailPage({ params }: WorkerPageProps) {
                 : 'Use this workspace to turn role-specific context into organized, reviewable work.'}
           </p>
         </section>
+        <WorkerContinuityPanel
+          worker={worker}
+          tasks={workerTasks}
+          approvals={workerApprovals}
+          memoryEntries={memoryEntries}
+        />
       </section>
     </WorkerWorkspaceShell>
   );

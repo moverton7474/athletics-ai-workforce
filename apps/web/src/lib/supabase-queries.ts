@@ -51,3 +51,7 @@ export async function fetchKnowledgeItems() {
 export async function fetchConnectorRuns() {
   return resolveQuery((client) => client.from('connector_runs').select('*').order('created_at', { ascending: false }).limit(20));
 }
+
+export async function fetchMemoryEntries() {
+  return resolveQuery((client) => client.from('memory_entries').select('*').order('created_at', { ascending: false }).limit(50));
+}

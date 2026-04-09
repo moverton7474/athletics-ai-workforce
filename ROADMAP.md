@@ -156,6 +156,8 @@ Focus on the core workforce product before broad connector expansion.
 - generated workforce blueprint page now exists to bridge onboarding into the recommended team launch path
 - task queue now has a richer list surface plus task detail pages to support next-action workflow UX
 - knowledge brain now distinguishes organization, worker, and personal memory scopes more clearly in the product shell
+- knowledge brain now includes a recent continuity feed so operational memory is visible alongside durable knowledge
+- worker workspace chat surface now includes continuity context with recent memory, linked tasks, and approval dependencies
 - CSOS production repo (`GF-Accelerate/ksu-csos`) has now been reviewed directly and will guide the next integration phase
 
 ### Immediate next build target
