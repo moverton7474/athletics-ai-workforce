@@ -163,6 +163,7 @@ Focus on the core workforce product before broad connector expansion.
 - worker workspaces now support worker-scoped memory capture directly, and the dashboard now rolls recent memory into the command-center view
 - memory entries now support lightweight management actions in-product: edit, delete, and pin/unpin through server-backed routes
 - memory capture now supports optional task linkage, and task views can surface task-linked memory explicitly
+- tenant-safe memory policy tightening is now staged through a dedicated migration for membership-based reads and privileged writes on `memory_entries`
 - CSOS production repo (`GF-Accelerate/ksu-csos`) has now been reviewed directly and will guide the next integration phase
 
 ### Immediate next build target

@@ -61,6 +61,7 @@ Follow the reordered roadmap (Option B):
 - worker chat pages now include worker-scoped memory capture, and dashboard now surfaces recent memory alongside tasks and approvals
 - memory cards now support edit, delete, and pin/unpin actions through `/api/memory-entries/[memoryEntryId]`
 - memory capture forms now support optional task linkage, and task detail now prioritizes task-linked memory in addition to worker context
+- migration `0012_memory_entry_policy_hardening.sql` now stages tenant-safe membership read + privileged write policies for `memory_entries`
 - startup/session continuity protocol has been documented in the workspace
 - CSOS repo `GF-Accelerate/ksu-csos` was reviewed directly
 - CSOS adapter architecture/spec and code scaffold were added
