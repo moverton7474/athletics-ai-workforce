@@ -57,6 +57,7 @@ Follow the reordered roadmap (Option B):
 - worker workspace chat surface now includes continuity context with recent memory, linked tasks, and approval dependencies
 - task detail now surfaces linked approvals, downstream approval outcomes, and related memory for the assigned worker
 - approval detail now surfaces the workflow transition more clearly with origin task, decision state, outcome task, and decision history
+- knowledge page now includes a server-backed memory capture form that writes to `memory_entries` through `/api/memory-entries`
 - startup/session continuity protocol has been documented in the workspace
 - CSOS repo `GF-Accelerate/ksu-csos` was reviewed directly
 - CSOS adapter architecture/spec and code scaffold were added

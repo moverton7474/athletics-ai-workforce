@@ -17,6 +17,15 @@ type KnowledgePayload = {
   scope?: string;
 };
 
+type MemoryPayload = {
+  memoryType: string;
+  visibilityScope?: string;
+  workerId?: string;
+  summary?: string;
+  content: string;
+  tags?: string[];
+};
+
 function normalizeOptional(value?: string) {
   const trimmed = value?.trim();
   return trimmed ? trimmed : null;
@@ -137,5 +146,59 @@ export async function addKnowledgeItem(payload: KnowledgePayload) {
       serverMode === 'service_role'
         ? 'Knowledge item saved through the server action path.'
         : 'Knowledge item saved using the public Supabase key path.',
+  };
+}
+
+export async function addMemoryEntry(payload: MemoryPayload) {
+  if (!payload.memoryType.trim()) {
+    return { success: false, mode: 'validation', message: 'Memory type is required.' };
+  }
+
+  if (!payload.content.trim()) {
+    return { success: false, mode: 'validation', message: 'Memory content is required.' };
+  }
+
+  const client = getSupabaseServerClient();
+  const serverMode = getSupabaseServerMode();
+  const memoryType = payload.memoryType.trim();
+  const visibilityScope = normalizeOptional(payload.visibilityScope) ?? 'organization';
+  const workerId = normalizeOptional(payload.workerId);
+  const content = payload.content.trim();
+  const summary = normalizeOptional(payload.summary);
+  const tags = Array.isArray(payload.tags)
+    ? payload.tags.map((tag) => tag.trim()).filter(Boolean)
+    : [];
+
+  if (!client) {
+    return {
+      success: true,
+      mode: 'stub',
+      message: 'Supabase server env vars are not configured yet. Memory payload validated but not persisted.',
+    };
+  }
+
+  const { error } = await client.from('memory_entries').insert({
+    organization_id: DEMO_ORGANIZATION_ID,
+    agent_id: workerId,
+    memory_type: memoryType,
+    visibility_scope: visibilityScope,
+    content,
+    metadata: {
+      summary,
+      tags,
+    },
+  });
+
+  if (error) {
+    return { success: false, mode: serverMode, message: error.message };
+  }
+
+  return {
+    success: true,
+    mode: serverMode,
+    message:
+      serverMode === 'service_role'
+        ? 'Memory entry saved through the server action path.'
+        : 'Memory entry saved using the public Supabase key path.',
   };
 }

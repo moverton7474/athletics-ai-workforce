@@ -1,16 +1,23 @@
 export const dynamic = 'force-dynamic';
 
 import { KnowledgeCard } from '../../components/knowledge/KnowledgeCard';
-import { MemoryEntryCard } from '../../components/memory/MemoryEntryCard';
 import { KnowledgeIngestionForm } from '../../components/knowledge/KnowledgeIngestionForm';
+import { MemoryCaptureForm } from '../../components/memory/MemoryCaptureForm';
+import { MemoryEntryCard } from '../../components/memory/MemoryEntryCard';
 import { DataSourceNotice } from '../../components/system/DataSourceNotice';
 import { listKnowledgeItems } from '../../lib/services/knowledge';
 import { listMemoryEntries } from '../../lib/services/memory';
+import { listWorkers } from '../../lib/services/workers';
 
 export default async function KnowledgePage() {
-  const [{ items, source, error }, { entries: memoryEntries, source: memorySource, error: memoryError }] = await Promise.all([
+  const [
+    { items, source, error },
+    { entries: memoryEntries, source: memorySource, error: memoryError },
+    { workers },
+  ] = await Promise.all([
     listKnowledgeItems(),
     listMemoryEntries(),
+    listWorkers(),
   ]);
 
   const byScope = {
@@ -38,7 +45,22 @@ export default async function KnowledgePage() {
           <li><strong>Personal memory</strong> keeps operator-specific support context that should not be shared too broadly.</li>
         </ul>
       </section>
-      <KnowledgeIngestionForm />
+      <section style={{ display: 'grid', gap: 24, gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))' }}>
+        <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16, display: 'grid', gap: 12 }}>
+          <div>
+            <h2 style={{ marginTop: 0, marginBottom: 8 }}>Capture Memory</h2>
+            <p style={{ margin: 0 }}>Write continuity notes directly into the backend so handoffs and reminders survive context resets.</p>
+          </div>
+          <MemoryCaptureForm workers={workers.map((worker) => ({ id: worker.id, name: worker.name, roleName: worker.roleName }))} />
+        </section>
+        <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16, display: 'grid', gap: 12 }}>
+          <div>
+            <h2 style={{ marginTop: 0, marginBottom: 8 }}>Capture Knowledge</h2>
+            <p style={{ margin: 0 }}>Store durable documents, source references, and reusable operating context.</p>
+          </div>
+          <KnowledgeIngestionForm />
+        </section>
+      </section>
       <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16, display: 'grid', gap: 16 }}>
         <div>
           <h2 style={{ marginTop: 0, marginBottom: 8 }}>Recent Continuity Feed</h2>

@@ -14,6 +14,15 @@ type KnowledgePayload = {
   scope?: string;
 };
 
+type MemoryPayload = {
+  memoryType: string;
+  visibilityScope?: string;
+  workerId?: string;
+  summary?: string;
+  content: string;
+  tags?: string[];
+};
+
 async function postJson(path: string, payload: unknown) {
   const response = await fetch(path, {
     method: 'POST',
@@ -32,4 +41,8 @@ export async function saveOrgProfile(payload: OrgProfilePayload) {
 
 export async function addKnowledgeItem(payload: KnowledgePayload) {
   return postJson('/api/knowledge-items', payload);
+}
+
+export async function addMemoryEntry(payload: MemoryPayload) {
+  return postJson('/api/memory-entries', payload);
 }
