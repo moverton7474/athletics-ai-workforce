@@ -261,13 +261,42 @@ export async function getCampaignReviewForRouteState(draftId: string, segmentKey
   };
 }
 
+export async function listCampaignDraftRecords() {
+  const result = await fetchCampaignDrafts();
+  if (result.error || !result.data.length) {
+    return {
+      drafts: Object.values(mockCampaignBuilderRecords).map(createFallbackDraftRecord),
+      source: 'mock' as const,
+      error: result.error,
+    };
+  }
+
+  return {
+    drafts: (result.data as any[]).map(mapCampaignDraftRecord),
+    source: 'supabase' as const,
+    error: null,
+  };
+}
+
 export async function getCampaignFollowUpForRouteState(campaignId: string, segmentKey?: string) {
   const result = await fetchCampaignDrafts();
   const row = (result.data as any[]).find((draft) => (draft.campaign_key ?? `${draft.segment_key}-campaign`) === campaignId);
 
   if (result.error || !row) {
+    const fallback = mockCampaignFollowUpRecords[campaignId] ?? getCampaignFollowUpState(campaignId, segmentKey);
     return {
-      followUpState: mockCampaignFollowUpRecords[campaignId] ?? getCampaignFollowUpState(campaignId, segmentKey),
+      followUpState: fallback,
+      draftRecord: {
+        draftKey: `${fallback.campaignId.replace(/-campaign$/, '')}-draft`,
+        campaignKey: fallback.campaignId,
+        segmentKey: fallback.recommendedNextCampaign?.suggestedSegmentKey ?? segmentKey ?? 'ksu-football-2026-non-renewals',
+        title: fallback.campaignName,
+        objective: fallback.recommendedNextCampaign?.suggestedObjective,
+        status: 'approved_for_launch',
+        selectedChannels: [],
+        assets: [],
+        details: {},
+      },
       source: 'mock' as const,
       error: result.error,
     };
@@ -275,6 +304,7 @@ export async function getCampaignFollowUpForRouteState(campaignId: string, segme
 
   return {
     followUpState: mapCampaignFollowUpState(row),
+    draftRecord: mapCampaignDraftRecord(row),
     source: 'supabase' as const,
     error: null,
   };

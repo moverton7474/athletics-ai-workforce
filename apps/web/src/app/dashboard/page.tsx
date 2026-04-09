@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic';
 import { OpenTasksWidget } from '../../components/dashboard/OpenTasksWidget';
 import { PendingApprovalsWidget } from '../../components/dashboard/PendingApprovalsWidget';
 import { ConnectorRunsWidget } from '../../components/dashboard/ConnectorRunsWidget';
+import { CampaignDraftApprovalWidget } from '../../components/dashboard/CampaignDraftApprovalWidget';
 import { MemoryRelationshipWidget } from '../../components/dashboard/MemoryRelationshipWidget';
 import { PinnedMemoryWidget } from '../../components/dashboard/PinnedMemoryWidget';
 import { RecentMemoryWidget } from '../../components/dashboard/RecentMemoryWidget';
@@ -11,6 +12,7 @@ import { SupabaseStatusCard } from '../../components/system/SupabaseStatusCard';
 import { listApprovals } from '../../lib/services/approvals';
 import { listConnectorRuns } from '../../lib/services/connector-runs';
 import { listMemoryEntries } from '../../lib/services/memory';
+import { listCampaignDraftRecords } from '../../lib/services/route-state';
 import { listTasks } from '../../lib/services/tasks';
 import { listWorkers } from '../../lib/services/workers';
 
@@ -20,10 +22,11 @@ export default async function DashboardPage() {
     { approvals, source: approvalSource },
     { runs, source: runSource },
     { entries: memoryEntries, source: memorySource },
+    { drafts, source: draftSource },
     { workers },
-  ] = await Promise.all([listTasks(), listApprovals(), listConnectorRuns(), listMemoryEntries(), listWorkers()]);
+  ] = await Promise.all([listTasks(), listApprovals(), listConnectorRuns(), listMemoryEntries(), listCampaignDraftRecords(), listWorkers()]);
 
-  const source = [taskSource, approvalSource, runSource, memorySource].includes('supabase') ? 'supabase' : 'mock';
+  const source = [taskSource, approvalSource, runSource, memorySource, draftSource].includes('supabase') ? 'supabase' : 'mock';
   const queuedApprovalsCount = approvals.filter((approval) => approval.status === 'pending').length;
   const nextActionsCount = tasks.filter((task) => task.status !== 'completed' && task.status !== 'canceled').length;
   const recentMemoryCount = memoryEntries.length;
@@ -43,6 +46,7 @@ export default async function DashboardPage() {
         </section>
         <OpenTasksWidget tasks={tasks} />
         <PendingApprovalsWidget approvals={approvals} />
+        <CampaignDraftApprovalWidget drafts={drafts} />
         <PinnedMemoryWidget entries={memoryEntries} workers={workers} />
         <RecentMemoryWidget entries={memoryEntries} workers={workers} />
         <MemoryRelationshipWidget entries={memoryEntries} tasks={tasks} approvals={approvals} workers={workers} />

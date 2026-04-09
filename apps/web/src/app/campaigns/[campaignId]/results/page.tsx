@@ -11,7 +11,14 @@ export default async function CampaignResultsPage({
 }) {
   const { campaignId } = await params;
   const resolvedSearchParams = await searchParams;
-  const { followUpState, source, error } = await getCampaignFollowUpForRouteState(campaignId, resolvedSearchParams?.segmentKey);
+  const { followUpState, draftRecord, source, error } = await getCampaignFollowUpForRouteState(campaignId, resolvedSearchParams?.segmentKey);
+  const draftDetails: Record<string, unknown> =
+    draftRecord.details && typeof draftRecord.details === 'object'
+      ? (draftRecord.details as Record<string, unknown>)
+      : {};
+  const approvalStatus = typeof draftDetails.approvalStatus === 'string' ? draftDetails.approvalStatus : undefined;
+  const approvalDecisionNote = typeof draftDetails.approvalDecisionNote === 'string' ? draftDetails.approvalDecisionNote : undefined;
+  const approvalRoute = typeof draftDetails.nextApprovalRoute === 'string' ? draftDetails.nextApprovalRoute : undefined;
 
   return (
     <main style={{ padding: 32, fontFamily: 'sans-serif', display: 'grid', gap: 24 }}>
@@ -25,6 +32,10 @@ export default async function CampaignResultsPage({
       <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16 }}>
         <h2 style={{ marginTop: 0 }}>Performance Summary</h2>
         <p style={{ margin: '8px 0' }}>Status: {followUpState.resultStatus}</p>
+        <p style={{ margin: '8px 0' }}>Draft workflow status: <strong>{draftRecord.status}</strong></p>
+        <p style={{ margin: '8px 0' }}>Approval status: <strong>{approvalStatus ?? 'not submitted'}</strong></p>
+        {approvalDecisionNote ? <p style={{ margin: '8px 0' }}>Latest approval note: {approvalDecisionNote}</p> : null}
+        {approvalRoute ? <p style={{ margin: '8px 0' }}><Link href={approvalRoute}>Open linked approval</Link></p> : null}
         <p style={{ margin: '8px 0 0' }}>{followUpState.performanceSummary}</p>
       </section>
 
