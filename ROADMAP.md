@@ -202,11 +202,44 @@ Introduce a voice-command abstraction layer early so the product can become voic
 - proposal creation requests
 - executive briefings
 - approvals review
+- show me hot leads / donor leads style list retrieval
+- voice-driven page reveal while speaking (query first, then move the UI to the relevant screen)
+- launch campaign / proposal / approval workflows from the same conversation context
+
+### CSOS Voice Analysis Findings (2026-04-09)
+A fresh review of the KSU CSOS codebase shows the current in-app voice agent already proves the interaction pattern we want to preserve and adapt:
+- explicit **page navigation registry** exists in `ksu-csos/apps/web/src/features/voice_console/voiceNavigationTools.ts` with aliases for many modules and a tool-based `navigate_to_page` action
+- explicit **data query / workflow tool layer** exists in `ksu-csos/apps/web/src/features/voice_console/voiceDataTools.ts` with tools for dashboard summaries, hot leads, donor/prospect lookup, campaign operations, workflow execution, approvals, and navigation helpers
+- CSOS voice supports **search + navigate** patterns, including things like opening a person record or agent detail after resolving the entity
+- CSOS voice preserves **manual navigation parity**: voice triggers navigation or workflow actions, but the user can still click/type through the same system manually
+- CSOS conversational surfaces include **session continuity**, **confirmation gates for sensitive actions**, **voice input + typed fallback**, and **display panels** for returned data (`VoiceConsole.tsx`, `VoiceBrain.tsx`)
+
+These findings reinforce the correct MVP direction for athletics-ai-workforce: voice should sit on top of the same product shell and action model, not replace it.
+
+### CSOS-Informed MVP Voice Requirements
+- every high-value operator workflow must have **manual + voice parity**
+- voice should support three modes: **answer**, **navigate**, and **execute**
+- voice queries should be able to **answer from live data** and then optionally **take the user to the relevant page** in the same flow
+- workflow-triggering commands must preserve **human approval gates** for consequential actions
+- the same underlying services/actions should power both button-click execution and voice-command execution
+- navigation should support both **page-level routing** and **entity-aware routing** (example: hot leads list, donor profile, proposal, campaign builder)
+- the system should expose visible feedback about what voice just did: answered only, navigated, or launched a workflow
+- manual navigation must remain first-class; voice is an acceleration layer, not the only control path
+
+### MVP Voice-Complete Workflow Candidates
+These are the strongest first workflows to make voice-complete while staying inside the MVP shell:
+1. "Show me hot leads" / "Show me donor leads" → answer + navigate to filtered queue/list
+2. "Show me sponsor attrition risks" → answer + navigate to connector/task surface
+3. "Build a proposal for [sponsor]" → create workflow shell + route into review surface
+4. "Open pending approvals" / "Approve this" / "Request changes" → governed approval loop
+5. "What should I work next?" → dashboard/queue summary + navigate to the top next action
+6. "Build a campaign for this segment" → carry context from a visible list into campaign/proposal workflow launch
 
 ### Exit Criteria
 - command model defined for all five MVP workers
 - first CSOS workflows mapped to voice triggers
 - voice/manual interaction model documented
+- first voice-complete workflow pack defined for athletics-ai-workforce with answer + navigate + execute parity
 
 ---
 
