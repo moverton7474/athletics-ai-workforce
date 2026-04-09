@@ -55,3 +55,11 @@ export async function fetchConnectorRuns() {
 export async function fetchMemoryEntries() {
   return resolveQuery((client) => client.from('memory_entries').select('*').order('created_at', { ascending: false }).limit(50));
 }
+
+export async function fetchSegmentDefinitions() {
+  return resolveQuery((client) => client.from('segment_definitions').select('*').order('created_at', { ascending: false }).limit(50));
+}
+
+export async function fetchCampaignDrafts() {
+  return resolveQuery((client) => client.from('campaign_drafts').select('*').order('created_at', { ascending: false }).limit(50));
+}

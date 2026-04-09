@@ -1,8 +1,9 @@
 import Link from 'next/link';
-import { getCampaignBuilderState } from '../../../lib/voice-route-state';
+import { DataSourceNotice } from '../../../components/system/DataSourceNotice';
+import { getCampaignBuilderForRouteState } from '../../../lib/services/route-state';
 
-export default function NewCampaignPage() {
-  const builderState = getCampaignBuilderState('ksu-football-2026-non-renewals', 'manual');
+export default async function NewCampaignPage() {
+  const { builderState, source, error } = await getCampaignBuilderForRouteState('ksu-football-2026-non-renewals', 'manual');
 
   return (
     <main style={{ padding: 32, fontFamily: 'sans-serif', display: 'grid', gap: 24 }}>
@@ -10,6 +11,8 @@ export default function NewCampaignPage() {
         <h1 style={{ marginBottom: 8 }}>New Campaign</h1>
         <p style={{ margin: 0 }}>Manual-first campaign builder shell. If no reusable segment context exists yet, start here or choose a segment first.</p>
       </div>
+
+      <DataSourceNotice source={source} entityLabel="Campaign builder" error={error} />
 
       <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16 }}>
         <h2 style={{ marginTop: 0 }}>Builder State</h2>

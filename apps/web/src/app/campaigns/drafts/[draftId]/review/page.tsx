@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { getGeneratedAssetReviewState } from '../../../../../lib/voice-route-state';
+import { DataSourceNotice } from '../../../../../components/system/DataSourceNotice';
+import { getCampaignReviewForRouteState } from '../../../../../lib/services/route-state';
 
 export default async function CampaignDraftReviewPage({
   params,
@@ -10,7 +11,7 @@ export default async function CampaignDraftReviewPage({
 }) {
   const { draftId } = await params;
   const resolvedSearchParams = await searchParams;
-  const reviewState = getGeneratedAssetReviewState(draftId, resolvedSearchParams?.segmentKey);
+  const { reviewState, source, error } = await getCampaignReviewForRouteState(draftId, resolvedSearchParams?.segmentKey);
 
   return (
     <main style={{ padding: 32, fontFamily: 'sans-serif', display: 'grid', gap: 24 }}>
@@ -18,6 +19,8 @@ export default async function CampaignDraftReviewPage({
         <h1 style={{ marginBottom: 8 }}>Campaign Asset Review</h1>
         <p style={{ margin: 0 }}>Generated assets grouped by channel before launch approval.</p>
       </div>
+
+      <DataSourceNotice source={source} entityLabel="Campaign review" error={error} />
 
       <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16 }}>
         <h2 style={{ marginTop: 0 }}>Review Summary</h2>

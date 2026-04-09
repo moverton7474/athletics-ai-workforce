@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { getCampaignBuilderState } from '../../../../lib/voice-route-state';
+import { DataSourceNotice } from '../../../../components/system/DataSourceNotice';
+import { getCampaignBuilderForRouteState } from '../../../../lib/services/route-state';
 
 export default async function NewCampaignFromSegmentPage({
   searchParams,
@@ -7,7 +8,7 @@ export default async function NewCampaignFromSegmentPage({
   searchParams?: Promise<{ segmentKey?: string }>;
 }) {
   const resolvedSearchParams = await searchParams;
-  const builderState = getCampaignBuilderState(resolvedSearchParams?.segmentKey, 'voice');
+  const { builderState, source, error } = await getCampaignBuilderForRouteState(resolvedSearchParams?.segmentKey, 'voice');
 
   return (
     <main style={{ padding: 32, fontFamily: 'sans-serif', display: 'grid', gap: 24 }}>
@@ -17,6 +18,8 @@ export default async function NewCampaignFromSegmentPage({
           This shell shows how voice or manual segment handoff can prefill the exact same campaign builder route.
         </p>
       </div>
+
+      <DataSourceNotice source={source} entityLabel="Campaign builder" error={error} />
 
       <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16 }}>
         <h2 style={{ marginTop: 0 }}>{builderState.campaignName}</h2>

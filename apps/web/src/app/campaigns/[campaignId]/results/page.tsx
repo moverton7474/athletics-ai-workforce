@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { getCampaignFollowUpState } from '../../../../lib/voice-route-state';
+import { DataSourceNotice } from '../../../../components/system/DataSourceNotice';
+import { getCampaignFollowUpForRouteState } from '../../../../lib/services/route-state';
 
 export default async function CampaignResultsPage({
   params,
@@ -10,7 +11,7 @@ export default async function CampaignResultsPage({
 }) {
   const { campaignId } = await params;
   const resolvedSearchParams = await searchParams;
-  const followUpState = getCampaignFollowUpState(campaignId, resolvedSearchParams?.segmentKey);
+  const { followUpState, source, error } = await getCampaignFollowUpForRouteState(campaignId, resolvedSearchParams?.segmentKey);
 
   return (
     <main style={{ padding: 32, fontFamily: 'sans-serif', display: 'grid', gap: 24 }}>
@@ -18,6 +19,8 @@ export default async function CampaignResultsPage({
         <h1 style={{ marginBottom: 8 }}>{followUpState.campaignName}</h1>
         <p style={{ margin: 0 }}>Results and follow-up shell for governed campaign lifecycle review.</p>
       </div>
+
+      <DataSourceNotice source={source} entityLabel="Campaign results" error={error} />
 
       <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16 }}>
         <h2 style={{ marginTop: 0 }}>Performance Summary</h2>

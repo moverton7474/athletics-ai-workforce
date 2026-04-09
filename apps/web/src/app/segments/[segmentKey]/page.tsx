@@ -1,9 +1,10 @@
 import Link from 'next/link';
-import { getSegmentContext } from '../../../lib/voice-route-state';
+import { DataSourceNotice } from '../../../components/system/DataSourceNotice';
+import { getSegmentForRouteState } from '../../../lib/services/route-state';
 
 export default async function SegmentDetailPage({ params }: { params: Promise<{ segmentKey: string }> }) {
   const { segmentKey } = await params;
-  const segment = getSegmentContext(segmentKey);
+  const { segment, source, error } = await getSegmentForRouteState(segmentKey);
 
   return (
     <main style={{ padding: 32, fontFamily: 'sans-serif', display: 'grid', gap: 24 }}>
@@ -11,6 +12,8 @@ export default async function SegmentDetailPage({ params }: { params: Promise<{ 
         <h1 style={{ marginBottom: 8 }}>{segment.label}</h1>
         <p style={{ margin: 0 }}>{segment.summary}</p>
       </div>
+
+      <DataSourceNotice source={source} entityLabel="Segment detail" error={error} />
 
       <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16 }}>
         <h2 style={{ marginTop: 0 }}>Segment Context</h2>

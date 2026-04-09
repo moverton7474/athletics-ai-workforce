@@ -1,5 +1,7 @@
 import Link from 'next/link';
-import { getSegmentQueryState, listSegmentContexts } from '../../lib/voice-route-state';
+import { DataSourceNotice } from '../../components/system/DataSourceNotice';
+import { getSegmentQueryState } from '../../lib/voice-route-state';
+import { listSegmentsForRouteState } from '../../lib/services/route-state';
 
 export default async function SegmentsPage({
   searchParams,
@@ -8,7 +10,7 @@ export default async function SegmentsPage({
 }) {
   const resolvedSearchParams = await searchParams;
   const queryState = getSegmentQueryState(resolvedSearchParams?.q);
-  const segments = listSegmentContexts();
+  const { segments, source, error } = await listSegmentsForRouteState();
 
   return (
     <main style={{ padding: 32, fontFamily: 'sans-serif', display: 'grid', gap: 24 }}>
@@ -18,6 +20,8 @@ export default async function SegmentsPage({
           Manual and voice entry point for reusable audiences like non-renewals, hot leads, and donor leads.
         </p>
       </div>
+
+      <DataSourceNotice source={source} entityLabel="Segments" error={error} />
 
       <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16 }}>
         <h2 style={{ marginTop: 0 }}>Query State</h2>
