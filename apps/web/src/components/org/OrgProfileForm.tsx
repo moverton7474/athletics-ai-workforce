@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import Link from 'next/link';
+import { useMemo, useState } from 'react';
 import { TeamRecommendationPreview } from '../onboarding/TeamRecommendationPreview';
 import { saveOrgProfile } from '../../lib/browser-actions';
 
@@ -14,6 +15,19 @@ export function OrgProfileForm() {
     toneOfVoice: 'Professional, energetic, institutional',
     primaryGoals: 'Grow sponsorship revenue, improve proposal throughput, and keep leadership aligned.',
   });
+
+  const teamBlueprintHref = useMemo(() => {
+    const params = new URLSearchParams({
+      name: formState.name,
+      website: formState.website,
+      industry: formState.industry,
+      targetCustomers: formState.targetCustomers,
+      toneOfVoice: formState.toneOfVoice,
+      primaryGoals: formState.primaryGoals,
+    });
+
+    return `/team?${params.toString()}`;
+  }, [formState]);
 
   return (
     <div style={{ display: 'grid', gap: 24, gridTemplateColumns: '1.2fr 1fr', alignItems: 'start' }}>
@@ -89,7 +103,10 @@ export function OrgProfileForm() {
             onChange={(event) => setFormState((current) => ({ ...current, primaryGoals: event.target.value }))}
           />
         </label>
-        <button type="submit">Save Organization Profile</button>
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+          <button type="submit">Save Organization Profile</button>
+          <Link href={teamBlueprintHref}>Continue to workforce blueprint</Link>
+        </div>
         {message ? <p>{message}</p> : null}
       </form>
       <TeamRecommendationPreview
