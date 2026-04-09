@@ -7,12 +7,20 @@ const routes = [
   { path: '/team', heading: 'Generated Workforce Blueprint' },
   { path: '/workers', heading: 'Workers' },
   { path: '/tasks', heading: 'Tasks' },
+  { path: '/segments', heading: 'Segments' },
+  { path: '/segments/ksu-football-2026-non-renewals', heading: '2026 KSU Football Non-Renewals' },
+  { path: '/campaigns/new', heading: 'New Campaign' },
+  { path: '/campaigns/new/from-segment?segmentKey=ksu-football-2026-non-renewals', heading: 'Prefilled Campaign Builder' },
+  { path: '/campaigns/drafts/ksu-football-2026-non-renewals-draft/review?segmentKey=ksu-football-2026-non-renewals', heading: 'Campaign Asset Review' },
+  { path: '/campaigns/ksu-football-2026-non-renewals-campaign/results?segmentKey=ksu-football-2026-non-renewals', heading: 'KSU Football Season Ticket Sales Campaign' },
+  { path: '/campaigns/ksu-football-2026-non-renewals-campaign/follow-up?segmentKey=ksu-football-2026-non-renewals', heading: 'Campaign Follow-Up' },
   { path: '/approvals', heading: 'Approvals' },
   { path: '/knowledge', heading: 'Knowledge Brain' },
   { path: '/voice', heading: 'Voice Commands' },
   { path: '/connector-runs', heading: 'Connector Runs' },
   { path: '/tasks/task-1', heading: 'Task Detail' },
   { path: '/approvals/approval-1', heading: 'Approval Review' },
+  { path: '/approvals/ksu-football-2026-non-renewals-draft-launch-approval?segmentKey=ksu-football-2026-non-renewals', heading: 'Approval Review' },
 ];
 
 test('public navigation reflects role-aware gating', async ({ page }) => {
@@ -95,6 +103,37 @@ test('task and approval detail pages surface clear operator next actions', async
   } else {
     await expect(page.getByText('No approval requests yet.')).toBeVisible();
   }
+});
+
+test('segment to campaign shell path stays navigable end to end', async ({ page }) => {
+  await page.goto('/segments');
+  await expect(page.getByRole('heading', { name: 'Segments' })).toBeVisible();
+  await page.getByRole('link', { name: 'Open segment detail' }).first().click();
+
+  await expect(page.getByRole('heading', { name: '2026 KSU Football Non-Renewals' })).toBeVisible();
+  await page.getByRole('link', { name: 'Open prefilled campaign builder' }).click();
+
+  await expect(page.getByRole('heading', { name: 'Prefilled Campaign Builder' })).toBeVisible();
+  await expect(page.getByText(/KSU Football Season Ticket Sales Campaign/i)).toBeVisible();
+  await page.getByRole('link', { name: 'Open generated asset review shell' }).click();
+
+  await expect(page.getByRole('heading', { name: 'Campaign Asset Review' })).toBeVisible();
+  await expect(page.getByText(/Review Summary/i)).toBeVisible();
+  await page.getByRole('link', { name: 'Open launch approval shell' }).click();
+
+  await expect(page.getByRole('heading', { name: 'Approval Review' })).toBeVisible();
+  await expect(page.getByText(/shared route\/state contract layer/i)).toBeVisible();
+  await page.getByRole('link', { name: 'Open post-decision results shell' }).click();
+
+  await expect(page.getByRole('heading', { name: 'KSU Football Season Ticket Sales Campaign' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Recommended Next Campaign' })).toBeVisible();
+});
+
+test('voice mapped routes open the new shell paths', async ({ page }) => {
+  await page.goto('/voice');
+  await expect(page.getByRole('heading', { name: 'Voice Commands' })).toBeVisible();
+  await page.getByRole('link', { name: 'Open mapped route' }).first().click();
+  await expect(page.getByRole('heading', { name: '2026 KSU Football Non-Renewals' })).toBeVisible();
 });
 
 test('org setup hands off intake state into the workforce blueprint', async ({ page }) => {
