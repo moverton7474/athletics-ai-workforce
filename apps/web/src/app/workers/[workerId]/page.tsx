@@ -1,6 +1,5 @@
 import { getWorkerWorkspaceContent } from '../../../data/mock-worker-workspace';
-import { MemoryCaptureForm } from '../../../components/memory/MemoryCaptureForm';
-import { WorkerContinuityPanel } from '../../../components/workers/WorkerContinuityPanel';
+import { WorkerMemoryWorkspaceSection } from '../../../components/workers/WorkerMemoryWorkspaceSection';
 import { WorkerWorkspaceShell } from '../../../components/workers/WorkerWorkspaceShell';
 import { listApprovals } from '../../../lib/services/approvals';
 import { listMemoryEntriesForWorker } from '../../../lib/services/memory';
@@ -64,27 +63,12 @@ export default async function WorkerDetailPage({ params }: WorkerPageProps) {
                 : 'Use this workspace to turn role-specific context into organized, reviewable work.'}
           </p>
         </section>
-        <WorkerContinuityPanel
+        <WorkerMemoryWorkspaceSection
           worker={worker}
           tasks={workerTasks}
           approvals={workerApprovals}
-          memoryEntries={memoryEntries}
+          initialMemoryEntries={memoryEntries}
         />
-        <section style={{ border: '1px solid #eee', borderRadius: 12, padding: 16, display: 'grid', gap: 12 }}>
-          <div>
-            <h3 style={{ marginTop: 0, marginBottom: 8 }}>Capture Worker Memory</h3>
-            <p style={{ margin: 0 }}>
-              Save handoffs, signals, and operator notes directly against {worker.name} so continuity can be captured inside the workspace where the work happens.
-            </p>
-          </div>
-          <MemoryCaptureForm
-            workers={[{ id: worker.id, name: worker.name, roleName: worker.roleName }]}
-            tasks={workerTasks.map((task) => ({ id: task.id, title: task.title }))}
-            approvals={workerApprovals.map((approval) => ({ id: approval.id, title: approval.title }))}
-            initialWorkerId={worker.id}
-            lockWorker
-          />
-        </section>
       </section>
     </WorkerWorkspaceShell>
   );

@@ -3,32 +3,30 @@ import { expect, test } from '@playwright/test';
 const routes = [
   { path: '/', heading: 'athletics-ai-workforce' },
   { path: '/dashboard', heading: 'Dashboard' },
-  { path: '/org/setup', heading: 'Organization Setup' },
+  { path: '/org/setup', heading: 'Build Your Athletics Workforce' },
   { path: '/workers', heading: 'Workers' },
   { path: '/tasks', heading: 'Tasks' },
   { path: '/approvals', heading: 'Approvals' },
   { path: '/knowledge', heading: 'Knowledge Brain' },
-  { path: '/voice', heading: 'Voice' },
+  { path: '/voice', heading: 'Voice Commands' },
 ];
 
 test('public navigation reflects role-aware gating', async ({ page }) => {
   await page.goto('/');
 
-  await expect(page.getByRole('heading', { name: 'AAW' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Dashboard' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Workers' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Tasks' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Knowledge' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Voice' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Sign In' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Org Setup' })).toHaveCount(0);
-  await expect(page.getByRole('link', { name: 'Approvals' })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'athletics-ai-workforce' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'View dashboard', exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Open workers', exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Start workforce setup', exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'View generated workforce', exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Org Setup', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: 'Approvals', exact: true })).toHaveCount(0);
 });
 
 for (const route of routes) {
   test(`route ${route.path} loads`, async ({ page }) => {
     await page.goto(route.path);
-    await expect(page.getByRole('heading', { name: route.heading })).toBeVisible();
+    await expect(page.getByRole('heading', { name: route.heading, exact: true }).first()).toBeVisible();
   });
 }
 

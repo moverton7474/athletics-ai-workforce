@@ -2,8 +2,7 @@ export const dynamic = 'force-dynamic';
 
 import { KnowledgeCard } from '../../components/knowledge/KnowledgeCard';
 import { KnowledgeIngestionForm } from '../../components/knowledge/KnowledgeIngestionForm';
-import { MemoryCaptureForm } from '../../components/memory/MemoryCaptureForm';
-import { MemoryEntryList } from '../../components/memory/MemoryEntryList';
+import { KnowledgeMemorySection } from '../../components/knowledge/KnowledgeMemorySection';
 import { DataSourceNotice } from '../../components/system/DataSourceNotice';
 import { listApprovals } from '../../lib/services/approvals';
 import { listKnowledgeItems } from '../../lib/services/knowledge';
@@ -54,30 +53,13 @@ export default async function KnowledgePage() {
       <section style={{ display: 'grid', gap: 24, gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))' }}>
         <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16, display: 'grid', gap: 12 }}>
           <div>
-            <h2 style={{ marginTop: 0, marginBottom: 8 }}>Capture Memory</h2>
-            <p style={{ margin: 0 }}>Write continuity notes directly into the backend so handoffs and reminders survive context resets.</p>
-          </div>
-          <MemoryCaptureForm
-            workers={workers.map((worker) => ({ id: worker.id, name: worker.name, roleName: worker.roleName }))}
-            tasks={tasks.map((task) => ({ id: task.id, title: task.title }))}
-            approvals={approvals.map((approval) => ({ id: approval.id, title: approval.title }))}
-          />
-        </section>
-        <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16, display: 'grid', gap: 12 }}>
-          <div>
             <h2 style={{ marginTop: 0, marginBottom: 8 }}>Capture Knowledge</h2>
             <p style={{ margin: 0 }}>Store durable documents, source references, and reusable operating context.</p>
           </div>
           <KnowledgeIngestionForm />
         </section>
       </section>
-      <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16, display: 'grid', gap: 16 }}>
-        <div>
-          <h2 style={{ marginTop: 0, marginBottom: 8 }}>Recent Continuity Feed</h2>
-          <p style={{ margin: 0 }}>Recent memory entries that keep tasks, handoffs, and operator guidance from disappearing between sessions.</p>
-        </div>
-        <MemoryEntryList initialEntries={memoryEntries} limit={6} emptyMessage="No memory entries captured yet." />
-      </section>
+      <KnowledgeMemorySection initialEntries={memoryEntries} workers={workers} tasks={tasks} approvals={approvals} />
       <section style={{ display: 'grid', gap: 24 }}>
         <div>
           <h2 style={{ marginBottom: 8 }}>Organization Memory</h2>
