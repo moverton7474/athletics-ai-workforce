@@ -99,3 +99,7 @@ export async function createCampaignDraft(payload: CampaignDraftPayload) {
 export async function updateCampaignDraft(draftKey: string, payload: CampaignDraftUpdatePayload) {
   return sendJson(`/api/campaign-drafts/${draftKey}`, 'PATCH', payload);
 }
+
+export async function submitCampaignDraftForApproval(draftKey: string) {
+  return postJson(`/api/campaign-drafts/${draftKey}/submit-approval`, {});
+}

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { CampaignDraftPersistencePanel } from '../../../../../components/campaigns/CampaignDraftPersistencePanel';
 import { CampaignReviewSummaryEditor } from '../../../../../components/campaigns/CampaignReviewSummaryEditor';
+import { SubmitCampaignForApprovalButton } from '../../../../../components/campaigns/SubmitCampaignForApprovalButton';
 import { DataSourceNotice } from '../../../../../components/system/DataSourceNotice';
 import { getCampaignReviewForRouteState } from '../../../../../lib/services/route-state';
 
@@ -14,6 +15,12 @@ export default async function CampaignDraftReviewPage({
   const { draftId } = await params;
   const resolvedSearchParams = await searchParams;
   const { reviewState, draftRecord, source, error } = await getCampaignReviewForRouteState(draftId, resolvedSearchParams?.segmentKey);
+  const draftDetails: Record<string, unknown> =
+    draftRecord.details && typeof draftRecord.details === 'object'
+      ? (draftRecord.details as Record<string, unknown>)
+      : {};
+  const approvalRoute = typeof draftDetails.nextApprovalRoute === 'string' ? draftDetails.nextApprovalRoute : undefined;
+  const approvalStatus = typeof draftDetails.approvalStatus === 'string' ? draftDetails.approvalStatus : undefined;
 
   return (
     <main style={{ padding: 32, fontFamily: 'sans-serif', display: 'grid', gap: 24 }}>
@@ -31,10 +38,17 @@ export default async function CampaignDraftReviewPage({
         <p style={{ margin: '8px 0' }}>Draft status: <strong>{draftRecord.status}</strong></p>
         <p style={{ margin: '8px 0' }}>Draft key: {draftRecord.draftKey}</p>
         <p style={{ margin: '8px 0' }}>Last updated: {draftRecord.updatedAt ?? 'Not persisted yet'}</p>
+        <p style={{ margin: '8px 0' }}>Approval status: <strong>{approvalStatus ?? 'not submitted'}</strong></p>
         <p style={{ margin: '8px 0 0' }}>Pending channels: {reviewState.pendingChannels.join(', ')}</p>
       </section>
 
       <CampaignReviewSummaryEditor draftKey={draftRecord.draftKey} initialSummary={reviewState.reviewSummary} />
+
+      <SubmitCampaignForApprovalButton
+        draftKey={draftRecord.draftKey}
+        existingApprovalRoute={approvalRoute}
+        existingApprovalStatus={approvalStatus}
+      />
 
       <CampaignDraftPersistencePanel
         mode="update"

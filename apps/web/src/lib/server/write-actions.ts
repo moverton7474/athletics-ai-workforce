@@ -65,6 +65,10 @@ function normalizeOptional(value?: string) {
   return trimmed ? trimmed : null;
 }
 
+function asRecord(value: unknown) {
+  return value && typeof value === 'object' ? (value as Record<string, unknown>) : {};
+}
+
 function mapMemoryEntryRow(entry: any): MemoryEntryDTO {
   const metadata = entry.metadata && typeof entry.metadata === 'object' ? entry.metadata : {};
   const tags = Array.isArray(metadata.tags)
@@ -483,7 +487,7 @@ export async function updateCampaignDraft(draftKey: string, payload: CampaignDra
     return { success: false, mode: serverMode, message: 'Campaign draft not found.' };
   }
 
-  const currentDetails = existing.data.details && typeof existing.data.details === 'object' ? existing.data.details : {};
+  const currentDetails = asRecord(existing.data.details);
   const mergedDetails = payload.details ? { ...currentDetails, ...payload.details } : currentDetails;
 
   const { data, error } = await client
@@ -515,5 +519,149 @@ export async function updateCampaignDraft(draftKey: string, payload: CampaignDra
         ? 'Campaign draft updated through the server action path.'
         : 'Campaign draft updated using the public Supabase key path.',
     draft: data ? mapCampaignDraftRow(data) : null,
+  };
+}
+
+export async function submitCampaignDraftForApproval(draftKey: string) {
+  if (!draftKey.trim()) {
+    return { success: false, mode: 'validation', message: 'Draft key is required.' };
+  }
+
+  const client = getSupabaseServerClient();
+  const serverMode = getSupabaseServerMode();
+
+  if (!client) {
+    return {
+      success: true,
+      mode: 'stub',
+      message: 'Supabase server env vars are not configured yet. Approval handoff validated but not persisted.',
+      approvalRoute: `/approvals/${draftKey}-launch-approval`,
+    };
+  }
+
+  const existingDraft = await client
+    .from('campaign_drafts')
+    .select('*')
+    .eq('draft_key', draftKey)
+    .eq('organization_id', DEMO_ORGANIZATION_ID)
+    .maybeSingle();
+
+  if (existingDraft.error) {
+    return { success: false, mode: serverMode, message: existingDraft.error.message };
+  }
+
+  if (!existingDraft.data) {
+    return { success: false, mode: serverMode, message: 'Campaign draft not found.' };
+  }
+
+  const draft = existingDraft.data;
+  const draftDetails = asRecord(draft.details);
+  const existingApprovalId = typeof draftDetails.approvalId === 'string' ? draftDetails.approvalId : null;
+
+  if (existingApprovalId) {
+    const existingApproval = await client
+      .from('approvals')
+      .select('id, status')
+      .eq('id', existingApprovalId)
+      .eq('organization_id', DEMO_ORGANIZATION_ID)
+      .maybeSingle();
+
+    if (existingApproval.error) {
+      return { success: false, mode: serverMode, message: existingApproval.error.message };
+    }
+
+    if (existingApproval.data) {
+      return {
+        success: true,
+        mode: serverMode,
+        message: 'Campaign draft is already linked to an approval record.',
+        approvalId: existingApproval.data.id,
+        approvalRoute: `/approvals/${existingApproval.data.id}`,
+      };
+    }
+  }
+
+  const now = new Date().toISOString();
+  const reviewTask = await client
+    .from('tasks')
+    .insert({
+      organization_id: DEMO_ORGANIZATION_ID,
+      title: `Review launch approval for ${draft.title}`,
+      description: 'Review campaign draft readiness before launch or scheduling is allowed.',
+      status: 'queued',
+      priority: 'high',
+    })
+    .select('id')
+    .single();
+
+  if (reviewTask.error) {
+    return { success: false, mode: serverMode, message: reviewTask.error.message };
+  }
+
+  const approvalInsert = await client
+    .from('approvals')
+    .insert({
+      organization_id: DEMO_ORGANIZATION_ID,
+      task_id: reviewTask.data.id,
+      approval_type: 'campaign_launch',
+      status: 'pending',
+      requested_action: 'campaign_launch',
+      target_system: 'athletics_ai_workforce',
+      entity_type: 'campaign_draft',
+      entity_name: draft.title,
+      stage: 'draft_review',
+      title: `Approve campaign launch for ${draft.title}`,
+      summary: 'Review the campaign draft, assets, and launch readiness before scheduling or send.',
+      next_action_label: 'Approve, reject, or request changes before launch',
+      details: {
+        workflow_kind: 'campaign_launch_review',
+        draft_key: draft.draft_key,
+        campaign_key: draft.campaign_key,
+        segment_key: draft.segment_key,
+        requested_action: 'campaign_launch',
+        target_system: 'athletics_ai_workforce',
+        entity_type: 'campaign_draft',
+        entity_name: draft.title,
+        stage: 'draft_review',
+        recommended_next_action: 'Approve, reject, or request changes before launch',
+        draft_status: draft.status,
+        draft_objective: draft.objective,
+        submitted_at: now,
+      },
+    })
+    .select('id, status')
+    .single();
+
+  if (approvalInsert.error) {
+    return { success: false, mode: serverMode, message: approvalInsert.error.message };
+  }
+
+  const approvalRoute = `/approvals/${approvalInsert.data.id}`;
+  const draftUpdate = await client
+    .from('campaign_drafts')
+    .update({
+      status: 'awaiting_approval',
+      details: {
+        ...draftDetails,
+        approvalId: approvalInsert.data.id,
+        approvalStatus: approvalInsert.data.status,
+        nextApprovalRoute: approvalRoute,
+        workflowState: 'awaiting_approval',
+      },
+      updated_at: now,
+    })
+    .eq('draft_key', draftKey)
+    .eq('organization_id', DEMO_ORGANIZATION_ID);
+
+  if (draftUpdate.error) {
+    return { success: false, mode: serverMode, message: draftUpdate.error.message };
+  }
+
+  return {
+    success: true,
+    mode: serverMode,
+    message: 'Campaign draft routed into approvals.',
+    approvalId: approvalInsert.data.id,
+    approvalRoute,
   };
 }

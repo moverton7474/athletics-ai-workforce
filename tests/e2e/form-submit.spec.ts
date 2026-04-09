@@ -41,3 +41,10 @@ test('campaign review can update a persisted draft record', async ({ page }) => 
   await page.getByRole('button', { name: 'Update draft record' }).click();
   await expect(page.getByText(/Campaign draft (updated|update validated)/i)).toBeVisible();
 });
+
+test('campaign review can route a draft into approval handoff', async ({ page }) => {
+  await page.goto('/campaigns/drafts/ksu-football-2026-non-renewals-draft/review?segmentKey=ksu-football-2026-non-renewals');
+
+  await page.getByRole('button', { name: 'Submit for approval' }).click();
+  await expect(page.getByText(/(routed into approvals|already linked to an approval record|Approval handoff validated)/i)).toBeVisible();
+});
