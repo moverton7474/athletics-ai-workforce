@@ -1,5 +1,5 @@
 import { DEMO_ORGANIZATION_ID } from '../constants';
-import type { MemoryEntryDTO } from '../types';
+import type { CampaignChannelConfig, CampaignDraftRecordDTO, GeneratedAsset, MemoryEntryDTO } from '../types';
 import { getSupabaseServerClient, getSupabaseServerMode } from './supabase-admin';
 
 type OrgProfilePayload = {
@@ -38,6 +38,28 @@ type MemoryUpdatePayload = {
   pinned?: boolean;
 };
 
+type CampaignDraftPayload = {
+  draftKey: string;
+  campaignKey?: string;
+  segmentKey: string;
+  title: string;
+  objective?: string;
+  status?: string;
+  selectedChannels?: CampaignChannelConfig[];
+  assets?: GeneratedAsset[];
+  details?: Record<string, unknown>;
+};
+
+type CampaignDraftUpdatePayload = {
+  campaignKey?: string;
+  title?: string;
+  objective?: string;
+  status?: string;
+  selectedChannels?: CampaignChannelConfig[];
+  assets?: GeneratedAsset[];
+  details?: Record<string, unknown>;
+};
+
 function normalizeOptional(value?: string) {
   const trimmed = value?.trim();
   return trimmed ? trimmed : null;
@@ -65,6 +87,21 @@ function mapMemoryEntryRow(entry: any): MemoryEntryDTO {
     tags,
     pinned: metadata.pinned === true,
     createdAt: entry.created_at,
+  };
+}
+
+function mapCampaignDraftRow(draft: any): CampaignDraftRecordDTO {
+  return {
+    draftKey: draft.draft_key,
+    campaignKey: draft.campaign_key,
+    segmentKey: draft.segment_key,
+    title: draft.title,
+    objective: draft.objective,
+    status: draft.status,
+    selectedChannels: Array.isArray(draft.selected_channels) ? draft.selected_channels : [],
+    assets: Array.isArray(draft.assets) ? draft.assets : [],
+    details: draft.details && typeof draft.details === 'object' ? draft.details : {},
+    updatedAt: draft.updated_at,
   };
 }
 
@@ -356,5 +393,127 @@ export async function deleteMemory(memoryEntryId: string) {
       serverMode === 'service_role'
         ? 'Memory entry deleted through the server action path.'
         : 'Memory entry deleted using the public Supabase key path.',
+  };
+}
+
+export async function createCampaignDraft(payload: CampaignDraftPayload) {
+  if (!payload.draftKey.trim()) {
+    return { success: false, mode: 'validation', message: 'Draft key is required.' };
+  }
+
+  if (!payload.segmentKey.trim()) {
+    return { success: false, mode: 'validation', message: 'Segment key is required.' };
+  }
+
+  if (!payload.title.trim()) {
+    return { success: false, mode: 'validation', message: 'Campaign title is required.' };
+  }
+
+  const client = getSupabaseServerClient();
+  const serverMode = getSupabaseServerMode();
+
+  if (!client) {
+    return {
+      success: true,
+      mode: 'stub',
+      message: 'Supabase server env vars are not configured yet. Campaign draft payload validated but not persisted.',
+    };
+  }
+
+  const { data, error } = await client
+    .from('campaign_drafts')
+    .upsert({
+      organization_id: DEMO_ORGANIZATION_ID,
+      draft_key: payload.draftKey.trim(),
+      campaign_key: normalizeOptional(payload.campaignKey),
+      segment_key: payload.segmentKey.trim(),
+      title: payload.title.trim(),
+      objective: normalizeOptional(payload.objective),
+      status: normalizeOptional(payload.status) ?? 'draft',
+      selected_channels: Array.isArray(payload.selectedChannels) ? payload.selectedChannels : [],
+      assets: Array.isArray(payload.assets) ? payload.assets : [],
+      details: payload.details ?? {},
+    }, { onConflict: 'draft_key' })
+    .select('*')
+    .single();
+
+  if (error) {
+    return { success: false, mode: serverMode, message: error.message };
+  }
+
+  return {
+    success: true,
+    mode: serverMode,
+    message:
+      serverMode === 'service_role'
+        ? 'Campaign draft saved through the server action path.'
+        : 'Campaign draft saved using the public Supabase key path.',
+    draft: data ? mapCampaignDraftRow(data) : null,
+  };
+}
+
+export async function updateCampaignDraft(draftKey: string, payload: CampaignDraftUpdatePayload) {
+  if (!draftKey.trim()) {
+    return { success: false, mode: 'validation', message: 'Draft key is required.' };
+  }
+
+  const client = getSupabaseServerClient();
+  const serverMode = getSupabaseServerMode();
+
+  if (!client) {
+    return {
+      success: true,
+      mode: 'stub',
+      message: 'Supabase server env vars are not configured yet. Campaign draft update validated but not persisted.',
+    };
+  }
+
+  const existing = await client
+    .from('campaign_drafts')
+    .select('*')
+    .eq('draft_key', draftKey)
+    .eq('organization_id', DEMO_ORGANIZATION_ID)
+    .maybeSingle();
+
+  if (existing.error) {
+    return { success: false, mode: serverMode, message: existing.error.message };
+  }
+
+  if (!existing.data) {
+    return { success: false, mode: serverMode, message: 'Campaign draft not found.' };
+  }
+
+  const currentDetails = existing.data.details && typeof existing.data.details === 'object' ? existing.data.details : {};
+  const mergedDetails = payload.details ? { ...currentDetails, ...payload.details } : currentDetails;
+
+  const { data, error } = await client
+    .from('campaign_drafts')
+    .update({
+      campaign_key: payload.campaignKey !== undefined ? normalizeOptional(payload.campaignKey) : existing.data.campaign_key,
+      title: payload.title !== undefined ? payload.title.trim() : existing.data.title,
+      objective: payload.objective !== undefined ? normalizeOptional(payload.objective) : existing.data.objective,
+      status: payload.status !== undefined ? payload.status.trim() : existing.data.status,
+      selected_channels: Array.isArray(payload.selectedChannels) ? payload.selectedChannels : existing.data.selected_channels,
+      assets: Array.isArray(payload.assets) ? payload.assets : existing.data.assets,
+      details: mergedDetails,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('draft_key', draftKey)
+    .eq('organization_id', DEMO_ORGANIZATION_ID)
+    .select('*')
+    .single();
+
+  if (error) {
+    return { success: false, mode: serverMode, message: error.message };
+  }
+
+  return {
+    success: true,
+    mode: serverMode,
+    message:
+      serverMode === 'service_role'
+        ? 'Campaign draft updated through the server action path.'
+        : 'Campaign draft updated using the public Supabase key path.',
+    draft: data ? mapCampaignDraftRow(data) : null,
   };
 }

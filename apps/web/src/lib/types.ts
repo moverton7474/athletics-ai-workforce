@@ -256,3 +256,16 @@ export interface NavigationIntentState {
   highlightedEntityId?: string;
   prefillMeta: RoutePrefillMeta;
 }
+
+export interface CampaignDraftRecordDTO {
+  draftKey: string;
+  campaignKey?: string | null;
+  segmentKey: string;
+  title: string;
+  objective?: string | null;
+  status: string;
+  selectedChannels: CampaignChannelConfig[];
+  assets: GeneratedAsset[];
+  details?: Record<string, unknown>;
+  updatedAt?: string;
+}

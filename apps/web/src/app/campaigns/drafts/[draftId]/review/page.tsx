@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { CampaignDraftPersistencePanel } from '../../../../../components/campaigns/CampaignDraftPersistencePanel';
 import { DataSourceNotice } from '../../../../../components/system/DataSourceNotice';
 import { getCampaignReviewForRouteState } from '../../../../../lib/services/route-state';
 
@@ -28,6 +29,25 @@ export default async function CampaignDraftReviewPage({
         <p style={{ margin: '8px 0' }}>{reviewState.reviewSummary}</p>
         <p style={{ margin: '8px 0 0' }}>Pending channels: {reviewState.pendingChannels.join(', ')}</p>
       </section>
+
+      <CampaignDraftPersistencePanel
+        mode="update"
+        draftKey={reviewState.draftId}
+        campaignKey={`${reviewState.linkedSegment.segmentKey}-campaign`}
+        segmentKey={reviewState.linkedSegment.segmentKey}
+        title={`${reviewState.linkedSegment.label} Campaign Draft`}
+        objective={reviewState.linkedSegment.recommendedObjective}
+        status="ready_for_review"
+        selectedChannels={reviewState.assets.map((asset) => ({ channel: asset.channel, enabled: true }))}
+        assets={reviewState.assets}
+        details={{
+          reviewSummary: reviewState.reviewSummary,
+          pendingChannels: reviewState.pendingChannels,
+          approvedChannels: reviewState.approvedChannels,
+          rejectedChannels: reviewState.rejectedChannels,
+          nextApprovalRoute: reviewState.nextApprovalRoute,
+        }}
+      />
 
       <section style={{ display: 'grid', gap: 16 }}>
         {reviewState.assets.map((asset) => (

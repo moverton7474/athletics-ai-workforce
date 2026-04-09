@@ -34,6 +34,28 @@ type MemoryUpdatePayload = {
   pinned?: boolean;
 };
 
+type CampaignDraftPayload = {
+  draftKey: string;
+  campaignKey?: string;
+  segmentKey: string;
+  title: string;
+  objective?: string;
+  status?: string;
+  selectedChannels?: unknown[];
+  assets?: unknown[];
+  details?: Record<string, unknown>;
+};
+
+type CampaignDraftUpdatePayload = {
+  campaignKey?: string;
+  title?: string;
+  objective?: string;
+  status?: string;
+  selectedChannels?: unknown[];
+  assets?: unknown[];
+  details?: Record<string, unknown>;
+};
+
 async function sendJson(path: string, method: 'POST' | 'PATCH' | 'DELETE', payload?: unknown) {
   const response = await fetch(path, {
     method,
@@ -68,4 +90,12 @@ export async function updateMemoryEntry(memoryEntryId: string, payload: MemoryUp
 
 export async function deleteMemoryEntry(memoryEntryId: string) {
   return sendJson(`/api/memory-entries/${memoryEntryId}`, 'DELETE');
+}
+
+export async function createCampaignDraft(payload: CampaignDraftPayload) {
+  return postJson('/api/campaign-drafts', payload);
+}
+
+export async function updateCampaignDraft(draftKey: string, payload: CampaignDraftUpdatePayload) {
+  return sendJson(`/api/campaign-drafts/${draftKey}`, 'PATCH', payload);
 }

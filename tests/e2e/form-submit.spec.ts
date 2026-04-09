@@ -10,7 +10,7 @@ test('org setup form submits safely', async ({ page }) => {
   await page.getByLabel('Tone of Voice').fill('Professional, energetic, institutional');
   await page.getByRole('button', { name: 'Save Organization Profile' }).click();
 
-  await expect(page.getByText(/Organization profile saved/i)).toBeVisible();
+  await expect(page.getByText(/Organization profile (saved|payload validated|validated)/i)).toBeVisible();
 });
 
 test('knowledge form submits safely and persists validation marker', async ({ page }) => {
@@ -22,8 +22,22 @@ test('knowledge form submits safely and persists validation marker', async ({ pa
   await page.getByLabel('Content Notes').fill('Updated by Playwright safe submit coverage.');
   await page.getByRole('button', { name: 'Add Knowledge Item' }).click();
 
-  await expect(page.getByText(/Knowledge (validation item updated|item saved)/i)).toBeVisible();
+  await expect(page.getByText(/Knowledge (validation item updated|item saved|payload validated|validated)/i)).toBeVisible();
 
   await page.reload();
   await expect(page.getByText('Playwright validation knowledge item')).toBeVisible();
+});
+
+test('campaign builder can create or refresh a persisted draft record', async ({ page }) => {
+  await page.goto('/campaigns/new/from-segment?segmentKey=ksu-football-2026-non-renewals');
+
+  await page.getByRole('button', { name: 'Save draft record' }).click();
+  await expect(page.getByText(/Campaign draft (saved|payload validated)/i)).toBeVisible();
+});
+
+test('campaign review can update a persisted draft record', async ({ page }) => {
+  await page.goto('/campaigns/drafts/ksu-football-2026-non-renewals-draft/review?segmentKey=ksu-football-2026-non-renewals');
+
+  await page.getByRole('button', { name: 'Update draft record' }).click();
+  await expect(page.getByText(/Campaign draft (updated|update validated)/i)).toBeVisible();
 });

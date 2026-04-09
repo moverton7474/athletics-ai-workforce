@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { CampaignDraftPersistencePanel } from '../../../../components/campaigns/CampaignDraftPersistencePanel';
 import { DataSourceNotice } from '../../../../components/system/DataSourceNotice';
 import { getCampaignBuilderForRouteState } from '../../../../lib/services/route-state';
 
@@ -9,6 +10,7 @@ export default async function NewCampaignFromSegmentPage({
 }) {
   const resolvedSearchParams = await searchParams;
   const { builderState, source, error } = await getCampaignBuilderForRouteState(resolvedSearchParams?.segmentKey, 'voice');
+  const draftKey = builderState.draftId ?? `${builderState.linkedSegment.segmentKey}-draft`;
 
   return (
     <main style={{ padding: 32, fontFamily: 'sans-serif', display: 'grid', gap: 24 }}>
@@ -41,6 +43,25 @@ export default async function NewCampaignFromSegmentPage({
           ))}
         </ul>
       </section>
+
+      <CampaignDraftPersistencePanel
+        mode={source === 'supabase' ? 'update' : 'create'}
+        draftKey={draftKey}
+        campaignKey={builderState.campaignId ?? `${builderState.linkedSegment.segmentKey}-campaign`}
+        segmentKey={builderState.linkedSegment.segmentKey}
+        title={builderState.campaignName ?? 'Campaign draft'}
+        objective={builderState.campaignObjective}
+        status="draft"
+        selectedChannels={builderState.selectedChannels}
+        assets={[]}
+        details={{
+          operatorNotes: builderState.operatorNotes,
+          prefilledFields: builderState.prefilledFields,
+          operatorOverrides: builderState.operatorOverrides,
+          missingRequiredFields: builderState.missingRequiredFields,
+          approvalRequired: builderState.approvalRequired,
+        }}
+      />
 
       <section style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         <Link href={builderState.reviewRoute}>Open generated asset review shell</Link>
