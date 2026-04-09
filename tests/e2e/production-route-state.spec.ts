@@ -18,7 +18,7 @@ test.describe('deployed route-state persistence', () => {
     await expect(page.getByText(/Campaign draft updated/i)).toBeVisible();
 
     await page.reload();
-    await expect(page.getByText(marker)).toBeVisible();
-    await expect(summaryField).toHaveValue(marker);
+    await expect(page.getByRole('textbox', { name: 'Review Summary' })).toHaveValue(marker);
+    await expect(page.locator('p').filter({ hasText: marker }).first()).toBeVisible();
   });
 });
