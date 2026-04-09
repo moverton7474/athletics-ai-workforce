@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { WorkforceDeploymentSequence } from '../../components/onboarding/WorkforceDeploymentSequence';
 import { TeamRecommendationPreview } from '../../components/onboarding/TeamRecommendationPreview';
 import { WorkforceLaunchPlan } from '../../components/onboarding/WorkforceLaunchPlan';
 
@@ -76,6 +77,13 @@ export default async function TeamPage({ searchParams }: TeamPageProps) {
       </section>
 
       <TeamRecommendationPreview
+        industry={profile.industry}
+        targetCustomers={profile.targetCustomers}
+        toneOfVoice={profile.toneOfVoice}
+        primaryGoals={profile.primaryGoals}
+      />
+
+      <WorkforceDeploymentSequence
         industry={profile.industry}
         targetCustomers={profile.targetCustomers}
         toneOfVoice={profile.toneOfVoice}
