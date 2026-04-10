@@ -19,21 +19,24 @@ export function RecentMemoryWidget({
   }
 
   return (
-    <section>
-      <h2>Recent Memory</h2>
+    <section style={{ border: '1px solid #ddd', borderRadius: 16, padding: 18, display: 'grid', gap: 14, background: '#fff' }}>
+      <div>
+        <h2 style={{ marginTop: 0, marginBottom: 8 }}>Recent Memory</h2>
+        <p style={{ margin: 0, color: '#555' }}>Latest continuity notes, reminders, and context captures that should stay close to current operator work.</p>
+      </div>
       {recentEntries.length ? (
-        <ul>
+        <div style={{ display: 'grid', gap: 12 }}>
           {recentEntries.map((entry) => (
-            <li key={entry.id}>
+            <article key={entry.id} style={{ border: '1px solid #f0f0f0', borderRadius: 12, padding: 14 }}>
               <strong>{entry.summary ?? entry.content}</strong>
-              <div>
+              <div style={{ marginTop: 8, color: '#555' }}>
                 {entry.memoryType.replaceAll('_', ' ')} · {entry.visibilityScope.replaceAll('_', ' ')} · {getWorkerLabel(entry.workerId)}
               </div>
-            </li>
+            </article>
           ))}
-        </ul>
+        </div>
       ) : (
-        <p>No recent memory captured yet.</p>
+        <p style={{ margin: 0 }}>No recent memory captured yet.</p>
       )}
     </section>
   );
