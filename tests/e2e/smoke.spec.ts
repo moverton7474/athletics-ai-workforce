@@ -143,6 +143,19 @@ test('segment to campaign shell path stays navigable end to end', async ({ page 
   await expect(page.getByRole('heading', { name: 'Recommended Next Campaign' })).toBeVisible();
 });
 
+test('worker surfaces show ownership, workflow, and continuity context', async ({ page }) => {
+  await page.goto('/workers');
+  await expect(page.getByText('Shared organization workspace').first()).toBeVisible();
+  await expect(page.getByText('Personal operator workspace').first()).toBeVisible();
+  await expect(page.getByText('Pending approvals').first()).toBeVisible();
+
+  await page.getByRole('link', { name: 'Open workspace' }).first().click();
+  await expect(page.getByRole('heading', { name: 'Workspace Ownership' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Workflow Ownership' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Continuity Signals' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Operator trust surface' })).toBeVisible();
+});
+
 test('voice mapped routes open the new shell paths', async ({ page }) => {
   await page.goto('/voice');
   await expect(page.getByRole('heading', { name: 'Voice Commands' })).toBeVisible();

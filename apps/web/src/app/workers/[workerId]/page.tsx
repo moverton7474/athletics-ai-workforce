@@ -4,7 +4,7 @@ import { WorkerWorkspaceShell } from '../../../components/workers/WorkerWorkspac
 import { listApprovals } from '../../../lib/services/approvals';
 import { listMemoryEntriesForWorker } from '../../../lib/services/memory';
 import { listTasks } from '../../../lib/services/tasks';
-import { getWorkerById } from '../../../lib/services/workers';
+import { getWorkerWorkspaceSnapshot } from '../../../lib/services/workers';
 
 type WorkerPageProps = {
   params: Promise<{ workerId: string }>;
@@ -12,7 +12,7 @@ type WorkerPageProps = {
 
 export default async function WorkerDetailPage({ params }: WorkerPageProps) {
   const { workerId } = await params;
-  const worker = await getWorkerById(workerId);
+  const { worker, snapshot } = await getWorkerWorkspaceSnapshot(workerId);
 
   if (!worker) {
     return (
@@ -36,7 +36,7 @@ export default async function WorkerDetailPage({ params }: WorkerPageProps) {
     .slice(0, 4);
 
   return (
-    <WorkerWorkspaceShell worker={worker} activeTab="chat">
+    <WorkerWorkspaceShell worker={worker} activeTab="chat" snapshot={snapshot}>
       <section style={{ display: 'grid', gap: 16 }}>
         <div>
           <h2 style={{ marginTop: 0, marginBottom: 8 }}>Chat Workspace</h2>
@@ -55,13 +55,25 @@ export default async function WorkerDetailPage({ params }: WorkerPageProps) {
         </section>
         <section style={{ border: '1px solid #eee', borderRadius: 12, padding: 16 }}>
           <h3 style={{ marginTop: 0 }}>Current focus</h3>
-          <p style={{ marginBottom: 0 }}>
+          <p style={{ marginBottom: 8 }}>
             {worker.roleName === 'Sponsorship Intelligence'
               ? 'Use this workspace to analyze sponsor signals, package proposal recommendations, and surface approval-worthy actions.'
               : worker.roleName === 'Chief of Staff'
                 ? 'Use this workspace to coordinate cross-team execution, summarize priorities, and keep leadership aligned on next actions.'
                 : 'Use this workspace to turn role-specific context into organized, reviewable work.'}
           </p>
+          {snapshot ? (
+            <p style={{ margin: 0, color: '#555' }}>
+              Worker-owned workload: {snapshot.openTaskCount} open tasks · {snapshot.pendingApprovalCount} pending approvals · {snapshot.linkedMemoryCount} linked memory threads.
+            </p>
+          ) : null}
+        </section>
+        <section style={{ border: '1px solid #eee', borderRadius: 12, padding: 16, display: 'grid', gap: 10 }}>
+          <h3 style={{ marginTop: 0, marginBottom: 0 }}>Operator trust surface</h3>
+          <p style={{ margin: 0 }}>
+            Keep accountability obvious here: what this worker owns, what is blocked on approval, and what continuity notes are strong enough to survive a handoff.
+          </p>
+          {snapshot ? <p style={{ margin: 0, color: '#555' }}>{snapshot.handoffSummary}</p> : null}
         </section>
         <WorkerMemoryWorkspaceSection
           worker={worker}

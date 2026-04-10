@@ -1,6 +1,6 @@
 import { getWorkerWorkspaceContent } from '../../../../data/mock-worker-workspace';
 import { WorkerWorkspaceShell } from '../../../../components/workers/WorkerWorkspaceShell';
-import { getWorkerById } from '../../../../lib/services/workers';
+import { getWorkerWorkspaceSnapshot } from '../../../../lib/services/workers';
 
 type WorkerSettingsPageProps = {
   params: Promise<{ workerId: string }>;
@@ -8,7 +8,7 @@ type WorkerSettingsPageProps = {
 
 export default async function WorkerSettingsPage({ params }: WorkerSettingsPageProps) {
   const { workerId } = await params;
-  const worker = await getWorkerById(workerId);
+  const { worker, snapshot } = await getWorkerWorkspaceSnapshot(workerId);
 
   if (!worker) {
     return (
@@ -22,12 +22,19 @@ export default async function WorkerSettingsPage({ params }: WorkerSettingsPageP
   const content = getWorkerWorkspaceContent(worker);
 
   return (
-    <WorkerWorkspaceShell worker={worker} activeTab="settings">
+    <WorkerWorkspaceShell worker={worker} activeTab="settings" snapshot={snapshot}>
       <section style={{ display: 'grid', gap: 12 }}>
         <div>
           <h2 style={{ marginTop: 0, marginBottom: 8 }}>Worker Settings</h2>
           <p style={{ margin: 0 }}>Assignment mode, integration posture, and future runtime controls should live here.</p>
         </div>
+        {snapshot ? (
+          <section style={{ border: '1px solid #eee', borderRadius: 12, padding: 16 }}>
+            <h3 style={{ marginTop: 0, marginBottom: 8 }}>Ownership and trust defaults</h3>
+            <p style={{ margin: '0 0 8px 0' }}><strong>{snapshot.ownershipLabel}</strong> · {snapshot.accountabilityLabel}</p>
+            <p style={{ margin: 0, color: '#555' }}>Settings should make it obvious whether this worker is allowed to stay private, when work becomes team-visible, and how approval-linked actions are governed.</p>
+          </section>
+        ) : null}
         <section style={{ border: '1px solid #eee', borderRadius: 12, padding: 16 }}>
           <h3 style={{ marginTop: 0 }}>Worker Mode Policy</h3>
           <p style={{ margin: 0 }}>

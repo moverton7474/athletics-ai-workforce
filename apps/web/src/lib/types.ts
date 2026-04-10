@@ -22,6 +22,24 @@ export interface WorkerDTO {
   tabs: WorkerTab[];
 }
 
+export interface WorkerWorkspaceSnapshotDTO {
+  workerId: string;
+  ownershipLabel: string;
+  accountabilityLabel: string;
+  navigationLabel: string;
+  collaborationSummary: string;
+  handoffSummary: string;
+  routeEntrySummary: string;
+  openTaskCount: number;
+  activeTaskCount: number;
+  pendingApprovalCount: number;
+  linkedApprovalCount: number;
+  linkedMemoryCount: number;
+  pinnedMemoryCount: number;
+  taskLinkedMemoryCount: number;
+  approvalLinkedMemoryCount: number;
+}
+
 export interface TaskDTO {
   id: string;
   organizationId: string;

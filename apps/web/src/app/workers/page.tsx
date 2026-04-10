@@ -3,10 +3,10 @@ export const dynamic = 'force-dynamic';
 import { WorkerCard } from '../../components/workers/WorkerCard';
 import { WorkerModeGuide } from '../../components/workers/WorkerModeGuide';
 import { DataSourceNotice } from '../../components/system/DataSourceNotice';
-import { listWorkers } from '../../lib/services/workers';
+import { listWorkerWorkspaceSnapshots } from '../../lib/services/workers';
 
 export default async function WorkersPage() {
-  const { workers, source, error } = await listWorkers();
+  const { workers, snapshots, source, error } = await listWorkerWorkspaceSnapshots();
   const sharedWorkers = workers.filter((worker) => worker.mode === 'shared');
   const personalWorkers = workers.filter((worker) => worker.mode === 'personal');
 
@@ -25,7 +25,7 @@ export default async function WorkersPage() {
         </div>
         <div style={{ display: 'grid', gap: 16 }}>
           {sharedWorkers.map((worker) => (
-            <WorkerCard key={worker.id} worker={worker} />
+            <WorkerCard key={worker.id} worker={worker} snapshot={snapshots[worker.id]} />
           ))}
         </div>
       </section>
@@ -36,7 +36,7 @@ export default async function WorkersPage() {
         </div>
         <div style={{ display: 'grid', gap: 16 }}>
           {personalWorkers.map((worker) => (
-            <WorkerCard key={worker.id} worker={worker} />
+            <WorkerCard key={worker.id} worker={worker} snapshot={snapshots[worker.id]} />
           ))}
         </div>
       </section>
