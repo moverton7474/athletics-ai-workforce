@@ -75,7 +75,8 @@ export function CampaignNextActionCard({
   return (
     <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16, display: 'grid', gap: 12 }}>
       <div>
-        <h2 style={{ marginTop: 0, marginBottom: 8 }}>{title}</h2>
+        <h2 style={{ marginTop: 0, marginBottom: 8 }}>Operator Next Action</h2>
+        <h3 style={{ marginTop: 0, marginBottom: 8 }}>{title}</h3>
         <p style={{ margin: 0 }}>{description}</p>
       </div>
       {href && linkLabel ? (

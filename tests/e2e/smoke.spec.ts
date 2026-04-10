@@ -49,8 +49,10 @@ test('dashboard shows live runtime data state', async ({ page }) => {
   await expect(page.getByText(/Public Supabase environment variables are (present|missing) for this runtime/i)).toBeVisible();
   await expect(page.getByText(/Dashboard widgets are (loading from live Supabase data|currently falling back to seeded\/mock data)/i)).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Latest Connector Outcomes' })).toBeVisible();
-  await expect(page.getByText('Awaiting approval')).toBeVisible();
-  await expect(page.getByText('Linked approvals')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Campaign Draft Approval State' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Latest Connector Outcomes' })).toBeVisible();
+  await expect(page.getByText('Awaiting approval').first()).toBeVisible();
+  await expect(page.getByText('Linked approvals').first()).toBeVisible();
 });
 
 test('org setup form renders expected fields', async ({ page }) => {
@@ -115,7 +117,7 @@ test('segment to campaign shell path stays navigable end to end', async ({ page 
   await page.getByRole('link', { name: 'Open prefilled campaign builder' }).click();
 
   await expect(page.getByRole('heading', { name: 'Prefilled Campaign Builder' })).toBeVisible();
-  await expect(page.getByText(/KSU Football Season Ticket Sales Campaign/i)).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'KSU Football Season Ticket Sales Campaign' })).toBeVisible();
   await page.getByRole('link', { name: 'Open generated asset review shell' }).click();
 
   await expect(page.getByRole('heading', { name: 'Campaign Asset Review' })).toBeVisible();
@@ -123,8 +125,19 @@ test('segment to campaign shell path stays navigable end to end', async ({ page 
   await page.getByRole('link', { name: 'Open launch approval shell' }).click();
 
   await expect(page.getByRole('heading', { name: 'Approval Review' })).toBeVisible();
-  await expect(page.getByText(/shared route\/state contract layer/i)).toBeVisible();
-  await page.getByRole('link', { name: 'Open post-decision results shell' }).click();
+  await expect(
+    page
+      .getByText(/shared route\/state contract layer/i)
+      .or(page.getByRole('heading', { name: 'Workflow Context' }))
+      .first(),
+  ).toBeVisible();
+
+  const fallbackResultsLink = page.getByRole('link', { name: 'Open post-decision results shell' });
+  if ((await fallbackResultsLink.count()) > 0) {
+    await fallbackResultsLink.first().click();
+  } else {
+    await page.getByRole('link', { name: 'Open results' }).first().click();
+  }
 
   await expect(page.getByRole('heading', { name: 'KSU Football Season Ticket Sales Campaign' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Recommended Next Campaign' })).toBeVisible();

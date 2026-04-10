@@ -176,10 +176,15 @@ function mapCampaignFollowUpState(row: any): CampaignFollowUpState {
   const campaignKey = row.campaign_key ?? `${row.segment_key}-campaign`;
   const fallback = getCampaignFollowUpState(campaignKey, row.segment_key);
 
+  const details = row.details && typeof row.details === 'object' ? row.details : {};
+
   return {
     ...fallback,
     campaignId: campaignKey,
-    campaignName: row.title ?? fallback.campaignName,
+    campaignName:
+      typeof details.campaignName === 'string'
+        ? details.campaignName
+        : fallback.campaignName,
     resultStatus: typeof row.details?.resultStatus === 'string' ? row.details.resultStatus : fallback.resultStatus,
     performanceSummary:
       typeof row.details?.performanceSummary === 'string'

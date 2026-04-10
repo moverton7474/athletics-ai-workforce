@@ -16,6 +16,7 @@ export function CampaignDraftPersistencePanel({
   selectedChannels,
   assets,
   details,
+  actionLabel,
 }: {
   mode: 'create' | 'update';
   draftKey: string;
@@ -27,6 +28,7 @@ export function CampaignDraftPersistencePanel({
   selectedChannels: CampaignChannelConfig[];
   assets: GeneratedAsset[];
   details?: Record<string, unknown>;
+  actionLabel?: string;
 }) {
   const router = useRouter();
   const [message, setMessage] = useState<string | null>(null);
@@ -73,7 +75,7 @@ export function CampaignDraftPersistencePanel({
       </p>
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         <button type="button" onClick={handleClick}>
-          {mode === 'create' ? 'Save draft record' : 'Update draft record'}
+          {actionLabel ?? (mode === 'create' ? 'Save draft record' : 'Update draft record')}
         </button>
       </div>
       {message ? <p style={{ margin: 0 }}>{message}</p> : null}

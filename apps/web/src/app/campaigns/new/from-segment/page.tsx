@@ -58,6 +58,7 @@ export default async function NewCampaignFromSegmentPage({
 
       <CampaignDraftPersistencePanel
         mode={source === 'supabase' ? 'update' : 'create'}
+        actionLabel="Save draft record"
         draftKey={draftKey}
         campaignKey={builderState.campaignId ?? `${builderState.linkedSegment.segmentKey}-campaign`}
         segmentKey={builderState.linkedSegment.segmentKey}

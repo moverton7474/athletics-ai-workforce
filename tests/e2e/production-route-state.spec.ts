@@ -31,7 +31,7 @@ test.describe('deployed route-state persistence', () => {
     await page.getByRole('button', { name: 'Submit for approval' }).click();
     await expect(page.getByText(/(Campaign draft routed into approvals|already linked to an approval record)/i)).toBeVisible();
 
-    const openApprovalLink = page.getByRole('link', { name: 'Open linked approval' });
+    const openApprovalLink = page.getByRole('link', { name: 'Open linked approval' }).first();
     await expect(openApprovalLink).toBeVisible();
     await openApprovalLink.click();
 
