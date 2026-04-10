@@ -36,6 +36,7 @@ export function CampaignReviewSummaryEditor({
               status: 'ready_for_review',
               details: {
                 reviewSummary: summary,
+                reviewSummaryUpdatedAt: new Date().toISOString(),
               },
             });
             setMessage(result.message ?? null);

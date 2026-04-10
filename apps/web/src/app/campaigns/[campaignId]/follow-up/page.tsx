@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import { CampaignNextActionCard } from '../../../../components/campaigns/CampaignNextActionCard';
 import { CampaignWorkflowStatusCard } from '../../../../components/campaigns/CampaignWorkflowStatusCard';
+import { CampaignWorkflowTimeline } from '../../../../components/campaigns/CampaignWorkflowTimeline';
 import { DataSourceNotice } from '../../../../components/system/DataSourceNotice';
+import { buildCampaignWorkflowEvents } from '../../../../lib/campaign-workflow-events';
 import { getCampaignFollowUpForRouteState } from '../../../../lib/services/route-state';
 
 export default async function CampaignFollowUpPage({
@@ -18,6 +20,18 @@ export default async function CampaignFollowUpPage({
     draftRecord.details && typeof draftRecord.details === 'object'
       ? (draftRecord.details as Record<string, unknown>)
       : {};
+  const workflowEvents = buildCampaignWorkflowEvents({
+    draftStatus: draftRecord.status,
+    draftUpdatedAt: draftRecord.updatedAt,
+    reviewSummary: typeof draftDetails.reviewSummary === 'string' ? draftDetails.reviewSummary : undefined,
+    reviewSummaryUpdatedAt: typeof draftDetails.reviewSummaryUpdatedAt === 'string' ? draftDetails.reviewSummaryUpdatedAt : undefined,
+    approvalSubmittedAt: typeof draftDetails.approvalSubmittedAt === 'string' ? draftDetails.approvalSubmittedAt : undefined,
+    approvalStatus: typeof draftDetails.approvalStatus === 'string' ? draftDetails.approvalStatus : undefined,
+    approvalDecisionNote: typeof draftDetails.approvalDecisionNote === 'string' ? draftDetails.approvalDecisionNote : undefined,
+    approvalDecidedAt: typeof draftDetails.approvalDecidedAt === 'string' ? draftDetails.approvalDecidedAt : undefined,
+    outcomeTaskId: typeof draftDetails.outcomeTaskId === 'string' ? draftDetails.outcomeTaskId : undefined,
+    outcomeTaskCreatedAt: typeof draftDetails.outcomeTaskCreatedAt === 'string' ? draftDetails.outcomeTaskCreatedAt : undefined,
+  });
 
   return (
     <main style={{ padding: 32, fontFamily: 'sans-serif', display: 'grid', gap: 24 }}>
@@ -51,6 +65,8 @@ export default async function CampaignFollowUpPage({
         resultsRoute={`/campaigns/${campaignId}/results?segmentKey=${draftRecord.segmentKey}`}
         followUpRoute={`/campaigns/${campaignId}/follow-up?segmentKey=${draftRecord.segmentKey}`}
       />
+
+      <CampaignWorkflowTimeline events={workflowEvents} />
 
       <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16 }}>
         <h2 style={{ marginTop: 0 }}>Follow-Up Recommendation</h2>

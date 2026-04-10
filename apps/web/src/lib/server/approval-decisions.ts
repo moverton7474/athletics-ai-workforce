@@ -248,6 +248,7 @@ export async function decideApproval(approvalId: string, decision: ApprovalDecis
             approvalDecisionNote: trimmedNote,
             approvalDecidedAt: now,
             outcomeTaskId: followUpTask.data.id,
+            outcomeTaskCreatedAt: now,
             workflowState: mapDraftWorkflowState(decision),
           },
           updated_at: now,

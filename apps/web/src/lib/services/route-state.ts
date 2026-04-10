@@ -319,6 +319,7 @@ export async function getCampaignFollowUpForRouteState(campaignId: string, segme
         selectedChannels: [],
         assets: [],
         details: {},
+        updatedAt: undefined,
       },
       source: 'mock' as const,
       error: result.error,

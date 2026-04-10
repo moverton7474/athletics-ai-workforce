@@ -4,8 +4,10 @@ import Link from 'next/link';
 import { ApprovalActions } from '../../../components/approvals/ApprovalActions';
 import { CampaignNextActionCard } from '../../../components/campaigns/CampaignNextActionCard';
 import { CampaignWorkflowStatusCard } from '../../../components/campaigns/CampaignWorkflowStatusCard';
+import { CampaignWorkflowTimeline } from '../../../components/campaigns/CampaignWorkflowTimeline';
 import { MemoryEntryList } from '../../../components/memory/MemoryEntryList';
 import { DataSourceNotice } from '../../../components/system/DataSourceNotice';
+import { buildCampaignWorkflowEvents } from '../../../lib/campaign-workflow-events';
 import { getCurrentUserContext } from '../../../lib/server/membership';
 import { getApprovalDecisionState } from '../../../lib/voice-route-state';
 import { getApprovalById } from '../../../lib/services/approvals';
@@ -37,6 +39,24 @@ export default async function ApprovalDetailPage({
   const outcomeTask = approval?.outcomeTaskId ? tasks.find((task) => task.id === approval.outcomeTaskId) ?? null : null;
   const decisionHistory = Array.isArray(approval?.details?.decision_history)
     ? approval?.details?.decision_history.filter((entry): entry is Record<string, unknown> => !!entry && typeof entry === 'object')
+    : [];
+  const draftDetails: Record<string, unknown> =
+    draftRecord?.details && typeof draftRecord.details === 'object'
+      ? (draftRecord.details as Record<string, unknown>)
+      : {};
+  const workflowEvents = draftRecord
+    ? buildCampaignWorkflowEvents({
+        draftStatus: draftRecord.status,
+        draftUpdatedAt: draftRecord.updatedAt,
+        reviewSummary: typeof draftDetails.reviewSummary === 'string' ? draftDetails.reviewSummary : undefined,
+        reviewSummaryUpdatedAt: typeof draftDetails.reviewSummaryUpdatedAt === 'string' ? draftDetails.reviewSummaryUpdatedAt : undefined,
+        approvalSubmittedAt: typeof draftDetails.approvalSubmittedAt === 'string' ? draftDetails.approvalSubmittedAt : approval?.createdAt,
+        approvalStatus: approval?.status,
+        approvalDecisionNote: approval?.decisionNote ?? (typeof draftDetails.approvalDecisionNote === 'string' ? draftDetails.approvalDecisionNote : undefined),
+        approvalDecidedAt: approval?.decidedAt ?? (typeof draftDetails.approvalDecidedAt === 'string' ? draftDetails.approvalDecidedAt : undefined),
+        outcomeTaskId: approval?.outcomeTaskId ?? (typeof draftDetails.outcomeTaskId === 'string' ? draftDetails.outcomeTaskId : undefined),
+        outcomeTaskCreatedAt: typeof draftDetails.outcomeTaskCreatedAt === 'string' ? draftDetails.outcomeTaskCreatedAt : undefined,
+      })
     : [];
   const recommendedApprovalAction = !approval
     ? null
@@ -166,18 +186,21 @@ export default async function ApprovalDetailPage({
           </section>
 
           {draftRecord ? (
-            <CampaignWorkflowStatusCard
-              draftStatus={draftRecord.status}
-              approvalStatus={approval.status}
-              workflowState={typeof draftRecord.details?.workflowState === 'string' ? draftRecord.details.workflowState : undefined}
-              latestApprovalNote={approval.decisionNote ?? (typeof draftRecord.details?.approvalDecisionNote === 'string' ? draftRecord.details.approvalDecisionNote : undefined)}
-              approvalDecidedAt={approval.decidedAt ?? (typeof draftRecord.details?.approvalDecidedAt === 'string' ? draftRecord.details.approvalDecidedAt : undefined)}
-              outcomeTaskId={approval.outcomeTaskId ?? (typeof draftRecord.details?.outcomeTaskId === 'string' ? draftRecord.details.outcomeTaskId : undefined)}
-              reviewRoute={`/campaigns/drafts/${draftRecord.draftKey}/review?segmentKey=${draftRecord.segmentKey}`}
-              approvalRoute={`/approvals/${approval.id}`}
-              resultsRoute={`/campaigns/${draftRecord.campaignKey ?? `${draftRecord.segmentKey}-campaign`}/results?segmentKey=${draftRecord.segmentKey}`}
-              followUpRoute={`/campaigns/${draftRecord.campaignKey ?? `${draftRecord.segmentKey}-campaign`}/follow-up?segmentKey=${draftRecord.segmentKey}`}
-            />
+            <>
+              <CampaignWorkflowStatusCard
+                draftStatus={draftRecord.status}
+                approvalStatus={approval.status}
+                workflowState={typeof draftRecord.details?.workflowState === 'string' ? draftRecord.details.workflowState : undefined}
+                latestApprovalNote={approval.decisionNote ?? (typeof draftRecord.details?.approvalDecisionNote === 'string' ? draftRecord.details.approvalDecisionNote : undefined)}
+                approvalDecidedAt={approval.decidedAt ?? (typeof draftRecord.details?.approvalDecidedAt === 'string' ? draftRecord.details.approvalDecidedAt : undefined)}
+                outcomeTaskId={approval.outcomeTaskId ?? (typeof draftRecord.details?.outcomeTaskId === 'string' ? draftRecord.details.outcomeTaskId : undefined)}
+                reviewRoute={`/campaigns/drafts/${draftRecord.draftKey}/review?segmentKey=${draftRecord.segmentKey}`}
+                approvalRoute={`/approvals/${approval.id}`}
+                resultsRoute={`/campaigns/${draftRecord.campaignKey ?? `${draftRecord.segmentKey}-campaign`}/results?segmentKey=${draftRecord.segmentKey}`}
+                followUpRoute={`/campaigns/${draftRecord.campaignKey ?? `${draftRecord.segmentKey}-campaign`}/follow-up?segmentKey=${draftRecord.segmentKey}`}
+              />
+              <CampaignWorkflowTimeline events={workflowEvents} />
+            </>
           ) : null}
 
           <CampaignNextActionCard

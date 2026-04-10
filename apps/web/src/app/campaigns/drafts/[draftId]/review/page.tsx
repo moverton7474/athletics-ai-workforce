@@ -3,8 +3,10 @@ import { CampaignDraftPersistencePanel } from '../../../../../components/campaig
 import { CampaignNextActionCard } from '../../../../../components/campaigns/CampaignNextActionCard';
 import { CampaignReviewSummaryEditor } from '../../../../../components/campaigns/CampaignReviewSummaryEditor';
 import { CampaignWorkflowStatusCard } from '../../../../../components/campaigns/CampaignWorkflowStatusCard';
+import { CampaignWorkflowTimeline } from '../../../../../components/campaigns/CampaignWorkflowTimeline';
 import { SubmitCampaignForApprovalButton } from '../../../../../components/campaigns/SubmitCampaignForApprovalButton';
 import { DataSourceNotice } from '../../../../../components/system/DataSourceNotice';
+import { buildCampaignWorkflowEvents } from '../../../../../lib/campaign-workflow-events';
 import { getCampaignReviewForRouteState } from '../../../../../lib/services/route-state';
 
 export default async function CampaignDraftReviewPage({
@@ -25,6 +27,18 @@ export default async function CampaignDraftReviewPage({
   const approvalStatus = typeof draftDetails.approvalStatus === 'string' ? draftDetails.approvalStatus : undefined;
   const approvalDecisionNote = typeof draftDetails.approvalDecisionNote === 'string' ? draftDetails.approvalDecisionNote : undefined;
   const approvalDecidedAt = typeof draftDetails.approvalDecidedAt === 'string' ? draftDetails.approvalDecidedAt : undefined;
+  const workflowEvents = buildCampaignWorkflowEvents({
+    draftStatus: draftRecord.status,
+    draftUpdatedAt: draftRecord.updatedAt,
+    reviewSummary: reviewState.reviewSummary,
+    reviewSummaryUpdatedAt: typeof draftDetails.reviewSummaryUpdatedAt === 'string' ? draftDetails.reviewSummaryUpdatedAt : undefined,
+    approvalSubmittedAt: typeof draftDetails.approvalSubmittedAt === 'string' ? draftDetails.approvalSubmittedAt : undefined,
+    approvalStatus,
+    approvalDecisionNote,
+    approvalDecidedAt,
+    outcomeTaskId: typeof draftDetails.outcomeTaskId === 'string' ? draftDetails.outcomeTaskId : undefined,
+    outcomeTaskCreatedAt: typeof draftDetails.outcomeTaskCreatedAt === 'string' ? draftDetails.outcomeTaskCreatedAt : undefined,
+  });
 
   return (
     <main style={{ padding: 32, fontFamily: 'sans-serif', display: 'grid', gap: 24 }}>
@@ -71,6 +85,8 @@ export default async function CampaignDraftReviewPage({
         resultsRoute={`/campaigns/${draftRecord.campaignKey ?? `${draftRecord.segmentKey}-campaign`}/results?segmentKey=${draftRecord.segmentKey}`}
         followUpRoute={`/campaigns/${draftRecord.campaignKey ?? `${draftRecord.segmentKey}-campaign`}/follow-up?segmentKey=${draftRecord.segmentKey}`}
       />
+
+      <CampaignWorkflowTimeline events={workflowEvents} />
 
       <CampaignReviewSummaryEditor draftKey={draftRecord.draftKey} initialSummary={reviewState.reviewSummary} />
 

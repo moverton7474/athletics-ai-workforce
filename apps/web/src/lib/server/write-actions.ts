@@ -645,6 +645,7 @@ export async function submitCampaignDraftForApproval(draftKey: string) {
         ...draftDetails,
         approvalId: approvalInsert.data.id,
         approvalStatus: approvalInsert.data.status,
+        approvalSubmittedAt: now,
         nextApprovalRoute: approvalRoute,
         workflowState: 'awaiting_approval',
       },
