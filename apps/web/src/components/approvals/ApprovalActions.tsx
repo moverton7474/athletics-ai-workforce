@@ -53,28 +53,43 @@ export function ApprovalActions({ approvalId, approvalStatus, canDecide }: Appro
   }
 
   return (
-    <div style={{ display: 'grid', gap: 8, marginTop: 12 }}>
+    <div style={{ display: 'grid', gap: 12, marginTop: 12 }}>
       <label style={{ display: 'grid', gap: 6 }}>
         Review note
         <textarea
           aria-label="Review note"
           value={decisionNote}
           onChange={(event) => setDecisionNote(event.target.value)}
-          rows={3}
-          placeholder="Optional decision note"
+          rows={4}
+          placeholder="Capture the rationale, guardrails, or requested changes for the next operator."
+          style={{ border: '1px solid #ddd', borderRadius: 12, padding: 12, font: 'inherit' }}
         />
       </label>
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-        {Object.entries(decisionLabels).map(([value, label]) => (
-          <button
-            key={value}
-            type="button"
-            onClick={() => submitDecision(value as keyof typeof decisionLabels)}
-            disabled={Boolean(loadingDecision)}
-          >
-            {loadingDecision === value ? 'Saving…' : label}
-          </button>
-        ))}
+        <button
+          type="button"
+          onClick={() => submitDecision('approved')}
+          disabled={Boolean(loadingDecision)}
+          style={{ border: '1px solid #86efac', background: '#ecfdf3', borderRadius: 999, padding: '8px 14px' }}
+        >
+          {loadingDecision === 'approved' ? 'Saving…' : 'Approve'}
+        </button>
+        <button
+          type="button"
+          onClick={() => submitDecision('changes_requested')}
+          disabled={Boolean(loadingDecision)}
+          style={{ border: '1px solid #fdba74', background: '#fff7ed', borderRadius: 999, padding: '8px 14px' }}
+        >
+          {loadingDecision === 'changes_requested' ? 'Saving…' : 'Request changes'}
+        </button>
+        <button
+          type="button"
+          onClick={() => submitDecision('rejected')}
+          disabled={Boolean(loadingDecision)}
+          style={{ border: '1px solid #fca5a5', background: '#fef2f2', borderRadius: 999, padding: '8px 14px' }}
+        >
+          {loadingDecision === 'rejected' ? 'Saving…' : 'Reject'}
+        </button>
       </div>
       {decision ? <span>{decision}</span> : null}
       {error ? <span>{error}</span> : null}

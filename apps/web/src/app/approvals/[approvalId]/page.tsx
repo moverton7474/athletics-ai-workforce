@@ -89,16 +89,88 @@ export default async function ApprovalDetailPage({
       : escalationLevel === 'medium'
         ? { border: '#fdba74', background: '#fff7ed' }
         : { border: '#86efac', background: '#ecfdf3' };
+  const approvalDetails = approval?.details && typeof approval.details === 'object' ? approval.details : {};
+  const riskLevel = !approval
+    ? 'unknown'
+    : typeof approvalDetails.riskLevel === 'string'
+      ? approvalDetails.riskLevel
+      : approval.requestedAction === 'proposal_submit'
+        ? 'high'
+        : approval.approvalType.includes('launch') || approval.approvalType.includes('outreach')
+          ? 'medium'
+          : 'medium';
+  const confidenceLabel = !approval
+    ? 'unknown'
+    : typeof approvalDetails.confidence === 'string'
+      ? approvalDetails.confidence
+      : approval.connectorRunId
+        ? 'connector-backed recommendation'
+        : 'operator review required';
+  const expiresAt = !approval
+    ? null
+    : typeof approvalDetails.expiresAt === 'string'
+      ? approvalDetails.expiresAt
+      : null;
+  const reviewPosture = !approval
+    ? null
+    : approval.status === 'pending'
+      ? 'A human decision is still required before the governed workflow can move forward.'
+      : approval.status === 'approved'
+        ? 'The approval gate is cleared; the remaining risk is execution follow-through and handoff quality.'
+        : approval.status === 'changes_requested'
+          ? 'The workflow remains live, but work must be revised before another approval attempt.'
+          : 'The workflow was intentionally stopped and should only restart with clearer rationale.';
 
   return (
-    <main style={{ padding: 32, fontFamily: 'sans-serif', display: 'grid', gap: 24 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-        <div>
-          <h1 style={{ marginBottom: 8 }}>Approval Review</h1>
-          <p style={{ margin: 0 }}>Review workflow context, connector payloads, and the decision state for this approval.</p>
+    <main style={{ padding: 32, fontFamily: 'sans-serif', display: 'grid', gap: 24, background: 'linear-gradient(180deg, #fafafc 0%, #ffffff 260px)' }}>
+      <section
+        style={{
+          borderRadius: 24,
+          padding: 24,
+          background: 'linear-gradient(135deg, #111827 0%, #1f2937 50%, #312e81 100%)',
+          color: '#fff',
+          display: 'grid',
+          gap: 18,
+          boxShadow: '0 24px 60px rgba(15, 23, 42, 0.18)',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap' }}>
+          <div style={{ maxWidth: 760, display: 'grid', gap: 10 }}>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <span style={{ border: '1px solid rgba(255,255,255,0.18)', borderRadius: 999, padding: '6px 12px', background: 'rgba(255,255,255,0.08)' }}>Approval review</span>
+              <span style={{ border: '1px solid rgba(197,165,114,0.35)', borderRadius: 999, padding: '6px 12px', background: 'rgba(197,165,114,0.14)', color: '#f5deb3' }}>Human-in-the-loop gate</span>
+            </div>
+            <div>
+              <h1 style={{ margin: 0, marginBottom: 8 }}>Approval Review</h1>
+              <p style={{ margin: 0, color: 'rgba(255,255,255,0.82)', lineHeight: 1.6 }}>
+                Review workflow context, evaluate execution risk, capture rationale, and decide whether this work should move forward.
+              </p>
+            </div>
+          </div>
+          <Link href="/approvals" style={{ color: '#fff' }}>Back to approvals</Link>
         </div>
-        <Link href="/approvals">Back to approvals</Link>
-      </div>
+
+        <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
+          {[
+            { label: 'Status', value: approval ? approval.status.replaceAll('_', ' ') : 'unavailable', tone: '#fbbf24' },
+            { label: 'Risk level', value: riskLevel, tone: riskLevel === 'high' ? '#fca5a5' : riskLevel === 'medium' ? '#fcd34d' : '#86efac' },
+            { label: 'Confidence', value: confidenceLabel, tone: '#c4b5fd' },
+            { label: 'Expires', value: expiresAt ?? 'No expiry recorded', tone: '#93c5fd' },
+          ].map((item) => (
+            <article key={item.label} style={{ border: '1px solid rgba(255,255,255,0.12)', borderRadius: 18, padding: 16, background: 'rgba(255,255,255,0.06)' }}>
+              <div style={{ color: item.tone, fontWeight: 700, marginBottom: 6 }}>{item.label}</div>
+              <div style={{ color: 'rgba(255,255,255,0.88)' }}>{item.value}</div>
+            </article>
+          ))}
+        </div>
+
+        {reviewPosture ? (
+          <section style={{ border: '1px solid rgba(255,255,255,0.14)', borderRadius: 18, padding: 16, background: 'rgba(255,255,255,0.06)' }}>
+            <h2 style={{ marginTop: 0, marginBottom: 8, fontSize: 18 }}>Decision posture</h2>
+            <p style={{ margin: 0, color: 'rgba(255,255,255,0.82)' }}>{reviewPosture}</p>
+          </section>
+        ) : null}
+      </section>
 
       <DataSourceNotice source={source} entityLabel="Approval detail" error={error} />
 
@@ -150,7 +222,7 @@ export default async function ApprovalDetailPage({
         </section>
       ) : (
         <>
-          <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16, display: 'grid', gap: 12 }}>
+          <section style={{ border: '1px solid #ddd', borderRadius: 16, padding: 18, display: 'grid', gap: 14, background: '#fff' }}>
             <div>
               <h2 style={{ marginTop: 0, marginBottom: 8 }}>{approval.title}</h2>
               <p style={{ margin: 0 }}>
@@ -159,6 +231,23 @@ export default async function ApprovalDetailPage({
             </div>
 
             {approval.summary ? <p style={{ margin: 0 }}>{approval.summary}</p> : null}
+
+            <section style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+              <article style={{ border: '1px solid #f0f0f0', borderRadius: 12, padding: 14 }}>
+                <h3 style={{ marginTop: 0, marginBottom: 8 }}>Decision guardrail</h3>
+                <p style={{ margin: 0, color: '#555' }}>
+                  {approval.status === 'pending'
+                    ? 'Do not let this approval sit without rationale. Approve, reject, or request changes with an explicit note for the next operator.'
+                    : 'This decision already has a recorded state. The operator job now is making sure downstream work and rationale remain visible.'}
+                </p>
+              </article>
+              <article style={{ border: '1px solid #f0f0f0', borderRadius: 12, padding: 14 }}>
+                <h3 style={{ marginTop: 0, marginBottom: 8 }}>Autonomy posture</h3>
+                <p style={{ margin: 0, color: '#555' }}>
+                  This workflow is intentionally human-gated. Risk, context, and downstream action ownership should all be visible before execution moves forward.
+                </p>
+              </article>
+            </section>
 
             <div style={{ display: 'grid', gap: 8 }}>
               <h3 style={{ margin: 0 }}>Workflow Context</h3>
