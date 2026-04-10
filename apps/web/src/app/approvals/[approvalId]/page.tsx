@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic';
 
 import Link from 'next/link';
 import { ApprovalActions } from '../../../components/approvals/ApprovalActions';
+import { CampaignNextActionCard } from '../../../components/campaigns/CampaignNextActionCard';
 import { CampaignWorkflowStatusCard } from '../../../components/campaigns/CampaignWorkflowStatusCard';
 import { MemoryEntryList } from '../../../components/memory/MemoryEntryList';
 import { DataSourceNotice } from '../../../components/system/DataSourceNotice';
@@ -179,9 +180,20 @@ export default async function ApprovalDetailPage({
             />
           ) : null}
 
+          <CampaignNextActionCard
+            currentSurface="approval"
+            draftStatus={draftRecord?.status ?? 'awaiting_approval'}
+            approvalStatus={approval.status}
+            workflowState={typeof draftRecord?.details?.workflowState === 'string' ? draftRecord.details.workflowState : undefined}
+            reviewRoute={draftRecord ? `/campaigns/drafts/${draftRecord.draftKey}/review?segmentKey=${draftRecord.segmentKey}` : undefined}
+            approvalRoute={`/approvals/${approval.id}`}
+            resultsRoute={draftRecord ? `/campaigns/${draftRecord.campaignKey ?? `${draftRecord.segmentKey}-campaign`}/results?segmentKey=${draftRecord.segmentKey}` : undefined}
+            followUpRoute={draftRecord ? `/campaigns/${draftRecord.campaignKey ?? `${draftRecord.segmentKey}-campaign`}/follow-up?segmentKey=${draftRecord.segmentKey}` : undefined}
+          />
+
           <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16, display: 'grid', gap: 16 }}>
             <div>
-              <h2 style={{ marginTop: 0, marginBottom: 8 }}>Operator Next Action</h2>
+              <h2 style={{ marginTop: 0, marginBottom: 8 }}>Escalation / operator context</h2>
               <p style={{ margin: 0 }}>{recommendedApprovalAction}</p>
             </div>
             <section

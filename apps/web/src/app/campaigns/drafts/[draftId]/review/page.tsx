@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { CampaignDraftPersistencePanel } from '../../../../../components/campaigns/CampaignDraftPersistencePanel';
+import { CampaignNextActionCard } from '../../../../../components/campaigns/CampaignNextActionCard';
 import { CampaignReviewSummaryEditor } from '../../../../../components/campaigns/CampaignReviewSummaryEditor';
 import { CampaignWorkflowStatusCard } from '../../../../../components/campaigns/CampaignWorkflowStatusCard';
 import { SubmitCampaignForApprovalButton } from '../../../../../components/campaigns/SubmitCampaignForApprovalButton';
@@ -54,6 +55,17 @@ export default async function CampaignDraftReviewPage({
         latestApprovalNote={approvalDecisionNote}
         approvalDecidedAt={approvalDecidedAt}
         outcomeTaskId={typeof draftDetails.outcomeTaskId === 'string' ? draftDetails.outcomeTaskId : undefined}
+        reviewRoute={`/campaigns/drafts/${draftRecord.draftKey}/review?segmentKey=${draftRecord.segmentKey}`}
+        approvalRoute={approvalRoute}
+        resultsRoute={`/campaigns/${draftRecord.campaignKey ?? `${draftRecord.segmentKey}-campaign`}/results?segmentKey=${draftRecord.segmentKey}`}
+        followUpRoute={`/campaigns/${draftRecord.campaignKey ?? `${draftRecord.segmentKey}-campaign`}/follow-up?segmentKey=${draftRecord.segmentKey}`}
+      />
+
+      <CampaignNextActionCard
+        currentSurface="review"
+        draftStatus={draftRecord.status}
+        approvalStatus={approvalStatus}
+        workflowState={typeof draftDetails.workflowState === 'string' ? draftDetails.workflowState : undefined}
         reviewRoute={`/campaigns/drafts/${draftRecord.draftKey}/review?segmentKey=${draftRecord.segmentKey}`}
         approvalRoute={approvalRoute}
         resultsRoute={`/campaigns/${draftRecord.campaignKey ?? `${draftRecord.segmentKey}-campaign`}/results?segmentKey=${draftRecord.segmentKey}`}
