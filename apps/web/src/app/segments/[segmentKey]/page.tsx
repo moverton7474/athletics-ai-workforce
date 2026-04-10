@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { WorkflowEntryContextCard } from '../../../components/campaigns/WorkflowEntryContextCard';
 import { DataSourceNotice } from '../../../components/system/DataSourceNotice';
 import { getSegmentForRouteState } from '../../../lib/services/route-state';
 
@@ -14,6 +15,14 @@ export default async function SegmentDetailPage({ params }: { params: Promise<{ 
       </div>
 
       <DataSourceNotice source={source} entityLabel="Segment detail" error={error} />
+
+      <WorkflowEntryContextCard
+        entryMode={segment.prefillMeta.entryMode}
+        voiceActionMode={segment.prefillMeta.voiceActionMode}
+        sourceCommand={segment.prefillMeta.sourceCommand}
+        sourceWorker={segment.prefillMeta.sourceWorker}
+        confidence={segment.prefillMeta.confidence}
+      />
 
       <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16 }}>
         <h2 style={{ marginTop: 0 }}>Segment Context</h2>

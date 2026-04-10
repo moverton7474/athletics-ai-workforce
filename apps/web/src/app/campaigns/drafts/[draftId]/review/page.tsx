@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { CampaignDraftPersistencePanel } from '../../../../../components/campaigns/CampaignDraftPersistencePanel';
 import { CampaignNextActionCard } from '../../../../../components/campaigns/CampaignNextActionCard';
 import { CampaignReviewSummaryEditor } from '../../../../../components/campaigns/CampaignReviewSummaryEditor';
+import { WorkflowEntryContextCard } from '../../../../../components/campaigns/WorkflowEntryContextCard';
 import { CampaignWorkflowStatusCard } from '../../../../../components/campaigns/CampaignWorkflowStatusCard';
 import { CampaignWorkflowTimeline } from '../../../../../components/campaigns/CampaignWorkflowTimeline';
 import { SubmitCampaignForApprovalButton } from '../../../../../components/campaigns/SubmitCampaignForApprovalButton';
@@ -73,6 +74,14 @@ export default async function CampaignDraftReviewPage({
         approvalRoute={approvalRoute}
         resultsRoute={`/campaigns/${draftRecord.campaignKey ?? `${draftRecord.segmentKey}-campaign`}/results?segmentKey=${draftRecord.segmentKey}`}
         followUpRoute={`/campaigns/${draftRecord.campaignKey ?? `${draftRecord.segmentKey}-campaign`}/follow-up?segmentKey=${draftRecord.segmentKey}`}
+      />
+
+      <WorkflowEntryContextCard
+        entryMode={typeof draftDetails.entryMode === 'string' ? draftDetails.entryMode : reviewState.prefillMeta.entryMode}
+        voiceActionMode={typeof draftDetails.voiceActionMode === 'string' ? draftDetails.voiceActionMode : reviewState.prefillMeta.voiceActionMode}
+        sourceCommand={typeof draftDetails.sourceCommand === 'string' ? draftDetails.sourceCommand : reviewState.prefillMeta.sourceCommand}
+        sourceWorker={typeof draftDetails.sourceWorker === 'string' ? draftDetails.sourceWorker : reviewState.prefillMeta.sourceWorker}
+        confidence={typeof draftDetails.confidence === 'string' ? draftDetails.confidence : reviewState.prefillMeta.confidence}
       />
 
       <CampaignNextActionCard

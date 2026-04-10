@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { CampaignDraftPersistencePanel } from '../../../../components/campaigns/CampaignDraftPersistencePanel';
+import { WorkflowEntryContextCard } from '../../../../components/campaigns/WorkflowEntryContextCard';
 import { DataSourceNotice } from '../../../../components/system/DataSourceNotice';
 import { getCampaignBuilderForRouteState } from '../../../../lib/services/route-state';
 
@@ -22,6 +23,14 @@ export default async function NewCampaignFromSegmentPage({
       </div>
 
       <DataSourceNotice source={source} entityLabel="Campaign builder" error={error} />
+
+      <WorkflowEntryContextCard
+        entryMode={builderState.prefillMeta.entryMode}
+        voiceActionMode={builderState.prefillMeta.voiceActionMode}
+        sourceCommand={builderState.prefillMeta.sourceCommand}
+        sourceWorker={builderState.prefillMeta.sourceWorker}
+        confidence={builderState.prefillMeta.confidence}
+      />
 
       <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16 }}>
         <h2 style={{ marginTop: 0 }}>{builderState.campaignName}</h2>
@@ -63,6 +72,11 @@ export default async function NewCampaignFromSegmentPage({
           operatorOverrides: builderState.operatorOverrides,
           missingRequiredFields: builderState.missingRequiredFields,
           approvalRequired: builderState.approvalRequired,
+          entryMode: builderState.prefillMeta.entryMode,
+          voiceActionMode: builderState.prefillMeta.voiceActionMode,
+          sourceCommand: builderState.prefillMeta.sourceCommand,
+          sourceWorker: builderState.prefillMeta.sourceWorker,
+          confidence: builderState.prefillMeta.confidence,
         }}
       />
 

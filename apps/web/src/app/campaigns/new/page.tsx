@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { WorkflowEntryContextCard } from '../../../components/campaigns/WorkflowEntryContextCard';
 import { DataSourceNotice } from '../../../components/system/DataSourceNotice';
 import { getCampaignBuilderForRouteState } from '../../../lib/services/route-state';
 
@@ -13,6 +14,14 @@ export default async function NewCampaignPage() {
       </div>
 
       <DataSourceNotice source={source} entityLabel="Campaign builder" error={error} />
+
+      <WorkflowEntryContextCard
+        entryMode={builderState.prefillMeta.entryMode}
+        voiceActionMode={builderState.prefillMeta.voiceActionMode}
+        sourceCommand={builderState.prefillMeta.sourceCommand}
+        sourceWorker={builderState.prefillMeta.sourceWorker}
+        confidence={builderState.prefillMeta.confidence}
+      />
 
       <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16 }}>
         <h2 style={{ marginTop: 0 }}>Builder State</h2>
