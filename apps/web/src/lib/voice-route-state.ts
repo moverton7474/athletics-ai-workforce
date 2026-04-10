@@ -92,6 +92,27 @@ export const segmentLibrary: Record<string, SegmentContext> = {
       sourceWorker: 'chief_of_staff',
     }),
   },
+  'csos-sponsorship-pipeline': {
+    segmentKey: 'csos-sponsorship-pipeline',
+    sourceType: 'csos_query',
+    label: 'CSOS Sponsorship Pipeline',
+    summary: 'First narrow CSOS-backed read path for pipeline opportunities routed into the segment shell.',
+    rationale: 'Adapter-backed live read path proving the product can ingest a real CSOS query without broad connector sprawl.',
+    audienceCount: 2,
+    estimatedValue: 50000,
+    filterDefinition: {
+      queryText: 'csos sponsorship pipeline',
+      segmentKind: 'custom',
+      sort: 'priority_desc',
+    },
+    recommendedObjective: 'Review the live CSOS pipeline read and launch a targeted follow-up campaign from it.',
+    nextBestAction: 'Inspect the CSOS-backed opportunities, then open a campaign builder from the same segment shell.',
+    recoverableUrl: '/segments/csos-sponsorship-pipeline',
+    prefillMeta: buildPrefillMeta({
+      sourceCommand: 'show the csos sponsorship pipeline',
+      sourceWorker: 'sponsorship_intelligence',
+    }),
+  },
 };
 
 export function listSegmentContexts(): SegmentContext[] {

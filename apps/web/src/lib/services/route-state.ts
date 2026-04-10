@@ -20,6 +20,7 @@ import type {
   SegmentContext,
 } from '../types';
 import { fetchCampaignDrafts, fetchSegmentDefinitions } from '../supabase-queries';
+import { loadCsosSponsorshipPipelineRead } from '../server/csos-read-path';
 
 function normalizeChannels(value: unknown, fallback: CampaignChannelConfig[]): CampaignChannelConfig[] {
   return Array.isArray(value) && value.length ? (value as CampaignChannelConfig[]) : fallback;
@@ -27,6 +28,33 @@ function normalizeChannels(value: unknown, fallback: CampaignChannelConfig[]): C
 
 function normalizeAssets(value: unknown, fallback: GeneratedAsset[]): GeneratedAsset[] {
   return Array.isArray(value) && value.length ? (value as GeneratedAsset[]) : fallback;
+}
+
+async function buildCsosSponsorshipPipelineSegment(): Promise<SegmentContext> {
+  const fallback = getSegmentContext('csos-sponsorship-pipeline');
+  const response = await loadCsosSponsorshipPipelineRead();
+  const opportunities = Array.isArray(response.output?.opportunities)
+    ? response.output.opportunities.filter((opportunity): opportunity is Record<string, unknown> => !!opportunity && typeof opportunity === 'object')
+    : [];
+  const estimatedValue = opportunities.reduce((sum, opportunity) => {
+    const value = typeof opportunity.value === 'number' ? opportunity.value : 0;
+    return sum + value;
+  }, 0);
+
+  return {
+    ...fallback,
+    sourceType: response.mode === 'direct-read' ? 'csos_query' : fallback.sourceType,
+    summary:
+      response.mode === 'direct-read'
+        ? 'Live CSOS sponsorship pipeline read surfaced through the segment shell.'
+        : 'Stub CSOS sponsorship pipeline read surfaced through the segment shell.',
+    audienceCount: opportunities.length || fallback.audienceCount,
+    estimatedValue: estimatedValue || fallback.estimatedValue,
+    rationale: response.summary,
+    sourceRecordIds: opportunities
+      .map((opportunity) => (typeof opportunity.sponsor === 'string' ? opportunity.sponsor : null))
+      .filter((value): value is string => !!value),
+  };
 }
 
 function mapSegmentRow(row: any): SegmentContext {
@@ -170,22 +198,32 @@ function mapCampaignFollowUpState(row: any): CampaignFollowUpState {
 
 export async function listSegmentsForRouteState() {
   const result = await fetchSegmentDefinitions();
+  const csosSegment = await buildCsosSponsorshipPipelineSegment();
+
   if (result.error || !result.data.length) {
     return {
-      segments: mockSegmentRecords,
+      segments: [...mockSegmentRecords.filter((segment) => segment.segmentKey !== 'csos-sponsorship-pipeline'), csosSegment],
       source: 'mock' as const,
       error: result.error,
     };
   }
 
   return {
-    segments: (result.data as any[]).map(mapSegmentRow),
+    segments: [...(result.data as any[]).map(mapSegmentRow), csosSegment],
     source: 'supabase' as const,
     error: null,
   };
 }
 
 export async function getSegmentForRouteState(segmentKey?: string) {
+  if (segmentKey === 'csos-sponsorship-pipeline') {
+    return {
+      segment: await buildCsosSponsorshipPipelineSegment(),
+      source: 'mock' as const,
+      error: null,
+    };
+  }
+
   const result = await listSegmentsForRouteState();
   return {
     segment:

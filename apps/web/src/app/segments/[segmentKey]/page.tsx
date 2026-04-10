@@ -33,6 +33,21 @@ export default async function SegmentDetailPage({ params }: { params: Promise<{ 
         </pre>
       </section>
 
+      {segment.sourceType === 'csos_query' ? (
+        <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16 }}>
+          <h2 style={{ marginTop: 0 }}>CSOS Read Path Preview</h2>
+          {segment.sourceRecordIds?.length ? (
+            <ul style={{ marginBottom: 0 }}>
+              {segment.sourceRecordIds.map((recordId) => (
+                <li key={recordId}>{recordId}</li>
+              ))}
+            </ul>
+          ) : (
+            <p style={{ margin: 0 }}>No live opportunity names were returned yet.</p>
+          )}
+        </section>
+      ) : null}
+
       <section style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         <Link href={`/campaigns/new/from-segment?segmentKey=${segment.segmentKey}`}>Open prefilled campaign builder</Link>
         <Link href="/segments">Back to segments</Link>
