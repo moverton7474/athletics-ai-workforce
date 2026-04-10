@@ -14,6 +14,27 @@ Build `athletics-ai-workforce` as a Marblism-style AI workforce platform with st
 - uploaded agentic staffing platform package
 - KSU CSOS command surface and connector potential
 - Batman's Three Pillars / voice-first integration recommendations
+- Visionary AI Vision Board visual system, admin/settings patterns, and autonomy/consent UX
+- direct end-to-end codebase review of both Vision Board and KSU CSOS as reference systems for athletics-ai-workforce
+
+### Synthesis rule (2026-04-10)
+- **Vision Board** informs athletics-ai-workforce primarily on:
+  - visual system
+  - branding discipline
+  - premium admin/settings UX
+  - trust / consent / autonomy controls
+  - feature-flag and staged rollout patterns
+- **KSU CSOS** informs athletics-ai-workforce primarily on:
+  - workflow truth
+  - role / ownership governance
+  - work queues and approval logic
+  - rules/config architecture
+  - event/integration seams
+  - auditability and identity-resolution thinking
+- **athletics-ai-workforce** remains the synthesis layer and should not copy either repo wholesale.
+- Use CSOS for backend/workflow reference, not visual identity.
+- Use Vision Board for premium product expression and trust UX, not domain workflow truth.
+- Enforce schema-contract-implementation alignment more strictly than current CSOS drift allows.
 
 ---
 
@@ -93,6 +114,8 @@ Focus on the core workforce product before broad connector expansion.
 - strengthen worker workspace quality
 - improve chat / outputs / guidelines / settings experience
 - make the roster + worker surfaces feel product-grade
+- begin applying the route-by-route adoption plan from `ROUTE_ADOPTION_MAP_VISIONARY_CSOS.md`
+- borrow Vision Board premium/trust patterns into shell presentation while keeping athletics workflows and CSOS-backed governance primary
 
 #### 2. Shared vs personal worker model
 - make the operating model clearer in UX and data flow
@@ -184,6 +207,21 @@ Execute Option B: finish the core workforce system shell and workflow loop first
 3. continue Phase 2.3 workflow/approval hardening
 4. enforce startup/handoff/memory continuity discipline
 5. keep CSOS integration limited to adapter refinement + one live read path
+6. begin route-by-route adoption of:
+   - Vision Board trust/consent/admin-settings patterns
+   - CSOS rules/governance/event architecture
+   - distinct athletics-ai-workforce synthesis surfaces rather than direct copying
+
+### Current adoption planning artifact (2026-04-10)
+The route-level planning artifact for this synthesis work now exists at:
+- `ROUTE_ADOPTION_MAP_VISIONARY_CSOS.md`
+
+Use it to decide where Vision Board patterns should land first and where CSOS workflow/governance patterns should land first.
+
+Priority interpretation:
+- **Vision Board first** on presentation, settings, trust, consent, and premium admin surfaces
+- **CSOS first** on queues, approvals, role/ownership, rules/config, event seams, and workflow truth
+- **athletics-ai-workforce** owns the final route design, state model, and product shell
 
 ## Phase 1.5 - Voice Command Foundation
 ### Goals
