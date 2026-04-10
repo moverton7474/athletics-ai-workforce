@@ -145,8 +145,8 @@ test('segment to campaign shell path stays navigable end to end', async ({ page 
 
 test('worker surfaces show ownership, workflow, and continuity context', async ({ page }) => {
   await page.goto('/workers');
-  await expect(page.getByText('Shared organization workspace').first()).toBeVisible();
-  await expect(page.getByText('Personal operator workspace').first()).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Shared Workers' }).first()).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Personal Workers' }).first()).toBeVisible();
   await expect(page.getByText('Pending approvals').first()).toBeVisible();
 
   await page.getByRole('link', { name: 'Open workspace' }).first().click();
