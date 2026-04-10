@@ -68,6 +68,7 @@ export default async function NewCampaignFromSegmentPage({
         selectedChannels={builderState.selectedChannels}
         assets={[]}
         details={{
+          campaignName: builderState.campaignName,
           operatorNotes: builderState.operatorNotes,
           prefilledFields: builderState.prefilledFields,
           operatorOverrides: builderState.operatorOverrides,

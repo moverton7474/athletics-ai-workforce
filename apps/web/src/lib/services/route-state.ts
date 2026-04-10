@@ -133,7 +133,10 @@ function mapCampaignDraftRow(row: any): CampaignBuilderState {
     draftId: row.draft_key,
     campaignId: row.campaign_key ?? fallback.campaignId,
     linkedSegment,
-    campaignName: row.title ?? fallback.campaignName,
+    campaignName:
+      typeof details.campaignName === 'string'
+        ? details.campaignName
+        : fallback.campaignName,
     campaignObjective: row.objective ?? fallback.campaignObjective,
     selectedChannels: normalizeChannels(row.selected_channels, fallback.selectedChannels),
     operatorNotes: typeof details.operatorNotes === 'string' ? details.operatorNotes : fallback.operatorNotes,
