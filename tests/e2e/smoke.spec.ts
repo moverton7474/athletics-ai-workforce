@@ -156,6 +156,14 @@ test('worker surfaces show ownership, workflow, and continuity context', async (
   await expect(page.getByRole('heading', { name: 'Operator trust surface' })).toBeVisible();
 });
 
+test('worker settings surface autonomy and channel governance clearly', async ({ page }) => {
+  await page.goto('/workers/worker-chief-of-staff/settings');
+  await expect(page.getByRole('heading', { name: 'Autonomy & trust posture' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Channel & delivery governance' })).toBeVisible();
+  await expect(page.getByText('Confidence threshold').first()).toBeVisible();
+  await expect(page.getByText('Quiet hours / timing').first()).toBeVisible();
+});
+
 test('voice mapped routes open the new shell paths', async ({ page }) => {
   await page.goto('/voice');
   await expect(page.getByRole('heading', { name: 'Voice Commands' })).toBeVisible();
