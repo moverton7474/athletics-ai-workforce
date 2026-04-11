@@ -15,6 +15,9 @@ import { listMemoryEntriesForApproval } from '../../../lib/services/memory';
 import { getCampaignDraftRecordByKey } from '../../../lib/services/route-state';
 import { listTasks } from '../../../lib/services/tasks';
 
+const sectionStyle = { border: '1px solid #ddd', borderRadius: 12, padding: 16, display: 'grid', gap: 16 };
+const mutedLabelStyle = { fontSize: 12, letterSpacing: 0.4, textTransform: 'uppercase' as const, color: '#555', margin: 0 };
+
 export default async function ApprovalDetailPage({
   params,
   searchParams,
@@ -302,6 +305,64 @@ export default async function ApprovalDetailPage({
             resultsRoute={draftRecord ? `/campaigns/${draftRecord.campaignKey ?? `${draftRecord.segmentKey}-campaign`}/results?segmentKey=${draftRecord.segmentKey}` : undefined}
             followUpRoute={draftRecord ? `/campaigns/${draftRecord.campaignKey ?? `${draftRecord.segmentKey}-campaign`}/follow-up?segmentKey=${draftRecord.segmentKey}` : undefined}
           />
+
+          {draftRecord ? (
+            <section style={sectionStyle}>
+              <div>
+                <h2 style={{ marginTop: 0, marginBottom: 8 }}>Campaign Approval Frame</h2>
+                <p style={{ margin: 0 }}>
+                  This approval should be read as a governed launch decision for the campaign workflow, not as an isolated record. The operator should confirm
+                  asset readiness, rationale quality, and downstream ownership before clearing execution.
+                </p>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12 }}>
+                <article style={{ border: '1px solid #f0f0f0', borderRadius: 12, padding: 14 }}>
+                  <p style={mutedLabelStyle}>Linked draft</p>
+                  <p style={{ margin: '8px 0 0' }}>{draftRecord.title}</p>
+                </article>
+                <article style={{ border: '1px solid #f0f0f0', borderRadius: 12, padding: 14 }}>
+                  <p style={mutedLabelStyle}>Review summary</p>
+                  <p style={{ margin: '8px 0 0' }}>{typeof draftDetails.reviewSummary === 'string' ? draftDetails.reviewSummary : 'No review summary captured yet.'}</p>
+                </article>
+                <article style={{ border: '1px solid #f0f0f0', borderRadius: 12, padding: 14 }}>
+                  <p style={mutedLabelStyle}>Workflow state</p>
+                  <p style={{ margin: '8px 0 0' }}>{typeof draftDetails.workflowState === 'string' ? draftDetails.workflowState.replaceAll('_', ' ') : 'approval review'}</p>
+                </article>
+                <article style={{ border: '1px solid #f0f0f0', borderRadius: 12, padding: 14 }}>
+                  <p style={mutedLabelStyle}>Approval dependency</p>
+                  <p style={{ margin: '8px 0 0' }}>{approval.requestedAction ? approval.requestedAction.replaceAll('_', ' ') : 'campaign launch'}</p>
+                </article>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 12 }}>
+                <article style={{ border: '1px solid #f0f0f0', borderRadius: 12, padding: 14 }}>
+                  <h3 style={{ marginTop: 0, marginBottom: 8 }}>Approve when</h3>
+                  <ul style={{ margin: 0, paddingLeft: 18 }}>
+                    <li>the review summary is decision-ready</li>
+                    <li>the execution target is still correct</li>
+                    <li>the next owner is obvious after approval</li>
+                  </ul>
+                </article>
+                <article style={{ border: '1px solid #f0f0f0', borderRadius: 12, padding: 14 }}>
+                  <h3 style={{ marginTop: 0, marginBottom: 8 }}>Request changes when</h3>
+                  <ul style={{ margin: 0, paddingLeft: 18 }}>
+                    <li>the campaign direction is right but assets or rationale are weak</li>
+                    <li>the operator needs revisions before launch</li>
+                    <li>the workflow should stay alive but not move forward yet</li>
+                  </ul>
+                </article>
+                <article style={{ border: '1px solid #f0f0f0', borderRadius: 12, padding: 14 }}>
+                  <h3 style={{ marginTop: 0, marginBottom: 8 }}>Reject when</h3>
+                  <ul style={{ margin: 0, paddingLeft: 18 }}>
+                    <li>the campaign objective or audience is wrong</li>
+                    <li>the risk posture is unacceptable</li>
+                    <li>the workflow should stop rather than be revised</li>
+                  </ul>
+                </article>
+              </div>
+            </section>
+          ) : null}
 
           <section style={{ border: '1px solid #ddd', borderRadius: 12, padding: 16, display: 'grid', gap: 16 }}>
             <div>
