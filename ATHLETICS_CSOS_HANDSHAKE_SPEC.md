@@ -493,10 +493,10 @@ Not:
 ---
 
 ## Recommended First Live Workflow
-### Primary
+### Locked first workflow
 `KSU Football Non-Renewals`
 
-### Alternative
+### Alternative later
 `Top Football Season Ticket Prospects`
 
-Both fit this spec cleanly and can be supported by the first read bridge plus the existing athletics campaign workflow shell.
+Both fit this spec cleanly and can be supported by the first read bridge plus the existing athletics campaign workflow shell, with non-renewals now selected as the initial bridge target.

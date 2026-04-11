@@ -39,8 +39,8 @@ The MVP is successful when a user can:
 
 ---
 
-## Recommended First Workflow
-### Primary recommendation
+## Selected First Workflow
+### Locked workflow
 **KSU Football Non-Renewals**
 
 Why this first:
@@ -49,10 +49,10 @@ Why this first:
 - easier to explain and validate operationally
 - naturally leads into campaign draft + review + approval
 
-### Strong alternative
+### Strong alternative later
 **Top Football Season Ticket Prospects**
 
-Use this if the available CSOS query path is easier than non-renewals.
+Use this as the next cohort after the first bridge succeeds or if the available CSOS query path proves materially easier than non-renewals.
 
 ---
 
@@ -205,11 +205,10 @@ These are explicitly later-phase items:
 ---
 
 ## Immediate Next Decision
-Choose and lock one:
+The first workflow is now locked to:
 - **Primary:** `KSU Football Non-Renewals`
-- **Alternative:** `Top Football Season Ticket Prospects`
 
-Once that is locked, the next concrete work should be:
+The next concrete work should be:
 1. segment route upgrades
 2. capability inventory
 3. handshake spec

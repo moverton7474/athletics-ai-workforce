@@ -314,13 +314,13 @@ These are the capabilities I recommend exposing first from CSOS to athletics-ai-
 ---
 
 ## Best First Workflow Match
-### Recommended
+### Locked first workflow
 **KSU Football Non-Renewals**
 
-### Strong alternative
+### Strong alternative later
 **Top Football Season Ticket Prospects**
 
-These map most cleanly to the existing CSOS capabilities and the current athletics-ai-workforce MVP direction.
+These map most cleanly to the existing CSOS capabilities and the current athletics-ai-workforce MVP direction, with non-renewals now selected as the initial bridge target.
 
 ---
 
