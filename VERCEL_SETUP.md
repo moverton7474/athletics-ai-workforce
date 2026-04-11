@@ -14,6 +14,12 @@ Prepare athletics-ai-workforce for Vercel deployment when the app shell is ready
 - SUPABASE_PROJECT_ID
 - SUPABASE_ACCESS_TOKEN
 
+## Additional environment variables for the CSOS read bridge
+- CSOS_ADAPTER_USE_DIRECT_READS
+- CSOS_SUPABASE_URL
+- CSOS_SUPABASE_SERVICE_ROLE_KEY
+- CSOS_SUPABASE_ANON_KEY (optional fallback)
+
 ## Deployment notes
 - keep service-role keys server-only
 - do not expose connector secrets to client bundles
