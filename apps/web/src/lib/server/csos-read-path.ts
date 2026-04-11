@@ -5,6 +5,41 @@ import { invokeCsosAdapter } from './csos-adapter';
 
 const execFileAsync = promisify(execFile);
 
+export async function loadCsosFootballNonRenewalsRead() {
+  const adapterResponse = await invokeCsosAdapter({
+    organizationId: DEMO_ORGANIZATION_ID,
+    action: 'ticketing.renewal_risk.list',
+    entity: {
+      type: 'segment',
+      name: 'KSU Football Non-Renewals',
+    },
+    input: {
+      sport: 'football',
+      riskLevel: 'high',
+      limit: 200,
+      cohortType: 'non_renewal_recovery',
+    },
+  });
+
+  const constituents = Array.isArray(adapterResponse.output?.constituents)
+    ? adapterResponse.output.constituents.filter((constituent): constituent is Record<string, unknown> => !!constituent && typeof constituent === 'object')
+    : [];
+
+  return {
+    ok: adapterResponse.ok,
+    source: adapterResponse.source,
+    mode: adapterResponse.mode,
+    organizationId: DEMO_ORGANIZATION_ID,
+    summary: adapterResponse.ok
+      ? `${adapterResponse.summary} This route currently uses CSOS renewal-risk data as the live non-renewal recovery cohort bridge.`
+      : adapterResponse.summary,
+    output: {
+      constituents,
+    },
+    error: adapterResponse.error ?? null,
+  };
+}
+
 export async function loadCsosSponsorshipPipelineRead() {
   const cliBin = process.env.CSOS_CLI_BIN || 'csos';
 

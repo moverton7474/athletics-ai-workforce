@@ -20,7 +20,7 @@ import type {
   SegmentContext,
 } from '../types';
 import { fetchCampaignDrafts, fetchSegmentDefinitions } from '../supabase-queries';
-import { loadCsosSponsorshipPipelineRead } from '../server/csos-read-path';
+import { loadCsosFootballNonRenewalsRead, loadCsosSponsorshipPipelineRead } from '../server/csos-read-path';
 
 function normalizeChannels(value: unknown, fallback: CampaignChannelConfig[]): CampaignChannelConfig[] {
   return Array.isArray(value) && value.length ? (value as CampaignChannelConfig[]) : fallback;
@@ -28,6 +28,39 @@ function normalizeChannels(value: unknown, fallback: CampaignChannelConfig[]): C
 
 function normalizeAssets(value: unknown, fallback: GeneratedAsset[]): GeneratedAsset[] {
   return Array.isArray(value) && value.length ? (value as GeneratedAsset[]) : fallback;
+}
+
+async function buildCsosFootballNonRenewalsSegment(): Promise<SegmentContext> {
+  const fallback = getSegmentContext('ksu-football-2026-non-renewals');
+  const response = await loadCsosFootballNonRenewalsRead();
+  const constituents = Array.isArray(response.output?.constituents)
+    ? response.output.constituents.filter((constituent): constituent is Record<string, unknown> => !!constituent && typeof constituent === 'object')
+    : [];
+  const estimatedValue = constituents.reduce((sum, constituent) => {
+    const value = typeof constituent.lifetimeTicketSpend === 'number' ? constituent.lifetimeTicketSpend : 0;
+    return sum + value;
+  }, 0);
+
+  return {
+    ...fallback,
+    sourceType: response.mode === 'direct-read' ? 'csos_query' : fallback.sourceType,
+    summary:
+      response.mode === 'direct-read'
+        ? 'Live CSOS football non-renewal recovery cohort surfaced through the segment shell.'
+        : fallback.summary,
+    audienceCount: constituents.length || fallback.audienceCount,
+    estimatedValue: estimatedValue || fallback.estimatedValue,
+    rationale: response.summary,
+    sourceRecordIds: constituents
+      .map((constituent) => {
+        const firstName = typeof constituent.firstName === 'string' ? constituent.firstName : '';
+        const lastName = typeof constituent.lastName === 'string' ? constituent.lastName : '';
+        const fullName = `${firstName} ${lastName}`.trim();
+        return fullName || null;
+      })
+      .filter((value): value is string => !!value)
+      .slice(0, 12),
+  };
 }
 
 async function buildCsosSponsorshipPipelineSegment(): Promise<SegmentContext> {
@@ -206,24 +239,41 @@ function mapCampaignFollowUpState(row: any): CampaignFollowUpState {
 
 export async function listSegmentsForRouteState() {
   const result = await fetchSegmentDefinitions();
+  const footballNonRenewalsSegment = await buildCsosFootballNonRenewalsSegment();
   const csosSegment = await buildCsosSponsorshipPipelineSegment();
 
   if (result.error || !result.data.length) {
     return {
-      segments: [...mockSegmentRecords.filter((segment) => segment.segmentKey !== 'csos-sponsorship-pipeline'), csosSegment],
+      segments: [
+        footballNonRenewalsSegment,
+        ...mockSegmentRecords.filter(
+          (segment) => segment.segmentKey !== 'ksu-football-2026-non-renewals' && segment.segmentKey !== 'csos-sponsorship-pipeline',
+        ),
+        csosSegment,
+      ],
       source: 'mock' as const,
       error: result.error,
     };
   }
 
+  const mapped = (result.data as any[]).map(mapSegmentRow).filter((segment) => !['ksu-football-2026-non-renewals', 'csos-sponsorship-pipeline'].includes(segment.segmentKey));
+
   return {
-    segments: [...(result.data as any[]).map(mapSegmentRow), csosSegment],
+    segments: [footballNonRenewalsSegment, ...mapped, csosSegment],
     source: 'supabase' as const,
     error: null,
   };
 }
 
 export async function getSegmentForRouteState(segmentKey?: string) {
+  if (segmentKey === 'ksu-football-2026-non-renewals') {
+    return {
+      segment: await buildCsosFootballNonRenewalsSegment(),
+      source: 'mock' as const,
+      error: null,
+    };
+  }
+
   if (segmentKey === 'csos-sponsorship-pipeline') {
     return {
       segment: await buildCsosSponsorshipPipelineSegment(),
