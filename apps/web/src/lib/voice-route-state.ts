@@ -50,6 +50,29 @@ export const segmentLibrary: Record<string, SegmentContext> = {
       sourceWorker: 'sponsorship_intelligence',
     }),
   },
+  'ksu-football-top-prospects': {
+    segmentKey: 'ksu-football-top-prospects',
+    sourceType: 'deterministic_filter',
+    label: 'KSU Football Top Prospects',
+    summary: 'High-propensity football prospects ranked for campaign launch and rep follow-up.',
+    rationale: 'Strong second bridge segment after the initial non-renewal recovery workflow.',
+    audienceCount: 100,
+    estimatedValue: 150000,
+    filterDefinition: {
+      sport: 'football',
+      segmentKind: 'custom',
+      sort: 'priority_desc',
+      limit: 100,
+      queryText: 'top football prospects',
+    },
+    recommendedObjective: 'Prioritize high-propensity football prospects for campaign launch and rep follow-up.',
+    nextBestAction: 'Review the ranked prospect cohort, then launch a governed outreach campaign.',
+    recoverableUrl: '/segments/ksu-football-top-prospects?sport=football&queryText=top-football-prospects',
+    prefillMeta: buildPrefillMeta({
+      sourceCommand: 'show me the top football season ticket prospects',
+      sourceWorker: 'chief_of_staff',
+    }),
+  },
   'ksu-hot-leads': {
     segmentKey: 'ksu-hot-leads',
     sourceType: 'saved_segment',
@@ -132,6 +155,7 @@ export function getSegmentQueryState(searchText?: string): SegmentQueryState {
     searchText,
     suggestedQueries: [
       '2026 KSU football non-renewals',
+      'top football prospects',
       'hot leads',
       'donor leads',
     ],
@@ -143,6 +167,7 @@ export function getSegmentQueryState(searchText?: string): SegmentQueryState {
             : searchText.toLowerCase().includes('hot')
               ? 'hot_leads'
               : 'custom',
+          sport: searchText.toLowerCase().includes('football') ? 'football' : undefined,
         }
       : undefined,
     selectedSegmentKey: undefined,

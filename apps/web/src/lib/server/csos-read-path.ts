@@ -40,6 +40,42 @@ export async function loadCsosFootballNonRenewalsRead() {
   };
 }
 
+export async function loadCsosFootballTopProspectsRead() {
+  const adapterResponse = await invokeCsosAdapter({
+    organizationId: DEMO_ORGANIZATION_ID,
+    action: 'ticketing.prospects.segment',
+    entity: {
+      type: 'segment',
+      name: 'KSU Football Top Prospects',
+    },
+    input: {
+      sport: 'football',
+      minPropensity: 70,
+      maxPropensity: 100,
+      isTicketHolder: false,
+      hasPaciolan: true,
+      limit: 100,
+      cohortType: 'top_prospects',
+    },
+  });
+
+  const prospects = Array.isArray(adapterResponse.output?.prospects)
+    ? adapterResponse.output.prospects.filter((prospect): prospect is Record<string, unknown> => !!prospect && typeof prospect === 'object')
+    : [];
+
+  return {
+    ok: adapterResponse.ok,
+    source: adapterResponse.source,
+    mode: adapterResponse.mode,
+    organizationId: DEMO_ORGANIZATION_ID,
+    summary: adapterResponse.summary,
+    output: {
+      prospects,
+    },
+    error: adapterResponse.error ?? null,
+  };
+}
+
 export async function loadCsosSponsorshipPipelineRead() {
   const cliBin = process.env.CSOS_CLI_BIN || 'csos';
 

@@ -20,7 +20,11 @@ import type {
   SegmentContext,
 } from '../types';
 import { fetchCampaignDrafts, fetchSegmentDefinitions } from '../supabase-queries';
-import { loadCsosFootballNonRenewalsRead, loadCsosSponsorshipPipelineRead } from '../server/csos-read-path';
+import {
+  loadCsosFootballNonRenewalsRead,
+  loadCsosFootballTopProspectsRead,
+  loadCsosSponsorshipPipelineRead,
+} from '../server/csos-read-path';
 
 function normalizeChannels(value: unknown, fallback: CampaignChannelConfig[]): CampaignChannelConfig[] {
   return Array.isArray(value) && value.length ? (value as CampaignChannelConfig[]) : fallback;
@@ -55,6 +59,39 @@ async function buildCsosFootballNonRenewalsSegment(): Promise<SegmentContext> {
       .map((constituent) => {
         const firstName = typeof constituent.firstName === 'string' ? constituent.firstName : '';
         const lastName = typeof constituent.lastName === 'string' ? constituent.lastName : '';
+        const fullName = `${firstName} ${lastName}`.trim();
+        return fullName || null;
+      })
+      .filter((value): value is string => !!value)
+      .slice(0, 12),
+  };
+}
+
+async function buildCsosFootballTopProspectsSegment(): Promise<SegmentContext> {
+  const fallback = getSegmentContext('ksu-football-top-prospects');
+  const response = await loadCsosFootballTopProspectsRead();
+  const prospects = Array.isArray(response.output?.prospects)
+    ? response.output.prospects.filter((prospect): prospect is Record<string, unknown> => !!prospect && typeof prospect === 'object')
+    : [];
+  const estimatedValue = prospects.reduce((sum, prospect) => {
+    const value = typeof prospect.lifetimeTicketSpend === 'number' ? prospect.lifetimeTicketSpend : 0;
+    return sum + value;
+  }, 0);
+
+  return {
+    ...fallback,
+    sourceType: response.mode === 'direct-read' ? 'csos_query' : fallback.sourceType,
+    summary:
+      response.mode === 'direct-read'
+        ? 'Live CSOS football top-prospect cohort surfaced through the segment shell.'
+        : fallback.summary,
+    audienceCount: prospects.length || fallback.audienceCount,
+    estimatedValue: estimatedValue || fallback.estimatedValue,
+    rationale: response.summary,
+    sourceRecordIds: prospects
+      .map((prospect) => {
+        const firstName = typeof prospect.firstName === 'string' ? prospect.firstName : '';
+        const lastName = typeof prospect.lastName === 'string' ? prospect.lastName : '';
         const fullName = `${firstName} ${lastName}`.trim();
         return fullName || null;
       })
@@ -240,14 +277,16 @@ function mapCampaignFollowUpState(row: any): CampaignFollowUpState {
 export async function listSegmentsForRouteState() {
   const result = await fetchSegmentDefinitions();
   const footballNonRenewalsSegment = await buildCsosFootballNonRenewalsSegment();
+  const footballTopProspectsSegment = await buildCsosFootballTopProspectsSegment();
   const csosSegment = await buildCsosSponsorshipPipelineSegment();
 
   if (result.error || !result.data.length) {
     return {
       segments: [
         footballNonRenewalsSegment,
+        footballTopProspectsSegment,
         ...mockSegmentRecords.filter(
-          (segment) => segment.segmentKey !== 'ksu-football-2026-non-renewals' && segment.segmentKey !== 'csos-sponsorship-pipeline',
+          (segment) => !['ksu-football-2026-non-renewals', 'ksu-football-top-prospects', 'csos-sponsorship-pipeline'].includes(segment.segmentKey),
         ),
         csosSegment,
       ],
@@ -256,10 +295,12 @@ export async function listSegmentsForRouteState() {
     };
   }
 
-  const mapped = (result.data as any[]).map(mapSegmentRow).filter((segment) => !['ksu-football-2026-non-renewals', 'csos-sponsorship-pipeline'].includes(segment.segmentKey));
+  const mapped = (result.data as any[])
+    .map(mapSegmentRow)
+    .filter((segment) => !['ksu-football-2026-non-renewals', 'ksu-football-top-prospects', 'csos-sponsorship-pipeline'].includes(segment.segmentKey));
 
   return {
-    segments: [footballNonRenewalsSegment, ...mapped, csosSegment],
+    segments: [footballNonRenewalsSegment, footballTopProspectsSegment, ...mapped, csosSegment],
     source: 'supabase' as const,
     error: null,
   };
@@ -269,6 +310,14 @@ export async function getSegmentForRouteState(segmentKey?: string) {
   if (segmentKey === 'ksu-football-2026-non-renewals') {
     return {
       segment: await buildCsosFootballNonRenewalsSegment(),
+      source: 'mock' as const,
+      error: null,
+    };
+  }
+
+  if (segmentKey === 'ksu-football-top-prospects') {
+    return {
+      segment: await buildCsosFootballTopProspectsSegment(),
       source: 'mock' as const,
       error: null,
     };
