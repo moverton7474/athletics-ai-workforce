@@ -157,7 +157,8 @@ test('worker surfaces show ownership, workflow, and continuity context', async (
 });
 
 test('worker settings surface autonomy and channel governance clearly', async ({ page }) => {
-  await page.goto('/workers/worker-chief-of-staff/settings');
+  await page.goto('/workers');
+  await page.getByRole('link', { name: 'Settings' }).first().click();
   await expect(page.getByRole('heading', { name: 'Autonomy & trust posture' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Channel & delivery governance' })).toBeVisible();
   await expect(page.getByText('Confidence threshold').first()).toBeVisible();
