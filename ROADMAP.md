@@ -200,7 +200,7 @@ Focus on the core workforce product before broad connector expansion.
 - enterprise governance depth
 - broader vertical generalization
 
-## Current Live State (2026-04-09)
+## Current Live State (2026-04-11)
 ### Confirmed now live
 - Supabase-backed production deployment is active on `athletics-ai-workforce-web`
 - safe server-side writes are live for org profile + knowledge items
@@ -233,20 +233,23 @@ Focus on the core workforce product before broad connector expansion.
 - onboarding now hands live intake state into the generated workforce blueprint instead of dropping into a disconnected static page
 - generated workforce blueprint now acts like a real launch package: org-specific summary, recommended rollout sequence, shared-vs-personal operating model summary, first-week operating checklist, and direct links into workers, dashboard, approvals, and knowledge surfaces
 - task detail and approval detail pages now include explicit operator next-action guidance plus direct navigation to related workflow surfaces
-- smoke coverage now validates the expanded product shell end to end across public pages, onboarding handoff, generated workforce blueprint, task detail surfaces, and approval detail surfaces; deployed production verification reached 17/17 passing tests in this session
+- the campaign workflow spine has now been upgraded end to end across the major MVP shell routes: `/campaigns/new/from-segment`, `/campaigns/drafts/[draftId]/review`, `/approvals/[approvalId]`, `/campaigns/[campaignId]/results`, and `/campaigns/[campaignId]/follow-up`
+- those campaign routes now show stronger governed workflow framing, operator next-step clarity, result/follow-up context, and better route-to-route continuity instead of feeling like disconnected placeholder shells
+- smoke coverage now validates the expanded product shell end to end across public pages, onboarding handoff, generated workforce blueprint, task detail surfaces, approval detail surfaces, and the campaign route spine; deployed and local verification have both been used repeatedly to catch drift
 - user screenshots from this session confirm the live continuity coverage, workers, tasks, and knowledge surfaces are rendering in production as expected
 - CSOS production repo (`GF-Accelerate/ksu-csos`) has now been reviewed directly and will guide the next integration phase
 
 ### Immediate next build target
-Execute Option B: finish the core workforce system shell and workflow loop first, while limiting connector work to a narrow proof of architecture.
+Complete a live production verification pass after the strengthened campaign spine work, tighten any drift uncovered there, and then move to the next route family with `/segments` and `/segments/[segmentKey]` as the strongest next candidates.
 
 ### Immediate implementation priorities
-1. strengthen worker/workspace product quality
-2. define or improve the onboarding → team generation flow
-3. continue Phase 2.3 workflow/approval hardening
-4. enforce startup/handoff/memory continuity discipline
-5. keep CSOS integration limited to adapter refinement + one live read path
-6. begin route-by-route adoption of:
+1. verify the deployed campaign workflow spine against production after the latest pushes
+2. tighten any production drift before opening the next route family
+3. upgrade `/segments` and `/segments/[segmentKey]` so the front of the workflow matches the stronger downstream campaign shell
+4. continue strengthening worker/workspace product quality
+5. preserve startup/handoff/memory continuity discipline
+6. keep CSOS integration limited to adapter refinement + one live read path
+7. continue route-by-route adoption of:
    - Vision Board trust/consent/admin-settings patterns
    - CSOS rules/governance/event architecture
    - distinct athletics-ai-workforce synthesis surfaces rather than direct copying
