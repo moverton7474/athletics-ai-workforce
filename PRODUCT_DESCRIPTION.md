@@ -26,6 +26,22 @@ For college athletics specifically, that means the system should help teams coor
 
 ---
 
+## Strategic Moat Lens
+
+The long-term moat for `athletics-ai-workforce` and the wider Visionary AI workforce ecosystem is not "we used AI." It is that the product is deliberately being built around five durable value verticals that generic models do not own well on their own:
+
+1. **Trust** — verifiable, governed, reviewable agent operations
+2. **Context** — permissioned organizational memory, knowledge, and workflow state
+3. **Distribution** — productized worker discovery, launch, and embedded workflow access
+4. **Taste** — strong judgment in orchestration, defaults, UX, and generated outputs
+5. **Liability** — explicit human accountability, auditability, and safe execution posture
+
+These are not abstract brand values. They are supposed to show up concretely in the product shell:
+- approvals and audit trails strengthen **trust** and **liability**
+- the knowledge + memory architecture strengthens **context**
+- onboarding, team blueprint, worker roster, and future agent discovery strengthen **distribution**
+- premium route design, strong defaults, and operator clarity strengthen **taste**
+
 ## System Design Philosophy
 
 ### 1. Product shell first

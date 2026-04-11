@@ -16,6 +16,45 @@ Build `athletics-ai-workforce` as a Marblism-style AI workforce platform with st
 - Batman's Three Pillars / voice-first integration recommendations
 - Visionary AI Vision Board visual system, admin/settings patterns, and autonomy/consent UX
 - direct end-to-end codebase review of both Vision Board and KSU CSOS as reference systems for athletics-ai-workforce
+- the five durable value verticals for defensible AI products: Trust, Context, Distribution, Taste, and Liability
+
+### Durable value verticals (strategic moat lens)
+Use these five verticals as a standing product-planning filter for athletics-ai-workforce and the broader Visionary AI agent workforce strategy.
+
+#### 1. Trust
+Build visible confidence, not hidden automation.
+- treat approvals, audit trails, verification states, and operator review as product features, not compliance afterthoughts
+- make "Powered by Visionary AI" mean verified, governed, and reviewable agent operations
+- strengthen decision provenance on dashboards, approvals, connector runs, and worker surfaces
+- prefer explicit action history and source attribution over opaque AI magic
+
+#### 2. Context
+Own the permissioned context layer that makes the workforce useful.
+- keep the second-brain / memory / knowledge architecture central to the product, not peripheral
+- preserve organization, worker, personal, and task-linked context as differentiated but connected scopes
+- design route state, memory, and future knowledge graph patterns so agents become more valuable with client-specific context
+- treat athletics-ai-workforce as the structured context shell above domain execution backends like CSOS
+
+#### 3. Distribution
+Control how agents and workflows are discovered, launched, and embedded.
+- treat the worker roster, onboarding blueprint, dashboard, and future agent discovery surfaces as a distribution layer for agentic labor
+- design the platform so specialized workers are easy to discover, trust, launch, and route work into
+- keep the product API-first and integration-friendly so other systems and future agents can transact with this workforce cleanly
+- favor deep niche workflow embedding over shallow generic breadth
+
+#### 4. Taste
+Differentiate through judgment, workflow design, and UX quality.
+- use Vision Board-inspired premium product expression to make the shell feel intentional, not generated
+- prioritize route quality, operator clarity, and orchestration sensibility over feature sprawl
+- treat prompts, defaults, worker framing, and generated artifacts as editorial decisions that reflect domain expertise
+- make design polish and workflow coherence part of the moat, especially in onboarding, approvals, settings, and campaign-building flows
+
+#### 5. Liability
+Win where accountability matters.
+- keep human-in-the-loop approval gates for consequential actions
+- design for regulated / high-stakes operating environments where "the AI did it" is not an acceptable answer
+- make approval records, decision logs, audit metadata, and review checkpoints durable, recoverable, and explicit
+- embed governance posture directly into route/state architecture rather than layering it on later
 
 ### Synthesis rule (2026-04-10)
 - **Vision Board** informs athletics-ai-workforce primarily on:
@@ -670,3 +709,7 @@ Voice remains important but should not delay the athletics MVP core.
 - Build agent communication and task remembrance so work survives session resets
 - Sell the team before the software
 - Treat workers as products with their own workspaces, not just prompts
+- Build the moat deliberately across trust, context, distribution, taste, and liability
+- Prefer visible governance and accountable workflows over invisible convenience
+- Treat agent discovery, launch, and orchestration UX as strategic distribution infrastructure
+- Treat premium workflow design and operator clarity as part of product defensibility, not polish-only work
