@@ -1,4 +1,4 @@
-import { getCsosServerClient } from './csos-server';
+import { getCsosServerClient, getCsosServerCredentials } from './csos-server';
 
 export type CsosAdapterAction =
   | 'constituents.search'
@@ -13,7 +13,8 @@ export type CsosAdapterAction =
   | 'sync.salesforce.status'
   | 'sync.salesforce.run'
   | 'ticketing.prospects.segment'
-  | 'ticketing.renewal_risk.list';
+  | 'ticketing.renewal_risk.list'
+  | 'ticketing.outreach.compose';
 
 export type CsosAdapterMode = 'stub' | 'edge-function' | 'direct-read';
 
@@ -59,6 +60,99 @@ export function getCsosAdapterMode(): CsosAdapterMode {
 
 export async function invokeCsosAdapter(request: CsosAdapterRequest): Promise<CsosAdapterResponse> {
   const mode = getCsosAdapterMode();
+
+  if (mode === 'edge-function' && request.action === 'ticketing.outreach.compose') {
+    const credentials = getCsosServerCredentials();
+
+    if (!credentials) {
+      return {
+        ok: false,
+        source: 'csos-adapter',
+        mode,
+        action: request.action,
+        status: 'error',
+        summary: 'CSOS edge-function mode is configured, but no server credentials are available.',
+        output: null,
+        error: 'Missing CSOS server-side credentials.',
+      };
+    }
+
+    const campaignId = typeof request.input?.campaignId === 'string' ? request.input.campaignId : undefined;
+    const constituentIds = Array.isArray(request.input?.constituentIds)
+      ? request.input?.constituentIds.filter((value): value is string => typeof value === 'string' && value.length > 0)
+      : [];
+    const channel = typeof request.input?.channel === 'string' ? request.input.channel : 'email';
+    const touchType = typeof request.input?.touchType === 'string' ? request.input.touchType : 'initial_outreach';
+
+    if (!campaignId || !constituentIds.length) {
+      return {
+        ok: false,
+        source: 'csos-adapter',
+        mode,
+        action: request.action,
+        status: 'error',
+        summary: 'Outreach compose requires a CSOS campaign id and at least one constituent id.',
+        output: null,
+        error: 'Missing campaign or constituent context.',
+      };
+    }
+
+    try {
+      const response = await fetch(`${credentials.url}/functions/v1/ticket_outreach`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${credentials.key}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'compose',
+          campaign_id: campaignId,
+          constituent_ids: constituentIds,
+          channel,
+          touch_type: touchType,
+        }),
+      });
+
+      const payload = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        return {
+          ok: false,
+          source: 'csos-adapter',
+          mode,
+          action: request.action,
+          status: 'error',
+          summary: 'CSOS outreach compose failed.',
+          output: null,
+          error: payload?.error ?? payload?.message ?? `HTTP ${response.status}`,
+        };
+      }
+
+      return {
+        ok: true,
+        source: 'csos-adapter',
+        mode,
+        action: request.action,
+        status: 'success',
+        summary: `CSOS outreach draft composed for ${constituentIds.length} constituent(s).`,
+        output: {
+          draft: payload?.preview ?? payload ?? null,
+        },
+        error: null,
+      };
+    } catch (error: any) {
+      return {
+        ok: false,
+        source: 'csos-adapter',
+        mode,
+        action: request.action,
+        status: 'error',
+        summary: 'CSOS outreach compose request failed.',
+        output: null,
+        error: error?.message ?? 'Unknown edge-function error.',
+      };
+    }
+  }
 
   if (mode === 'direct-read') {
     const client = getCsosServerClient();

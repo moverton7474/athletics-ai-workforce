@@ -14,6 +14,7 @@ const routes = [
   { path: '/segments/csos-sponsorship-pipeline', heading: 'CSOS Sponsorship Pipeline' },
   { path: '/campaigns/new', heading: 'New Campaign' },
   { path: '/campaigns/new/from-segment?segmentKey=ksu-football-2026-non-renewals', heading: 'Prefilled Campaign Builder' },
+  { path: '/campaigns/new/from-segment?segmentKey=ksu-football-2026-non-renewals&csosCampaignId=demo-campaign&constituentIds=abc123&channel=email', heading: 'Prefilled Campaign Builder' },
   { path: '/campaigns/drafts/ksu-football-2026-non-renewals-draft/review?segmentKey=ksu-football-2026-non-renewals', heading: 'Campaign Asset Review' },
   { path: '/campaigns/ksu-football-2026-non-renewals-campaign/results?segmentKey=ksu-football-2026-non-renewals', heading: 'KSU Football Season Ticket Sales Campaign' },
   { path: '/campaigns/ksu-football-2026-non-renewals-campaign/follow-up?segmentKey=ksu-football-2026-non-renewals', heading: 'Campaign Follow-Up' },

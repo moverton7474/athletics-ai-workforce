@@ -5,6 +5,40 @@ import { invokeCsosAdapter } from './csos-adapter';
 
 const execFileAsync = promisify(execFile);
 
+export async function loadCsosOutreachComposePreview(input: {
+  campaignId: string;
+  constituentIds: string[];
+  channel?: 'email' | 'sms' | 'voice_call';
+  touchType?: string;
+}) {
+  const adapterResponse = await invokeCsosAdapter({
+    organizationId: DEMO_ORGANIZATION_ID,
+    action: 'ticketing.outreach.compose',
+    entity: {
+      type: 'campaign',
+      name: input.campaignId,
+    },
+    input: {
+      campaignId: input.campaignId,
+      constituentIds: input.constituentIds,
+      channel: input.channel ?? 'email',
+      touchType: input.touchType ?? 'initial_outreach',
+    },
+  });
+
+  return {
+    ok: adapterResponse.ok,
+    source: adapterResponse.source,
+    mode: adapterResponse.mode,
+    organizationId: DEMO_ORGANIZATION_ID,
+    summary: adapterResponse.summary,
+    output: {
+      draft: adapterResponse.output?.draft ?? null,
+    },
+    error: adapterResponse.error ?? null,
+  };
+}
+
 export async function loadCsosFootballNonRenewalsRead() {
   const adapterResponse = await invokeCsosAdapter({
     organizationId: DEMO_ORGANIZATION_ID,

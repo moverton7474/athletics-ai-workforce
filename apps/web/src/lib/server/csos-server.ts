@@ -1,10 +1,26 @@
 import { createClient } from '@supabase/supabase-js';
 
-export function getCsosServerClient() {
+export function getCsosServerCredentials() {
   const url = process.env.CSOS_SUPABASE_URL;
   const serviceRoleKey = process.env.CSOS_SUPABASE_SERVICE_ROLE_KEY;
   const anonKey = process.env.CSOS_SUPABASE_ANON_KEY;
   const key = serviceRoleKey || anonKey;
+
+  if (!url || !key) {
+    return null;
+  }
+
+  return { url, key };
+}
+
+export function getCsosServerClient() {
+  const credentials = getCsosServerCredentials();
+
+  if (!credentials) {
+    return null;
+  }
+
+  const { url, key } = credentials;
 
   if (!url || !key) {
     return null;

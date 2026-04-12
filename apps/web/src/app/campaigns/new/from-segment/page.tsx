@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { CampaignDraftPersistencePanel } from '../../../../components/campaigns/CampaignDraftPersistencePanel';
 import { WorkflowEntryContextCard } from '../../../../components/campaigns/WorkflowEntryContextCard';
 import { DataSourceNotice } from '../../../../components/system/DataSourceNotice';
+import { loadCsosOutreachComposePreview } from '../../../../lib/server/csos-read-path';
 import { getCampaignBuilderForRouteState } from '../../../../lib/services/route-state';
 
 const sectionStyle = { border: '1px solid #ddd', borderRadius: 12, padding: 16 };
@@ -10,13 +11,29 @@ const mutedLabelStyle = { fontSize: 12, letterSpacing: 0.4, textTransform: 'uppe
 export default async function NewCampaignFromSegmentPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ segmentKey?: string }>;
+  searchParams?: Promise<{
+    segmentKey?: string;
+    csosCampaignId?: string;
+    constituentIds?: string;
+    channel?: 'email' | 'sms' | 'voice_call';
+  }>;
 }) {
   const resolvedSearchParams = await searchParams;
   const { builderState, draftRecord, source, error } = await getCampaignBuilderForRouteState(resolvedSearchParams?.segmentKey, 'voice');
   const draftKey = builderState.draftId ?? `${builderState.linkedSegment.segmentKey}-draft`;
   const enabledChannels = builderState.selectedChannels.filter((channel) => channel.enabled);
   const disabledChannels = builderState.selectedChannels.filter((channel) => !channel.enabled);
+  const csosConstituentIds = (resolvedSearchParams?.constituentIds ?? '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean);
+  const csosComposePreview = resolvedSearchParams?.csosCampaignId && csosConstituentIds.length
+    ? await loadCsosOutreachComposePreview({
+        campaignId: resolvedSearchParams.csosCampaignId,
+        constituentIds: csosConstituentIds,
+        channel: resolvedSearchParams.channel ?? 'email',
+      })
+    : null;
 
   return (
     <main style={{ padding: 32, fontFamily: 'sans-serif', display: 'grid', gap: 24 }}>
@@ -150,6 +167,32 @@ export default async function NewCampaignFromSegmentPage({
             </article>
           ))}
         </div>
+      </section>
+
+      <section style={{ ...sectionStyle, display: 'grid', gap: 16 }}>
+        <div>
+          <h2 style={{ marginTop: 0, marginBottom: 8 }}>CSOS Draft Bridge</h2>
+          <p style={{ margin: 0 }}>
+            This builder can now request a CSOS-backed outreach draft when a CSOS campaign id and selected constituent ids are available. Until then, this section stays as a readiness checkpoint instead of silently pretending execution context exists.
+          </p>
+        </div>
+
+        {csosComposePreview ? (
+          <article style={{ border: '1px solid #e5e5e5', borderRadius: 10, padding: 12 }}>
+            <h3 style={{ marginTop: 0, marginBottom: 8 }}>CSOS draft preview</h3>
+            <p style={{ margin: 0 }}>{csosComposePreview.summary}</p>
+            {csosComposePreview.output.draft ? (
+              <pre style={{ margin: '12px 0 0', whiteSpace: 'pre-wrap' }}>{JSON.stringify(csosComposePreview.output.draft, null, 2)}</pre>
+            ) : null}
+          </article>
+        ) : (
+          <article style={{ border: '1px solid #e5e5e5', borderRadius: 10, padding: 12 }}>
+            <h3 style={{ marginTop: 0, marginBottom: 8 }}>Awaiting CSOS campaign context</h3>
+            <p style={{ margin: 0 }}>
+              To call `ticketing.outreach.compose`, provide `csosCampaignId` plus one or more `constituentIds` in the route. That will let the builder request a real CSOS draft while keeping review and approval inside athletics-ai-workforce.
+            </p>
+          </article>
+        )}
       </section>
 
       <section style={{ ...sectionStyle, display: 'grid', gap: 16 }}>
