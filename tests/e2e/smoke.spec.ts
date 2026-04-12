@@ -8,6 +8,7 @@ const routes = [
   { path: '/workers', heading: 'Workers' },
   { path: '/tasks', heading: 'Tasks' },
   { path: '/segments', heading: 'Segments' },
+  { path: '/segments?q=milton', heading: 'Segments' },
   { path: '/segments/ksu-football-2026-non-renewals', heading: '2026 KSU Football Non-Renewals' },
   { path: '/segments/ksu-football-top-prospects', heading: 'KSU Football Top Prospects' },
   { path: '/segments/csos-sponsorship-pipeline', heading: 'CSOS Sponsorship Pipeline' },

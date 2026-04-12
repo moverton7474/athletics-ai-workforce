@@ -150,6 +150,68 @@ export async function invokeCsosAdapter(request: CsosAdapterRequest): Promise<Cs
         };
       }
 
+      if (request.action === 'constituents.search') {
+        const queryText = typeof request.input?.query === 'string' ? request.input.query.trim() : '';
+        const limit = typeof request.input?.limit === 'number' ? request.input.limit : 25;
+
+        if (!queryText) {
+          return {
+            ok: false,
+            source: 'csos-adapter',
+            mode,
+            action: request.action,
+            status: 'error',
+            summary: 'Constituent search requires a query string.',
+            output: null,
+            error: 'Missing query string.',
+          };
+        }
+
+        const { data, error } = await client
+          .from('constituent_master')
+          .select('id, first_name, last_name, email, phone, sport_affinity, is_ticket_holder, lifetime_ticket_spend')
+          .or(`first_name.ilike.%${queryText}%,last_name.ilike.%${queryText}%,email.ilike.%${queryText}%,phone.ilike.%${queryText}%`)
+          .order('last_name', { ascending: true })
+          .limit(limit);
+
+        if (error) {
+          return {
+            ok: false,
+            source: 'csos-adapter',
+            mode,
+            action: request.action,
+            status: 'error',
+            summary: 'Failed to search constituents in CSOS.',
+            output: null,
+            error: error.message,
+          };
+        }
+
+        const matches = (data ?? []).map((row: any) => ({
+          id: row.id,
+          firstName: row.first_name,
+          lastName: row.last_name,
+          email: row.email,
+          phone: row.phone,
+          sportAffinity: row.sport_affinity,
+          isTicketHolder: row.is_ticket_holder,
+          lifetimeTicketSpend: row.lifetime_ticket_spend,
+        }));
+
+        return {
+          ok: true,
+          source: 'csos-adapter',
+          mode,
+          action: request.action,
+          status: 'success',
+          summary: `Found ${matches.length} constituent match(es) in CSOS for "${queryText}".`,
+          output: {
+            matches,
+          },
+          error: null,
+        };
+      }
+
       if (request.action === 'ticketing.prospects.segment') {
         let query = client
           .from('constituent_master')

@@ -40,6 +40,37 @@ export async function loadCsosFootballNonRenewalsRead() {
   };
 }
 
+export async function loadCsosConstituentSearchRead(query: string) {
+  const adapterResponse = await invokeCsosAdapter({
+    organizationId: DEMO_ORGANIZATION_ID,
+    action: 'constituents.search',
+    entity: {
+      type: 'constituent',
+      name: query,
+    },
+    input: {
+      query,
+      limit: 12,
+    },
+  });
+
+  const matches = Array.isArray(adapterResponse.output?.matches)
+    ? adapterResponse.output.matches.filter((match): match is Record<string, unknown> => !!match && typeof match === 'object')
+    : [];
+
+  return {
+    ok: adapterResponse.ok,
+    source: adapterResponse.source,
+    mode: adapterResponse.mode,
+    organizationId: DEMO_ORGANIZATION_ID,
+    summary: adapterResponse.summary,
+    output: {
+      matches,
+    },
+    error: adapterResponse.error ?? null,
+  };
+}
+
 export async function loadCsosFootballTopProspectsRead() {
   const adapterResponse = await invokeCsosAdapter({
     organizationId: DEMO_ORGANIZATION_ID,

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { DataSourceNotice } from '../../components/system/DataSourceNotice';
+import { loadCsosConstituentSearchRead } from '../../lib/server/csos-read-path';
 import { getSegmentQueryState } from '../../lib/voice-route-state';
 import { listSegmentsForRouteState } from '../../lib/services/route-state';
 
@@ -16,6 +17,7 @@ export default async function SegmentsPage({
   const queryState = getSegmentQueryState(resolvedSearchParams?.q);
   const { segments, source, error } = await listSegmentsForRouteState();
   const lockedWorkflowSegment = segments.find((segment) => segment.segmentKey === lockedWorkflowSegmentKey) ?? segments[0];
+  const constituentSearchPreview = queryState.searchText ? await loadCsosConstituentSearchRead(queryState.searchText) : null;
 
   return (
     <main style={{ padding: 32, fontFamily: 'sans-serif', display: 'grid', gap: 24 }}>
@@ -79,6 +81,31 @@ export default async function SegmentsPage({
           </article>
         </div>
       </section>
+
+      {constituentSearchPreview ? (
+        <section style={{ ...sectionStyle, display: 'grid', gap: 16 }}>
+          <div>
+            <p style={mutedLabelStyle}>Next bridge capability</p>
+            <h2 style={{ marginTop: 8, marginBottom: 8 }}>CSOS Constituent Search Preview</h2>
+            <p style={{ margin: 0 }}>{constituentSearchPreview.summary}</p>
+          </div>
+
+          {constituentSearchPreview.output.matches.length ? (
+            <div style={{ display: 'grid', gap: 12 }}>
+              {constituentSearchPreview.output.matches.map((match) => (
+                <article key={String(match.id)} style={{ border: '1px solid #f0f0f0', borderRadius: 12, padding: 14 }}>
+                  <h3 style={{ marginTop: 0, marginBottom: 8 }}>{`${String(match.firstName ?? '')} ${String(match.lastName ?? '')}`.trim() || 'Unnamed constituent'}</h3>
+                  <p style={{ margin: 0 }}>Email: {String(match.email ?? 'Unknown')}</p>
+                  <p style={{ margin: '8px 0 0' }}>Phone: {String(match.phone ?? 'Unknown')}</p>
+                  <p style={{ margin: '8px 0 0' }}>Sport affinity: {String(match.sportAffinity ?? 'Unknown')}</p>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p style={{ margin: 0 }}>No live constituent matches were returned yet. The route will still remain usable through deterministic segment discovery.</p>
+          )}
+        </section>
+      ) : null}
 
       <section style={{ ...sectionStyle, display: 'grid', gap: 16 }}>
         <div>
